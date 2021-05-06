@@ -6,11 +6,10 @@ image:
 tasks:
   - name: ddev
     prebuild: |
-      export DDEV_NONINTERACTIVE=true
-      .gitpod/gitpod-setup-ddev.sh
+      sudo cp .gitpod/gitpod-setup-ddev.sh /usr/local/bin/.
     command: |
-      .gitpod/gitpod-setup-ddev.sh
-      gp await-port 8080 && gp preview $(gp url 8080)
+      sudo cp .gitpod/gitpod-setup-ddev.sh /usr/local/bin/.
+      echo "System is ready, clone a project, `ddev config` if needed, and `gitpod-setup-ddev` to run it"
 
 # Set the following ports public
 ports:

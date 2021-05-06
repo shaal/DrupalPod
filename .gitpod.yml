@@ -1,0 +1,49 @@
+image:
+  file: .gitpod/.gitpod.Dockerfile
+
+# ddev and composer are running as part of the prebuild
+# when starting a workspace all docker images are ready
+tasks:
+  - name: ddev
+    prebuild: |
+      export DDEV_NONINTERACTIVE=true
+      .gitpod/gitpod-setup-ddev.sh
+    command: |
+      .gitpod/gitpod-setup-ddev.sh
+      gp await-port 8080 && gp preview $(gp url 8080)
+
+# Set the following ports public
+ports:
+  - port: 6942
+    onOpen: ignore
+  - port: 8080
+  - port: 8025
+    onOpen: ignore
+  - port: 8026
+    onOpen: ignore
+  - port: 8036
+    onOpen: ignore
+  - port: 8037
+    onOpen: ignore
+  - port: 8443
+    onOpen: ignore
+  - port: 9999
+
+github:
+  prebuilds:
+    # enable for the master/default branch (defaults to true)
+    master: true
+    # enable for all branches in this repo (defaults to false)
+    branches: true
+    # enable for pull requests coming from this repo (defaults to true)
+    pullRequests: true
+    # enable for pull requests coming from forks (defaults to false)
+    pullRequestsFromForks: true
+    # add a check to pull requests (defaults to true)
+    addCheck: true
+    # add a "Review in Gitpod" button as a comment to pull requests (defaults to false)
+    addComment: true
+    # add a "Review in Gitpod" button to the pull request's description (defaults to false)
+    addBadge: true
+    # add a label once the prebuild is ready to pull requests (defaults to false)
+    addLabel: true

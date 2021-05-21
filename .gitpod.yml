@@ -6,10 +6,11 @@ image:
 tasks:
   - name: ddev
     prebuild: |
-      sudo cp .gitpod/gitpod-setup-ddev.sh /usr/local/bin/.
+      .gitpod/gitpod-setup-ddev.sh
+      .gitpod/download-ddev-images.sh
     command: |
       sudo cp .gitpod/gitpod-setup-ddev.sh /usr/local/bin/.
-      echo "System is ready, clone a project, `ddev config` if needed, and `gitpod-setup-ddev` to run it"
+      echo "System is ready, clone a project (https), `ddev config` if needed. Run `gitpod-setup-ddev` to set it up, and `ddev start`"
 
 # Set the following ports public
 ports:

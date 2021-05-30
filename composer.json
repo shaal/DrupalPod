@@ -44,7 +44,7 @@
         "sort-packages": true
     },
     "scripts": {
-        "post-root-package-install": [
+        "pre-install-cmd": [
             "DrupalGitCloneProject\\ComposerScripts::postRootPackageInstall"
         ],
         "post-drupal-scaffold-cmd": [

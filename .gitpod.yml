@@ -7,6 +7,8 @@ tasks:
   - name: ddev
     prebuild: |
       .gitpod/download-ddev-images.sh
+      .gitpod/gitpod-setup-ddev.sh
+      ddev composer install
     command: |
       .gitpod/gitpod-setup-ddev.sh
       ddev composer install

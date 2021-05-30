@@ -6,10 +6,10 @@ image:
 tasks:
   - name: ddev
     prebuild: |
-      .gitpod/install-latest-composer.sh
       .gitpod/download-ddev-images.sh
     command: |
-      .gitpod/download-ddev-images.sh
+      .gitpod/gitpod-setup-ddev.sh
+      ddev composer install
 
 # VScode xdebug extension
 vscode:

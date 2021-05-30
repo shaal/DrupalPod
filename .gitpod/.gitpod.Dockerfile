@@ -10,8 +10,14 @@ RUN pip3 install projector-installer
 RUN mkdir -p ~/.projector/configs  # Prevents projector install from asking for the license acceptance
 RUN projector install 'PhpStorm 2021.1' --no-auto-run
 
+# Install GitUI (terminal-ui for git)
+RUN brew install gitui
+
 # Install ddev
-RUN brew update && brew install drud/ddev/ddev && mkcert -install
+RUN brew update && brew install drud/ddev/ddev
+
+# Install latest composer
+RUN .gitpod/install-latest-composer.sh
 
 ###
 ### Initiate a rebuild of Gitpod's image by updating this comment #1

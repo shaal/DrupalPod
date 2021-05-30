@@ -14,7 +14,7 @@ $port = 3306;
 // so use the host-side bind port on docker IP
 if (empty(getenv('DDEV_PHP_VERSION') && getenv('IS_DDEV_PROJECT') == 'true')) {
   $host = "127.0.0.1";
-  $port = 32768;
+  $port = 32775;
 }
 
 $databases['default']['default'] = array(
@@ -27,7 +27,7 @@ $databases['default']['default'] = array(
   'prefix' => "",
 );
 
-$settings['hash_salt'] = 'OfanycLukdxienGsYkUyqmiWtetkXdgKgyflhPFLyHfKEjoMmmZiavWqpQJKQGEW';
+$settings['hash_salt'] = 'TnDOYdbfHDrVYaazJrvHBXFQdsBohhbwbCwGaijdaghWZGKUyekUaLlVmEqDHNYY';
 
 // This will prevent Drupal from setting read-only permissions on sites/default.
 $settings['skip_permissions_hardening'] = TRUE;

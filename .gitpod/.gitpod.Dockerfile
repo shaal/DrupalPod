@@ -16,9 +16,6 @@ RUN brew install gitui
 # Install ddev
 RUN brew update && brew install drud/ddev/ddev
 
-# Install latest composer
-RUN /workspace/mygitpod/.gitpod/install-latest-composer.sh
-
 ###
 ### Initiate a rebuild of Gitpod's image by updating this comment #1
 ###

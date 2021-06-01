@@ -1,0 +1,11 @@
+{
+  "extends": ["airbnb-base", "prettier"],
+  "rules": {
+    "quotes": ["warn", "double"],
+    "no-param-reassign": ["error", { "props": false }]
+  },
+  "env": {
+    "browser": true,
+    "node": true
+  }
+}

@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>js-keygen: convert openssh to PEM</title>
+  <script>module = {};</script>
+  <script src="publicSshToPem.js"></script>
+  <link rel="stylesheet" href="js-keygen.css">
+  <link rel="icon" type="image/png" href="key.png">
+</head>
+
+<body>
+  <div id="content">
+    <h1>Convert openSSH public key format to PEM</h1>
+    <p>Form the command line you can run
+      <br>
+      <code>ssh-keygen -f ~/.ssh/id_rsa -m 'PEM' -e > public.pem</code>
+      <br> in order to export your openssh public key to a PEM file, but doing in so in javascript is not too difficult and doesn't
+      require the webcrypto API, only a bit of ASN.1 knowledge.</p>
+    <p>Again
+      <a href="http://blog.oddbit.com/2011/05/08/converting-openssh-public-keys/">Converting open ssh public key</a> proves to be invaluable to come up with the tight conversion</p>
+    <p>Result can be check with openssl asn.1 decoder
+      <br>
+      <code>openssl asn1parse -i -in public.pem</code>
+    </p>
+    <br> No data is being sent to the server, everything happens within the context of this web page.
+    <br>
+   <hr>
+    <div>
+      <label for="key">OpenSSH public Key:</label>
+      <br>
+      <textarea id="key" style="height: 75px;" spellcheck="false">ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDCD2bpwgflG43XNQ1pID6cjHfBLDeAptIiOpzD8ujYJXMNyFB5+omBsM3WZh9wN+qkFFCFx2PAxHlmlMJEgCQVye7rJw5SPjLcoZvMniyrYQTNk/+PkSKNs/hNCPTeuvhDWrC08U1dZwKNYR6ZcI+w4vZUNj26Ma6CqJZMxcrNuENWOPnaiuAayzBwC0x6TqwKwzK8FxPfG7VT3RADoU9CwKLjdz63NRXF7Kq2Q20dycPZk7lxmqt8bFt+WTkVtK8fPmAu+NjATdqhNmkw7FG7cfOYvf3n1kChLx923MWrKAaNoObx/b8otiz9wWSh8cxavDwzdsi1MJMXOvHSpwQT patrick@Patricks-MacBook-Pro.local
+      </textarea>
+    </div>
+    <button id="generate">Convert</button>
+    <div>
+      <label for="pem">PEM:</label>
+      <br>
+      <textarea id="pem" disabled style="height: 150px;" spellcheck="false"></textarea>
+    </div>
+    <br>
+
+    <hr> Made with
+    <span style="color:magenta;">&hearts;</span> by
+    <a href="http://blog.roumanoff.com">Patrick Roumanoff</a>
+    <a href="https://github.com/PatrickRoumanoff/js-keygen">
+      <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67"
+        alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png">
+    </a>
+  </div>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelector("#generate").addEventListener("click", () => {
+        document.querySelector("#pem").value = publicSshToPem(document.querySelector("#key").value)
+      });
+    });
+  </script>
+
+</body>
+
+</html>

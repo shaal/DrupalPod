@@ -1,0 +1,25 @@
+{
+  "name": "js-keypair",
+  "version": "1.0.0",
+  "description": "Generate a key pair using the webcrypto API",
+  "main": "js-keygen.js",
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "4.17.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-plugin-import": "^2.8.0",
+    "git-scripts": "^0.2.1",
+    "surge": "^0.19.0"
+  },
+  "git": {
+    "scripts": {
+      "pre-push": "npx surge --project ./ --domain js-keygen.surge.sh"
+    }
+  },
+  "scripts": {
+    "test": "echo \"To run test open test/index.html in your browser\""
+  },
+  "author": "patrick@roumanoff.com",
+  "license": "CC-BY 4.0"
+}

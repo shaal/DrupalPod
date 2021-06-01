@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+
+<head>
+  <base href="js-keygen/">
+  <title>js-keygen</title>
+  <script>module = {};</script>
+  <script src="base64url.js"></script>
+  <script src="ssh-util.js"></script>
+  <script src="js-keygen-ui.js"></script>
+  <script src="js-keygen.js"></script>
+  <link rel="stylesheet" href="js-keygen.css">
+  <link rel="icon" type="image/png" href="key.png">
+</head>
+
+<body>
+  <div id="content">
+    <h1>js-keygen</h1>
+
+    Generate a keypair to be used with openSSH, this replicate ssh-keygen function in javascript in the browser, using the webcrypto
+    api and a bit of glue.
+    <br> For an in-depth explanation on how this work, see the
+    <a href="http://blog.roumanoff.com/2015/09/using-webcrypto-api-to-generate-keypair.html">blog post</a>.
+    <br> Usually you would want to save the private key to the machine initiating the ssh connection, and you want to copy the
+    public key to the system receiving the connection.
+    <br> No data is being sent to the server, everything happens within the context of this web page.
+    <br>   <hr>
+    <div>
+      <label for="name">Name:</label>
+      <input id="name" type="text" value="Drupal SSH key">
+    </div>
+    <div>
+      <label for="alg">Algorithm:</label>
+      <select id="alg" disabled>
+        <option value="RSASSA-PKCS1-v1_5" selected>RSASSA-PKCS1-v1_5</option>
+        <option value="RSA-PSS">RSA-PSS</option>
+        <option value="ECDSA">ECDSA</option>
+      </select>
+      <label for="size">Size:</label>
+      <select id="size" disabled>
+        <option value="1024">1024</option>
+        <option value="2048">2048</option>
+        <option value="4096" selected>4096</option>
+      </select>
+    </div>
+    <div>
+      <label for="hash">Hash:</label>
+      <select id="hash" disabled>
+        <option value="SHA-1">SHA-1</option>
+        <option value="SHA-256" selected>SHA-256</option>
+        <option value="SHA-384">SHA-384</option>
+        <option value="SHA-512">SHA-512</option>
+      </select>
+    </div>
+    <label for="generate"></label>
+    <button id="generate">Generate</button>
+    <br>
+
+    <div id="result" style="display:none;">
+      <hr>
+      <a id="private" style="display: none;" href="" download="id_rsa">id_rsa</a>
+      <a id="public" style="display: none;" href="" download="id_rsa.pub">id_rsa.pub</a>
+      Private Key
+      <button id="copyPrivate">Copy</button> or
+      <button id="savePrivate">Save</button>
+      <br>
+      <textarea id="privateKey" style="height: 150px;" spellcheck="false"></textarea>
+
+      <hr> Public Key
+      <button id="copyPublic">Copy</button> or
+      <button id="savePublic">Save</button>
+      <br>
+      <textarea id="publicKey" spellcheck="false"></textarea>
+    </div>
+    <hr> Made with
+    <span style="color:magenta;">&hearts;</span> by
+    <a href="http://blog.roumanoff.com">Patrick Roumanoff</a>
+  </div>
+</body>
+
+</html>

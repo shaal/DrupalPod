@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>js-keygen: convert pkcs1 to pkcs8</title>
+  <script>module = {};</script>
+  <script src="pkcs1To8.js"></script>
+  <link rel="stylesheet" href="js-keygen.css">
+  <link rel="icon" type="image/png" href="key.png">
+</head>
+
+<body>
+  <div id="content">
+    <h1>Convert PKCS1 private key to PKCS8 private key</h1>
+    <p>From the command line you can run
+      <br>
+      <code>openssl pkcs8 -topk8 -inform PEM -outform PEM -in private.pkcs1 -out private.pkcs8 -nocrypt</code>
+      <br>We can do the same in javascript</p>
+    <br> No data is being sent to the server, everything happens within the context of this web page.
+    <br>
+    <hr>
+    <div>
+      <label for="key">PKCS1 private Key PEM:</label>
+      <br>
+      <textarea id="key" style="height: 300px;" spellcheck="false">-----BEGIN PRIVATE KEY-----
+MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCku91CnYnU+88p
+sDWthuLgMLZd1cWOMF8xV7KUNR/EqssNWObwdD/mrX6Z8t9MPl0T6jL8+EMHRcQn
+pIR8bgUf7WT7Kl9INe/TpoIVX1bfyenQIqJbFE4lPs3E0VJP45wHFFRK85ls08zI
+OVDmzYFt87upTiwPbxS5OIFUB16sxttKAdXhebtWtkVQPB9662OG2WRhVlJqXNc9
+wuWvb0XnbVUxF0ryhsJj24VR3cjHQtkDc22Vu8yUzWS3VtBSUdfzT1EwVXm1AGAz
+WhjO+W/7fvWYvR9uO7O+po0g4kbloL9lO1v+pMPVZvcv6VQqLbcgNc6fzAlfwis9
+a/uKgRZhAgMBAAECggEADtNBZF9dKifHSw8qpYVAIcEAiI1WjCdaScyEq8XkKATe
+5UKc9gLgRVhTznMHGYt7QPGQySdmkN78ejzaF4CnQWpR7jCwBoWkIb4Ycufzn4xC
+WJLlXaEEL2Hpjs7vw3TOc+ymcWBe7GZbRaGy4DKadVS8DM6WNIVgrhKhwPgw0wel
+eCMyQVzJbb9lTiwWv2c1OCjNKYKOlu/sbbl+CH85g7jTiMJ4cAVtQeoTjPWDMZlU
+3Cn/NqsQbni+R374dgIoqUHsBVRc0wrjc6L06DZbtVhAkQrnBVcOeTstlUpA50X7
+lT65f1TjrUuOIQDOtXQ4uM/fQ88K5YprrCbA1mq+yQKBgQDRiqlpq4udzTbIGyy+
+rzubdXa1Yd61264/0iNOuX/XFf3lQsanBakotm9SCL9ZibAZLDBDDz5pTWwnFHnC
+rIvvnqTZpJ2YCRSWVPjPVBsT4KKZ/lptCdwUUdo4mntI8Qo3mThP5uKfCMK28+4W
+dLed3rS6zXkYZJa7AbF1R3VSWwKBgQDJQfbVDUIcu40SiaNvOl7C+UBsZt552w09
+rNIJSelxS2MkgwTN1SwxnzcCdDeEBsYe1PfXxHWdM1zeIsQN3ZB9qu3GfNt3cWyX
+fyH6x7n9fvQPgIoa/IvnSlmeuflX/zog3/by1DRBARuNNbDFd4ar6xp3O1mCGcGQ
+wwul5Xve8wKBgGl956B9bsK5J9VCaRpu2hF/542VgiwINweGYaQmm4fLWJFtNtmr
+behDQHQKV1taiD+EEaARMpiNE9/w3QP3HlQ6iD/SMkzydVzh1ol6jE9LjlD8zsWK
+azQHqVdJ3rtwLnajOshvMrRiErVMxRalGDPwhQhunYJ8Ua5AQfkLSrN1AoGATKyc
+5T5P2bJ6ZH2bjlymjZF4QdRPHg2eVcjpnDBUh505AEgKJID6fU0zH/Q20k3iXQy1
+/7YROPrAfsCwALhQvA/K1rvqwO6teGou/+Pnr/QV93H5K57bjhp9WkNwA15xPuUU
+qB7AaaOKY5n45sJKxGSliJdL2o0FealVXra3IpECgYA0YYrmCNXb2LISpJe3NLJI
+4UkMLsRwR4rnumsmbQl7u3NAjZtvsUWv+b8fayEbQii49RwfslJclrSAG/y0l/sA
+l+a6EbtPiu6HeP0nLYksP/yxSd1RfXWr2KEKQXv0DSRguQAmr5QyR6CMCJXvM/ul
+zB/5uOOZD9IzgautQqwIcQ==
+-----END PRIVATE KEY-----
+</textarea>
+    </div>
+    <button id="generate">Convert</button>
+    <div>
+      <label for="pem">PKCS8 private key PEM:</label>
+      <br>
+      <textarea id="pem" disabled style="height: 350px;" spellcheck="false"></textarea>
+    </div>
+    <br> To validate this pkcs8 record you can convert it baco pkcs1 through openssl:
+    <code>openssl pkcs8 -inform PEM -outform PEM -in private.pkcs8 -out private.pkcs1 -nocrypt</code>
+    <hr> Made with
+    <span style="color:magenta;">&hearts;</span> by
+    <a href="http://blog.roumanoff.com">Patrick Roumanoff</a>
+    <a href="https://github.com/PatrickRoumanoff/js-keygen">
+      <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67"
+        alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png">
+    </a>
+  </div>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelector("#generate").addEventListener("click", () => {
+        document.querySelector("#pem").value = pkcs1To8(document.querySelector("#key").value)
+      });
+    });
+  </script>
+
+</body>
+
+</html>

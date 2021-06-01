@@ -1,0 +1,45 @@
+body {
+  background-color: #cccccc;
+  font: 16px Arial, Tahoma, Helvetica, FreeSans, sans-serif;
+}
+
+button#generate {
+  background-color: rgb(60, 200, 30);
+  padding: 10px;
+  margin-top: 5px;
+  color: white;
+  font-weight: bold;
+  font-size: 1.1em;
+  border-radius: 8px;
+  border-width: 0px;
+  margin-right: 20px;
+  margin-left: 20px;
+  min-width: 120px;
+}
+
+div#content {
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  width: 780px;
+  margin: auto;
+  padding: 20px;
+}
+
+label {
+  display: inline-block;
+  width: 80px;
+}
+select {
+  width: 200px;
+}
+input {
+  width: 180px;
+}
+textarea {
+  margin-top: 10px;
+  width: 650px;
+  height: 70px;
+  word-wrap: break-word;
+  font-family: monospace;
+  overflow: scroll;
+}

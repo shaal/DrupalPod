@@ -4,16 +4,16 @@ image:
 # ddev and composer are running as part of the prebuild
 # when starting a workspace all docker images are ready
 tasks:
-  - name: ddev
-    prebuild: |
+  - init: |
       .gitpod/download-ddev-images.sh
-      .gitpod/gitpod-setup-ddev.sh
-      ddev composer install
-    command: |
-      .gitpod/setup-private-ssh.sh
-      .gitpod/pull-issue-fork.sh
       .gitpod/setup-ddev.sh
       ddev composer install
+      ddev drush si -y --account-pass=admin --site-name='ddev_gitpod' demo_umami
+    command: |
+      .gitpod/setup-ddev.sh
+      ddev composer install
+      .gitpod/setup-private-ssh.sh
+      .gitpod/pull-issue-fork.sh
 
 # VScode xdebug extension
 vscode:

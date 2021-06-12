@@ -10,7 +10,9 @@ tasks:
       .gitpod/gitpod-setup-ddev.sh
       ddev composer install
     command: |
-      .gitpod/gitpod-setup-ddev.sh
+      .gitpod/setup-private-ssh.sh
+      .gitpod/pull-issue-fork.sh
+      .gitpod/setup-ddev.sh
       ddev composer install
 
 # VScode xdebug extension

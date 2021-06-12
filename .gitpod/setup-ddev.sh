@@ -4,8 +4,7 @@
 
 set -eu -o pipefail
 
-DDEV_DIR="$(pwd)/.ddev"
-mkdir -p $DDEV_DIR
+DDEV_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 # Generate a config.gitpod.yaml that adds the gitpod
 # proxied ports so they're known to ddev.
@@ -17,8 +16,11 @@ router_http_port: 8080
 router_https_port: 8443
 use_dns_when_possible: false
 
+# Throwaway ports, otherwise Gitpod throw an error 'port needs to be > 1024'
+router_http_port: "8888"
+router_https_port: "8889"
 additional_fqdns:
-- 8080-${shortgpurl}
+- 8888-${shortgpurl}
 - 8025-${shortgpurl}
 - 8036-${shortgpurl}
 CONFIGEND
@@ -34,6 +36,11 @@ services:
   web:
     extra_hosts:
     - "host.docker.internal:${hostip}"
+    # This adds 8080 on the host (bound on all interfaces)
+    # It goes directly to the web container without
+    # ddev-nginx
+    ports:
+    - 8080:80
 COMPOSEEND
 
 # Misc housekeeping before start

@@ -6,14 +6,10 @@ image:
 tasks:
   - init: |
       .gitpod/download-ddev-images.sh
-      .gitpod/setup-ddev.sh
-      ddev composer install
-      ddev drush si -y --account-pass=admin --site-name='ddev_gitpod' demo_umami
     command: |
       .gitpod/setup-ddev.sh
-      ddev composer install
-      .gitpod/setup-private-ssh.sh
       .gitpod/pull-issue-fork.sh
+      .gitpod/setup-private-ssh.sh
 
 # VScode xdebug extension
 vscode:

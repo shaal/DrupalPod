@@ -11,7 +11,7 @@ if [ "$project_type" != "core" ] && ["$project_type" != "module" ] && [ "$projec
 fi
 
 if [ -z "$core_version" ]; then
-      core_version="9.2.x"
+      core_version="9.1.x"
 fi
 
 if [ -z "$issue_fork" ]
@@ -21,6 +21,5 @@ else
       echo "\$issue_fork is NOT empty"
 fi
 
-cd repos/Drupal
-git checkout $core_version
+cd repos/drupal && git checkout $core_version
 ddev composer update

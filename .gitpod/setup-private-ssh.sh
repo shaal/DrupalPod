@@ -27,5 +27,6 @@ else
             echo "Setting SSH key from environment variable"
             mkdir -p ~/.ssh
             printenv DRUPAL_SSH_KEY | sed 's/_/=/g' >  ~/.ssh/id_rsa
+            chmod 600 ~/.ssh/id_rsa
       fi
 fi

@@ -6,7 +6,7 @@ set -x
 # Module version
 # Issue fork to work on
 
-if [ "$project_type" != "core" ] AND ["$project_type" != "module" ] AND [ "$project_type" != "theme" ] ; then 
+if [ "$project_type" != "core" ] && ["$project_type" != "module" ] && [ "$project_type" != "theme" ]; then 
       project_type="core"
 fi
 

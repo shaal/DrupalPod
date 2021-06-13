@@ -23,4 +23,4 @@ fi
 
 cd repos/Drupal
 git checkout $core_version
-ddev composer install
+ddev composer update

@@ -4,18 +4,14 @@
 
 set -eu -o pipefail
 
-DDEV_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-
+DDEV_DIR="${GITPOD_REPO_ROOT}/.ddev"
 # Generate a config.gitpod.yaml that adds the gitpod
 # proxied ports so they're known to ddev.
 shortgpurl="${GITPOD_WORKSPACE_URL#'https://'}"
 
 cat <<CONFIGEND > ${DDEV_DIR}/config.gitpod.yaml
 #ddev-gitpod-generated
-router_http_port: 8080
-router_https_port: 8443
 use_dns_when_possible: false
-
 # Throwaway ports, otherwise Gitpod throw an error 'port needs to be > 1024'
 router_http_port: "8888"
 router_https_port: "8889"

@@ -1,6 +1,18 @@
 #!/usr/bin/env bash
+set -x
 
-[ -z "$project_type" ] && echo "Project Type EMPTY"
+# Type (core/module/theme) 
+# Drupal core version
+# Module version
+# Issue fork to work on
+
+if [ "$project_type" != "core" ] AND ["$project_type" != "module" ] AND [ "$project_type" != "theme" ] ; then 
+      project_type="core"
+fi
+
+if [ -z "$core_version" ]; then
+      core_version="9.2.x"
+fi
 
 if [ -z "$issue_fork" ]
 then
@@ -8,3 +20,7 @@ then
 else
       echo "\$issue_fork is NOT empty"
 fi
+
+cd repos/Drupal
+git checkout $core_version
+ddev composer install

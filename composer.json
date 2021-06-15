@@ -30,7 +30,7 @@
     ],
     "require": {
         "composer/installers": "^1.9",
-        "drupal/core-composer-scaffold": "^8.9",
+        "drupal/core-composer-scaffold": "*",
         "drupal/drupal": "*",
         "drupal/core": "*",
         "drupal/core-dev": "*",

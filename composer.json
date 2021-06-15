@@ -35,8 +35,7 @@
         "drupal/core": "*",
         "drupal/core-dev": "*",
         "drush/drush": "^10.3.6",
-        "phpspec/prophecy-phpunit": "^2.0",
-        "symfony/var-dumper": "^5.1"
+        "phpspec/prophecy-phpunit": "^2.0"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,

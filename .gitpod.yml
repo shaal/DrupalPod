@@ -10,8 +10,8 @@ tasks:
       ddev composer install
     command: |
       .gitpod/setup-ddev.sh
-      .gitpod/pull-issue-fork.sh
-      .gitpod/setup-private-ssh.sh
+      .gitpod/drupal/setup-private-ssh.sh
+      .gitpod/drupal/pull-issue-fork.sh
 
 # VScode xdebug extension
 vscode:

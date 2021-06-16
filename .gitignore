@@ -1,7 +1,9 @@
-vendor/
-.ddev/docker-compose.host-docker-internal.yaml
+# Drupal
 web/
+vendor/
+composer.lock
 .editorconfig
 .gitattributes
-./composer.lock
-repos/drupal
+
+# Ddev-Gitpod
+.ddev/docker-compose.host-docker-internal.yaml

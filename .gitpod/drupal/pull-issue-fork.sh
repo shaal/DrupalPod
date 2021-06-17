@@ -53,6 +53,5 @@ if [ $project_type != "core" ]; then
     cd "${GITPOD_REPO_ROOT}"/repos/drupal && git checkout "${core_version}"
 fi
 
-# Running composer install a second time, with a different Drupal major version 
-rm composer.lock
-ddev composer install
+# Run composer update to prevent errors when Drupal core major version changed since last composer install
+ddev composer update

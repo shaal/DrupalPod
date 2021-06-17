@@ -30,12 +30,12 @@
     ],
     "require": {
         "composer/installers": "^1.9",
-        "drupal/core-composer-scaffold": "*",
-        "drupal/drupal": "*",
         "drupal/core": "*",
+        "drupal/core-composer-scaffold": "*",
         "drupal/core-dev": "*",
+        "drupal/drupal": "*",
         "drush/drush": "^10.3.6",
-        "phpspec/prophecy-phpunit": "^2.0",
+        "phpspec/prophecy-phpunit": "*",
         "symfony/var-dumper": "^4.4 | ^5.1"
     },
     "minimum-stability": "dev",
@@ -45,9 +45,6 @@
     },
     "scripts": {
         "post-root-package-install": [
-            "DrupalGitCloneProject\\ComposerScripts::postRootPackageInstall"
-        ],
-        "pre-install-cmd": [
             "DrupalGitCloneProject\\ComposerScripts::postRootPackageInstall"
         ],
         "post-drupal-scaffold-cmd": [

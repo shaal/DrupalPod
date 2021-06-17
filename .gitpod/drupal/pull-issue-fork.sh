@@ -32,16 +32,18 @@ elif [ $project_type == "theme" ]; then
 fi
 
 # Clone project
-[ ! -d "${WORK_DIR}"/$project_name ] && cd "$WORK_DIR" && git clone https://git.drupalcode.org/project/$project_name
+if [ ! -d "${WORK_DIR}"/$project_name ]; then
+    cd "$WORK_DIR" && git clone https://git.drupalcode.org/project/$project_name
+fi
 WORK_DIR=$WORK_DIR/$project_name
 
 # If branch already exist only run checkout,
 if cd "${WORK_DIR}" && git show-ref -q --heads $branch_name; then
+    cd "${WORK_DIR}" && git checkout $branch_name
+else
     cd "${WORK_DIR}" && git remote add $issue_fork git@git.drupal.org:issue/$issue_fork.git
     cd "${WORK_DIR}" && git fetch $issue_fork
     cd "${WORK_DIR}" && git checkout -b $branch_name --track $issue_fork/$branch_name
-else
-    cd "${WORK_DIR}" && git checkout $branch_name
 fi
 
 # If project type is NOT core, change Drupal core version

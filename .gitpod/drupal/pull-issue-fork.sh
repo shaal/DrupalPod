@@ -11,16 +11,14 @@ if [ -z "$project_name" ]; then
     project_name='drupal'
 fi
 
-if [ -z "$issue_number" ]; then
-    issue_number='3042417'
-fi
-
 if [ -z "$branch_name" ]; then
     branch_name='3042417-accessible-dropdown-for'
 fi
 
 # Set issue_fork
-issue_fork=$project_name-$issue_number
+if [ -z "$issue_fork" ]; then
+    issue_fork=drupal-3042417
+fi
 
 # Set WORK_DIR
 if [ $project_type == "core" ]; then
@@ -55,4 +53,6 @@ if [ $project_type != "core" ]; then
     cd "${GITPOD_REPO_ROOT}"/repos/drupal && git checkout "${core_version}"
 fi
 
-ddev composer update
+# Running composer install a second time, with a different Drupal major version 
+rm composer.lock
+ddev composer install

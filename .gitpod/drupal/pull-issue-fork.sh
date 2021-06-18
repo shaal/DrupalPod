@@ -55,5 +55,8 @@ if [ $project_type != "core" ]; then
     cd "${GITPOD_REPO_ROOT}"/repos/drupal && git checkout "${core_version}"
 fi
 
+# Ignore specific directories during Drupal core development
+cp .gitpod/drupal/git-exclude.template repos/drupal/.git/info/exclude
+
 # Run composer update to prevent errors when Drupal core major version changed since last composer install
 ddev composer update

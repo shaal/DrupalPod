@@ -60,3 +60,8 @@ cp .gitpod/drupal/git-exclude.template repos/drupal/.git/info/exclude
 
 # Run composer update to prevent errors when Drupal core major version changed since last composer install
 ddev composer update
+
+# Run site install using a Drupal profile if one was defined
+if [ -n "$install_profile" ]; then
+    ddev drush si "$install_profile"
+fi

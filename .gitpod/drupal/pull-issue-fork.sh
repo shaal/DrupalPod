@@ -62,6 +62,6 @@ cp .gitpod/drupal/git-exclude.template repos/drupal/.git/info/exclude
 ddev composer update
 
 # Run site install using a Drupal profile if one was defined
-if [ -n "$install_profile" ] && [ "$install_profile" != "none" ]; then
+if [ -n "$install_profile" ] && [ "$install_profile" != "(none)" ]; then
     ddev drush si "$install_profile"
 fi

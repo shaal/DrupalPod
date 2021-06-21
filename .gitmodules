@@ -1,0 +1,4 @@
+[submodule "drupal"]
+    path = repos/drupal
+    url = https://git.drupalcode.org/project/drupal.git
+    ignore = dirty

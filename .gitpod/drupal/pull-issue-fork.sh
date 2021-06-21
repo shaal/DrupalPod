@@ -1,9 +1,18 @@
 #!/usr/bin/env bash
 set -x
 
+# Default settings (latest drupal core)
+if [ -z "$DP_PROJECT_TYPE" ]; then
+    DP_PROJECT_TYPE=project_core
+fi
+
+if [ -z "$DP_PROJECT_NAME" ]; then
+    DP_PROJECT_NAME=drupal
+fi
+
 # Set WORK_DIR
 if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
-    RELATIVE_WORK_DIR=web/modules/contrib
+    RELATIVE_WORK_DIR=repos
     WORK_DIR="${GITPOD_REPO_ROOT}"/"$RELATIVE_WORK_DIR"
 elif [ "$DP_PROJECT_TYPE" == "project_module" ]; then
     RELATIVE_WORK_DIR=web/modules/contrib
@@ -32,22 +41,26 @@ GITMODULESEND
 
 WORK_DIR="${GITPOD_REPO_ROOT}"/$RELATIVE_WORK_DIR
 
-# If branch already exist only run checkout,
-if cd "${WORK_DIR}" && git show-ref -q --heads "$DP_BRANCH_NAME"; then
-    cd "${WORK_DIR}" && git checkout "$DP_BRANCH_NAME"
-else
-    cd "${WORK_DIR}" && git remote add "$DP_ISSUE_FORK" git@git.drupal.org:issue/"$DP_ISSUE_FORK".git
-    cd "${WORK_DIR}" && git fetch "$DP_ISSUE_FORK"
-    cd "${WORK_DIR}" && git checkout -b "$DP_BRANCH_NAME" --track "$DP_ISSUE_FORK"/"$DP_BRANCH_NAME"
-fi
+# Checkout specific branch only if there's issue_fork
+if [ -n "$DP_ISSUE_FORK" ]; then
+    # If branch already exist only run checkout,
+    if cd "${WORK_DIR}" && git show-ref -q --heads "$DP_BRANCH_NAME"; then
+        cd "${WORK_DIR}" && git checkout "$DP_BRANCH_NAME"
+    else
+        cd "${WORK_DIR}" && git remote add "$DP_ISSUE_FORK" git@git.drupal.org:issue/"$DP_ISSUE_FORK".git
+        cd "${WORK_DIR}" && git fetch "$DP_ISSUE_FORK"
+        cd "${WORK_DIR}" && git checkout -b "$DP_BRANCH_NAME" --track "$DP_ISSUE_FORK"/"$DP_BRANCH_NAME"
+    fi
 
-# If project type is NOT core, change Drupal core version
-if [ "$DP_PROJECT_TYPE" != "project_core" ]; then
-    cd "${GITPOD_REPO_ROOT}"/repos/drupal && git checkout "${DP_CORE_VERSION}"
+    # If project type is NOT core, change Drupal core version
+    if [ "$DP_PROJECT_TYPE" != "project_core" ]; then
+        cd "${GITPOD_REPO_ROOT}"/repos/drupal && git checkout "${DP_CORE_VERSION}"
+    fi
 fi
 
 # Ignore specific directories during Drupal core development
 cp "${GITPOD_REPO_ROOT}"/.gitpod/drupal/git-exclude.template "${GITPOD_REPO_ROOT}"/.git/info/exclude
+cp "${GITPOD_REPO_ROOT}"/.gitpod/drupal/git-exclude.template "${GITPOD_REPO_ROOT}"/repos/drupal/.git/info/exclude
 
 # Run composer update to prevent errors when Drupal core major version changed since last composer install
 ddev composer update

@@ -56,7 +56,7 @@ if [ $DP_PROJECT_TYPE != "core" ]; then
 fi
 
 # Ignore specific directories during Drupal core development
-cp .gitpod/drupal/git-exclude.template repos/drupal/.git/info/exclude
+cp .gitpod/drupal/git-exclude.template .git/modules/drupal/info/exclude
 
 # Run composer update to prevent errors when Drupal core major version changed since last composer install
 ddev composer update

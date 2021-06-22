@@ -15,9 +15,9 @@ else
                         printf "\n"
                         echo "Setting a new SSH key"
                         ssh-keygen -q -t rsa -b 4096 -f ~/.ssh/id_rsa -P "$passphrase_var"
-                        .gitpod/drupal-instructions.sh
+                        .gitpod/drupal/drupal-instructions.sh
                         echo "Follow instructions for copying public key to Drupal"
-                        echo "Test SSH by running .gitpod/confirm-ssh-setup.sh"
+                        echo "Test SSH by running .gitpod/drupal/confirm-ssh-setup.sh"
                   else
                         # User did not want to set SSH key, exit
                         exit 0;

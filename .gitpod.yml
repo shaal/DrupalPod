@@ -4,29 +4,59 @@ image:
 # ddev and composer are running as part of the prebuild
 # when starting a workspace all docker images are ready
 tasks:
-  - name: ddev
-    prebuild: |
-      sudo cp .gitpod/gitpod-setup-ddev.sh /usr/local/bin/.
+  - init: |
+      .gitpod/download-ddev-images.sh
+      .gitpod/setup-ddev.sh
+      ddev composer run-script post-root-package-install
     command: |
-      sudo cp .gitpod/gitpod-setup-ddev.sh /usr/local/bin/.
-      echo "System is ready, clone a project, `ddev config` if needed, and `gitpod-setup-ddev` to run it"
+      .gitpod/setup-ddev.sh
+      .gitpod/drupal/setup-private-ssh.sh
+      .gitpod/drupal/pull-issue-fork.sh
 
-# Set the following ports public
+# VScode xdebug extension
+vscode:
+  extensions:
+    - felixfbecker.php-debug@1.13.0:WX8Y3EpQk3zgahy41yJtNQ==
+
 ports:
+  # Used by projector
   - port: 6942
     onOpen: ignore
+    visibility: private
+  # Direct-connect ddev-webserver port that is the main port
   - port: 8080
+    visibility: private
+  # Currently un-notified and unsupported mailhog http port
   - port: 8025
     onOpen: ignore
+    visibility: private
+  # Currently un-notified and unsupported mailhog https port
   - port: 8026
     onOpen: ignore
+    visibility: private
+  # Currently un-notified and unsupported phpmyadmin http port
   - port: 8036
     onOpen: ignore
+    visibility: private
+  # Currently un-notified and unsupported phpmyadmin https port
   - port: 8037
     onOpen: ignore
-  - port: 8443
+    visibility: private
+  # router http port that we're ignoring.
+  - port: 8888
     onOpen: ignore
+    visibility: private
+  # router https port that we're ignoring.
+  - port: 8889
+    onOpen: ignore
+    visibility: private
+  # xdebug port
+  - port: 9000
+    onOpen: ignore
+    visibility: private
+  # projector port
   - port: 9999
+    visibility: private
 
 github:
   prebuilds:

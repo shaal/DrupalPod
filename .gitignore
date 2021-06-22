@@ -1,0 +1,13 @@
+# Drupal
+web/
+vendor/
+composer.lock
+.editorconfig
+.gitattributes
+
+# DrupalPod
+.gitmodules
+repos/drupal/
+
+# Ddev-Gitpod
+.ddev/docker-compose.host-docker-internal.yaml

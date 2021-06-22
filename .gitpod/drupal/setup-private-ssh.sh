@@ -10,11 +10,7 @@ else
                   read -r -p "You cannot push code without SSH key. Would you like to set it up now? [Y/n]" setup_ssh
                   if [ "$setup_ssh" == "" ] || [ "$setup_ssh" == "y" ] || [ "$setup_ssh" == "Y" ]; then
                         # Create ssh key pairing + instructions to paste public key in drupal.org
-                        # TODO: force passphrase
-                        read -r -s -p "Enter a passphrase for SSH key" passphrase_var
-                        printf "\n"
-                        echo "Setting a new SSH key"
-                        ssh-keygen -q -t rsa -b 4096 -f ~/.ssh/id_rsa -P "$passphrase_var"
+                        ssh-keygen -q -t rsa -b 4096 -f ~/.ssh/id_rsa
                         .gitpod/drupal/drupal-instructions.sh
                         echo "Follow instructions for copying public key to Drupal"
                         echo "Test SSH by running .gitpod/drupal/confirm-ssh-setup.sh"

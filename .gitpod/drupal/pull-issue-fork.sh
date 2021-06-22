@@ -44,12 +44,12 @@ WORK_DIR="${GITPOD_REPO_ROOT}"/$RELATIVE_WORK_DIR
 # Checkout specific branch only if there's issue_fork
 if [ -n "$DP_ISSUE_FORK" ]; then
     # If branch already exist only run checkout,
-    if cd "${WORK_DIR}" && git show-ref -q --heads "$DP_BRANCH_NAME"; then
-        cd "${WORK_DIR}" && git checkout "$DP_BRANCH_NAME"
+    if cd "${WORK_DIR}" && git show-ref -q --heads "$DP_ISSUE_BRANCH"; then
+        cd "${WORK_DIR}" && git checkout "$DP_ISSUE_BRANCH"
     else
         cd "${WORK_DIR}" && git remote add "$DP_ISSUE_FORK" git@git.drupal.org:issue/"$DP_ISSUE_FORK".git
         cd "${WORK_DIR}" && git fetch "$DP_ISSUE_FORK"
-        cd "${WORK_DIR}" && git checkout -b "$DP_BRANCH_NAME" --track "$DP_ISSUE_FORK"/"$DP_BRANCH_NAME"
+        cd "${WORK_DIR}" && git checkout -b "$DP_ISSUE_BRANCH" --track "$DP_ISSUE_FORK"/"$DP_ISSUE_BRANCH"
     fi
 
     # If project type is NOT core, change Drupal core version

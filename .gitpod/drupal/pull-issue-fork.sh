@@ -51,11 +51,16 @@ if [ -n "$DP_ISSUE_FORK" ]; then
         cd "${WORK_DIR}" && git fetch "$DP_ISSUE_FORK"
         cd "${WORK_DIR}" && git checkout -b "$DP_ISSUE_BRANCH" --track "$DP_ISSUE_FORK"/"$DP_ISSUE_BRANCH"
     fi
+fi
 
-    # If project type is NOT core, change Drupal core version
-    if [ "$DP_PROJECT_TYPE" != "project_core" ]; then
-        cd "${GITPOD_REPO_ROOT}"/repos/drupal && git checkout "${DP_CORE_VERSION}"
-    fi
+# If project type is NOT core, change Drupal core version
+if [ "$DP_PROJECT_TYPE" != "project_core" ]; then
+    cd "${GITPOD_REPO_ROOT}"/repos/drupal && git checkout "${DP_CORE_VERSION}"
+fi
+
+if [ -n "$DP_PATCH_FILE" ]; then
+    echo Applying selected patch "$DP_PATCH_FILE"
+    cd "${WORK_DIR}" && curl "$DP_PATCH_FILE" | patch -p1
 fi
 
 # Ignore specific directories during Drupal core development

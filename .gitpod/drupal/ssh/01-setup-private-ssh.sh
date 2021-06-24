@@ -11,9 +11,9 @@ else
                   if [ "$setup_ssh" == "" ] || [ "$setup_ssh" == "y" ] || [ "$setup_ssh" == "Y" ]; then
                         # Create ssh key pairing + instructions to paste public key in drupal.org
                         ssh-keygen -q -t rsa -b 4096 -f ~/.ssh/id_rsa
-                        .gitpod/drupal/drupal-instructions.sh
+                        .gitpod/drupal/ssh/02-generate-drupal-ssh-instructions.sh
                         echo "Follow instructions for copying public key to Drupal"
-                        echo "Test SSH by running .gitpod/drupal/confirm-ssh-setup.sh"
+                        echo "Test SSH by running .gitpod/drupal/ssh/03-confirm-ssh-setup.sh"
                   else
                         # User did not want to set SSH key, exit
                         exit 0;
@@ -27,6 +27,7 @@ else
       else
             echo "Setting SSH key from environment variable"
             mkdir -p ~/.ssh
+            # Due to bug in gp env command, replace `=` with `_` - https://github.com/gitpod-io/gitpod/issues/4493
             printenv DRUPAL_SSH_KEY | sed 's/_/=/g' >  ~/.ssh/id_rsa
             chmod 600 ~/.ssh/id_rsa
       fi

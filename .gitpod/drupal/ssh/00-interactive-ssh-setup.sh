@@ -48,10 +48,10 @@ while true; do
       echo "Program terminated."
       ;;
     1 )
-      result=$(php -S localhost:8000 id_rsa.backup) & \
-      $(sleep 3s) && $(gp preview $(gp url 8000)) \
-      $(sleep 5s) && $(killall php)
-      display_result "SSH Setup Instructions"
+      result=$(code .gitpod/drupal/ssh/instructions-template.md)
+      display_result "If you completed the instructions above - click OK"
+      .gitpod/drupal/ssh/03-confirm-ssh-setup.sh
+      # gp preview https://drupal.org/user --external
       ;;
     2 )
       result=$(df -h)

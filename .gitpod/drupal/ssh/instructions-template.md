@@ -5,5 +5,5 @@
 1. Copy the content below 
 1. Paste it inside "Key" field 
 1. Click on "Save" button.
-1. Run in Gitpod terminal `.gitpod/drupal/confirm-ssh-setup.sh`
+1. Run in Gitpod terminal `.gitpod/drupal/ssh/03-confirm-ssh-setup.sh`
 ```

@@ -26,7 +26,7 @@ fi
 
 # Clone project
 if [ ! -d "${WORK_DIR}"/"$DP_PROJECT_NAME" ]; then
-    cd "$WORK_DIR" && git clone https://git.drupalcode.org/project/"$DP_PROJECT_NAME"
+    cd "$WORK_DIR" && git clone https://git.drupalcode.org/project/"$DP_PROJECT_NAME" -y
 fi
 
 # Dynamically generate .gitmodules file

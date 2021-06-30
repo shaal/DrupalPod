@@ -27,6 +27,7 @@ fi
 if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
     RELATIVE_WORK_DIR=repos
     WORK_DIR="${GITPOD_REPO_ROOT}"/"$RELATIVE_WORK_DIR"
+    mkdir -p "${WORK_DIR}"
 elif [ "$DP_PROJECT_TYPE" == "project_module" ]; then
     RELATIVE_WORK_DIR=web/modules/contrib
     WORK_DIR="${GITPOD_REPO_ROOT}"/"$RELATIVE_WORK_DIR"

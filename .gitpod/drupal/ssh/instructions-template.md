@@ -1,11 +1,14 @@
 # One-time public key setup
 1. Open https://www.drupal.org/user
-1. Click on "Git Access"
-1. Create a Git username if you don't have one.
-1. Click on "SSH keys", 
-1. Click on "Add a public key"
-1. Copy the content below 
-1. Paste it inside "Key" field 
-1. Click on "Save" button.
-1. Run in Gitpod terminal `.gitpod/drupal/ssh/03-confirm-ssh-setup.sh`
-```
+2. Click on "Git Access"
+3. Create a Git username if you don't have one.
+4. Click on "SSH keys", 
+5. Click on "Add a public key"
+6. Copy the content below 
+7. Paste it inside "Key" field 
+8. Click on "Save" button.
+9. Run in Gitpod terminal `.gitpod/drupal/ssh/04-confirm-ssh-setup.sh`
+
+
+
+

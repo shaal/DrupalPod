@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -x
 
+# Add git.drupal.org to known_hosts
+ssh-keyscan git.drupal.org >> ~/.ssh/known_hosts
+
 # Set clone mode (SSH/HTTPS)
 SSH_CLONE="git@git.drupal.org:"
 HTTPS_CLONE="https://git.drupalcode.org/"

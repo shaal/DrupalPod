@@ -50,7 +50,7 @@ while true; do
     1 )
       result=$(code .gitpod/drupal/ssh/instructions-template.md)
       display_result "If you completed the instructions above - click OK"
-      .gitpod/drupal/ssh/03-confirm-ssh-setup.sh
+      .gitpod/drupal/ssh/04-confirm-ssh-setup.sh
       # gp preview https://drupal.org/user --external
       ;;
     2 )

@@ -17,9 +17,9 @@ else
         echo "Setup failed, create private key again"
         rm -f /workspace/id_rsa
         rm -rf ~/.ssh
-        .gitpod/drupal/ssh/01-setup-private-ssh.sh
+        .gitpod/drupal/ssh/02-setup-private-ssh.sh
     else
         echo "Setup failed, please confirm you copied public key to Drupal"
-        .gitpod/drupal/ssh/02-generate-drupal-ssh-instructions.sh
+        .gitpod/drupal/ssh/03-generate-drupal-ssh-instructions.sh
     fi
 fi

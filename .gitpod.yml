@@ -10,7 +10,7 @@ tasks:
       ddev composer run-script post-root-package-install
     command: |
       .gitpod/setup-ddev.sh
-      .gitpod/drupal/ssh/01-setup-private-ssh.sh
+      .gitpod/drupal/ssh/01-check-private-ssh.sh
       .gitpod/drupal/pull-issue-fork.sh
 
 # VScode xdebug extension

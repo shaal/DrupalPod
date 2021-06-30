@@ -51,10 +51,10 @@ _\* In order to push code, a **one time** SSH keys setup is required._
 
 From within a Gitpod workspace run:
 
-1. `.gitpod/drupal/ssh/01-setup-private-ssh.sh` \
+1. `.gitpod/drupal/ssh/02-setup-private-ssh.sh` \
 Follow the instructions on the screen.
 
-1. `.gitpod/drupal/ssh/03-confirm-ssh-setup.sh` \
+1. `.gitpod/drupal/ssh/04-confirm-ssh-setup.sh` \
 It validates your SSH keys and stores them for future use.
 
 <br>

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -x
 
 # Check if ~/.ssh/id_rsa already exist
 if [ -f ~/.ssh/id_rsa ]; then

@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
-# Only if ssh connection works (private and public keys match) - save Gitpod environment variable
+# Add git.drupal.org to known_hosts
+ssh-keyscan git.drupal.org >> ~/.ssh/known_hosts
 
-ssh -T git@git.drupal.org -y
-if [ $? -eq 0 ]; then
+# Validate private SSH key in Gitpod with public SSH key in drupal.org
+if ssh -T git@git.drupal.org; then
     echo "Setup was succesful, saving your private key in Gitpod"
     # Set Gitpod variable anvironment
-
     # Due to bug in gp env command, replace `=` with `_` - https://github.com/gitpod-io/gitpod/issues/4493
     DRUPAL_SSH_KEY=$(sed 's/=/_/g' ~/.ssh/id_rsa)
     gp env "DRUPAL_SSH_KEY=$DRUPAL_SSH_KEY" > /dev/null

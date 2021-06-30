@@ -13,6 +13,8 @@ if ssh -T git@git.drupal.org; then
     gp env "DRUPAL_SSH_KEY=$DRUPAL_SSH_KEY" > /dev/null
     # Copy key to /workspace in case this workspace times out
     cp ~/.ssh/id_rsa /workspace/.
+    # Set repo remote branch to SSH (in case it was added as HTTPS)
+    .gitpod/drupal/ssh/05-set-repo-as-ssh.sh
 else
     if [ ! -f ~/.ssh/id_rsa.pub ] ; then
         echo "Setup failed, create private key again"

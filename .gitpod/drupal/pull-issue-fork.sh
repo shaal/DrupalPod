@@ -1,6 +1,20 @@
 #!/usr/bin/env bash
 set -x
 
+# Add git.drupal.org to known_hosts
+mkdir -p ~/.ssh
+ssh-keyscan git.drupal.org >> ~/.ssh/known_hosts
+
+# Set clone mode (SSH/HTTPS)
+SSH_CLONE="git@git.drupal.org:"
+HTTPS_CLONE="https://git.drupalcode.org/"
+
+if ssh -T git@git.drupal.org; then
+    CLONE_MODE=$SSH_CLONE
+else
+    CLONE_MODE=$HTTPS_CLONE
+fi
+
 # Default settings (latest drupal core)
 if [ -z "$DP_PROJECT_TYPE" ]; then
     DP_PROJECT_TYPE=project_core
@@ -14,6 +28,7 @@ fi
 if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
     RELATIVE_WORK_DIR=repos
     WORK_DIR="${GITPOD_REPO_ROOT}"/"$RELATIVE_WORK_DIR"
+    mkdir -p "${WORK_DIR}"
 elif [ "$DP_PROJECT_TYPE" == "project_module" ]; then
     RELATIVE_WORK_DIR=web/modules/contrib
     WORK_DIR="${GITPOD_REPO_ROOT}"/"$RELATIVE_WORK_DIR"
@@ -26,7 +41,7 @@ fi
 
 # Clone project
 if [ ! -d "${WORK_DIR}"/"$DP_PROJECT_NAME" ]; then
-    cd "$WORK_DIR" && git clone https://git.drupalcode.org/project/"$DP_PROJECT_NAME" -y
+    cd "$WORK_DIR" && git clone https://git.drupalcode.org/project/"$DP_PROJECT_NAME"
 fi
 
 # Dynamically generate .gitmodules file
@@ -47,7 +62,7 @@ if [ -n "$DP_ISSUE_FORK" ]; then
     if cd "${WORK_DIR}" && git show-ref -q --heads "$DP_ISSUE_BRANCH"; then
         cd "${WORK_DIR}" && git checkout "$DP_ISSUE_BRANCH"
     else
-        cd "${WORK_DIR}" && git remote add "$DP_ISSUE_FORK" git@git.drupal.org:issue/"$DP_ISSUE_FORK".git
+        cd "${WORK_DIR}" && git remote add "$DP_ISSUE_FORK" "$CLONE_MODE"issue/"$DP_ISSUE_FORK".git
         cd "${WORK_DIR}" && git fetch "$DP_ISSUE_FORK"
         cd "${WORK_DIR}" && git checkout -b "$DP_ISSUE_BRANCH" --track "$DP_ISSUE_FORK"/"$DP_ISSUE_BRANCH"
     fi

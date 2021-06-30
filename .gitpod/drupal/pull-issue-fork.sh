@@ -1,6 +1,16 @@
 #!/usr/bin/env bash
 set -x
 
+# Set clone mode (SSH/HTTPS)
+SSH_CLONE="git@git.drupal.org:"
+HTTPS_CLONE="https://git.drupalcode.org/"
+
+if ssh -T git@git.drupal.org; then
+    CLONE_MODE=$SSH_CLONE
+else
+    CLONE_MODE=$HTTPS_CLONE
+fi
+
 # Default settings (latest drupal core)
 if [ -z "$DP_PROJECT_TYPE" ]; then
     DP_PROJECT_TYPE=project_core
@@ -47,7 +57,7 @@ if [ -n "$DP_ISSUE_FORK" ]; then
     if cd "${WORK_DIR}" && git show-ref -q --heads "$DP_ISSUE_BRANCH"; then
         cd "${WORK_DIR}" && git checkout "$DP_ISSUE_BRANCH"
     else
-        cd "${WORK_DIR}" && git remote add "$DP_ISSUE_FORK" git@git.drupal.org:issue/"$DP_ISSUE_FORK".git
+        cd "${WORK_DIR}" && git remote add "$DP_ISSUE_FORK" "$CLONE_MODE"issue/"$DP_ISSUE_FORK".git
         cd "${WORK_DIR}" && git fetch "$DP_ISSUE_FORK"
         cd "${WORK_DIR}" && git checkout -b "$DP_ISSUE_BRANCH" --track "$DP_ISSUE_FORK"/"$DP_ISSUE_BRANCH"
     fi

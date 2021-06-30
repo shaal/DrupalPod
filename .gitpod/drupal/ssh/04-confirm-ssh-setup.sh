@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 # Add git.drupal.org to known_hosts
+mkdir -p ~/.ssh
 ssh-keyscan git.drupal.org >> ~/.ssh/known_hosts
 
 # Validate private SSH key in Gitpod with public SSH key in drupal.org

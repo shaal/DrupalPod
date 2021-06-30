@@ -2,6 +2,7 @@
 set -x
 
 # Add git.drupal.org to known_hosts
+mkdir -p ~/.ssh
 ssh-keyscan git.drupal.org >> ~/.ssh/known_hosts
 
 # Set clone mode (SSH/HTTPS)

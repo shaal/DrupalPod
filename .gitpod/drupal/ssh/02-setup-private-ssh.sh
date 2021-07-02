@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+if $DEBUG_DRUPALPOD; then
+    set -x
+fi
 
 SSH_SETUP=true
 

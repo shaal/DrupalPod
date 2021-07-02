@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-set -x
+if $DEBUG_DRUPALPOD; then
+    set -x
+fi
 
 # Set WORK_DIR
 if [ "$DP_PROJECT_TYPE" == "project_core" ]; then

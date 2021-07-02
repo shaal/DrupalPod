@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+if $DEBUG_DRUPALPOD; then
+    set -x
+fi
 
 # Add git.drupal.org to known_hosts
 mkdir -p ~/.ssh

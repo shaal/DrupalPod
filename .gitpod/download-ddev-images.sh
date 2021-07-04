@@ -4,6 +4,7 @@ if $DEBUG_DRUPALPOD; then
 fi
 
 ddev version | awk '/(drud|phpmyadmin)/ {print $2;}' >/tmp/images.txt
-for item in $(cat /tmp/images.txt); do
-  docker pull $item
-done
+while IFS= read -r item
+do
+  docker pull "$item"
+done < <(cat /tmp/images.txt)

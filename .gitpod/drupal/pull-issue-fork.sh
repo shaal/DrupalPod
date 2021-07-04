@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
-set -x
+if [ -n "$DEBUG_DRUPALPOD" ]; then
+    set -x
+fi
 
 # Add git.drupal.org to known_hosts
 mkdir -p ~/.ssh
-ssh-keyscan git.drupal.org >> ~/.ssh/known_hosts
+host=git.drupal.org
+SSHKey=$(ssh-keyscan $host 2> /dev/null)
+echo "$SSHKey" >> ~/.ssh/known_hosts
 
 # Set clone mode (SSH/HTTPS)
 SSH_CLONE="git@git.drupal.org:"

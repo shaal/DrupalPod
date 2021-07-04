@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-set -x
+if [ -n "$DEBUG_DRUPALPOD" ]; then
+    set -x
+fi
 
 # Check if ~/.ssh/id_rsa already exist
 if [ -f ~/.ssh/id_rsa ]; then

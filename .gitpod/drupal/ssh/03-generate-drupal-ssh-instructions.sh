@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+if [ -n "$DEBUG_DRUPALPOD" ]; then
+    set -x
+fi
 
 # create instructions file with user's public key
 cat ~/.ssh/id_rsa.pub > /workspace/public_key.md

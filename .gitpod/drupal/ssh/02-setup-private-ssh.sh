@@ -7,7 +7,9 @@ SSH_SETUP_REQUIRED=true
 
 # Add git.drupal.org to known_hosts
 mkdir -p ~/.ssh
-ssh-keyscan git.drupal.org >> ~/.ssh/known_hosts
+host=git.drupal.org
+SSHKey=$(ssh-keyscan $host 2> /dev/null)
+echo "$SSHKey" >> ~/.ssh/known_hosts
 
 # Validate private SSH key in Gitpod with public SSH key in drupal.org
 if ssh -T git@git.drupal.org; then

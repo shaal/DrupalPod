@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-if $DEBUG_DRUPALPOD; then
+if [ -n "$DEBUG_DRUPALPOD" ]; then
     set -x
 fi
 

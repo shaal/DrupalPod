@@ -22,4 +22,9 @@ else
             printenv DRUPAL_SSH_KEY | sed 's/_/=/g' >  ~/.ssh/id_rsa
             chmod 600 ~/.ssh/id_rsa
       fi
+      # Ask for SSH keyphrase only once
+      if ssh-add -l > /dev/null ; then
+            eval "$(ssh-agent -s)" > /dev/null
+            ssh-add -q ~/.ssh/id_rsa
+      fi
 fi

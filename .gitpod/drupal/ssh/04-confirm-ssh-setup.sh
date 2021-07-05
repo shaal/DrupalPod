@@ -9,6 +9,12 @@ host=git.drupal.org
 SSHKey=$(ssh-keyscan $host 2> /dev/null)
 echo "$SSHKey" >> ~/.ssh/known_hosts
 
+# Ask for SSH keyphrase only once
+if ssh-add -l > /dev/null ; then
+    eval "$(ssh-agent -s)" > /dev/null
+    ssh-add -q ~/.ssh/id_rsa
+fi
+
 # Validate private SSH key in Gitpod with public SSH key in drupal.org
 if ssh -T git@git.drupal.org; then
     echo "Setup was succesful, saving your private key in Gitpod"

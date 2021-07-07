@@ -77,6 +77,10 @@ if [ "$DP_PROJECT_TYPE" != "project_core" ]; then
     cd "${GITPOD_REPO_ROOT}"/repos/drupal && git checkout "${DP_CORE_VERSION}"
 fi
 
+if [ -n "$DP_MODULE_VERSION" ]; then
+    cd "${WORK_DIR}" && git checkout "$DP_MODULE_VERSION"
+fi
+
 if [ -n "$DP_PATCH_FILE" ]; then
     echo Applying selected patch "$DP_PATCH_FILE"
     cd "${WORK_DIR}" && curl "$DP_PATCH_FILE" | patch -p1

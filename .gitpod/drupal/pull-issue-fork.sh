@@ -95,5 +95,5 @@ ddev composer update
 
 # Run site install using a Drupal profile if one was defined
 if [ -n "$DP_INSTALL_PROFILE" ] && [ "$DP_INSTALL_PROFILE" != "''" ]; then
-    ddev drush si "$DP_INSTALL_PROFILE" -y
+    ddev drush si -y --account-pass=admin --site-name='drupalpod' "$DP_INSTALL_PROFILE"
 fi

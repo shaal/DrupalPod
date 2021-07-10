@@ -21,7 +21,7 @@ if ssh -T git@git.drupal.org; then
     # Set Gitpod variable anvironment
     # Remove all newline characters from SSH key
     # + Due to bug in gp env command, replace ` ` with `\ ` - https://github.com/gitpod-io/gitpod/issues/4736
-    gp env "DRUPAL_SSH_KEY=$(tr -d '\n' < ~/.ssh/id_rsa | sed 's/ /\\ /g')"
+    gp env "DRUPAL_SSH_KEY=$(tr -d '\n' < ~/.ssh/id_rsa | sed 's/ /\\ /g')" > /dev/null
     # Copy key to /workspace in case this workspace times out
     cp ~/.ssh/id_rsa /workspace/.
     # Set repo remote branch to SSH (in case it was added as HTTPS)

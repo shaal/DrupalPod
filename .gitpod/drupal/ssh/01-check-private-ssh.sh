@@ -18,7 +18,6 @@ else
       else
             echo "Setting SSH key from environment variable"
             mkdir -p ~/.ssh
-            # Due to bug in gp env command, replace `=` with `_` - https://github.com/gitpod-io/gitpod/issues/4493
             printenv DRUPAL_SSH_KEY > ~/.ssh/id_rsa
             chmod 600 ~/.ssh/id_rsa
       fi

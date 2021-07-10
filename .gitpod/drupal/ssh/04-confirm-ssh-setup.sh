@@ -19,9 +19,9 @@ fi
 if ssh -T git@git.drupal.org; then
     echo "Setup was succesful, saving your private key in Gitpod"
     # Set Gitpod variable anvironment
-    # Due to bug in gp env command, replace `=` with `_` - https://github.com/gitpod-io/gitpod/issues/4493
-    DRUPAL_SSH_KEY=$(sed 's/=/_/g' ~/.ssh/id_rsa)
-    gp env "DRUPAL_SSH_KEY=$DRUPAL_SSH_KEY" > /dev/null
+    # Remove all newline characters from SSH key
+    # + Due to bug in gp env command, replace ` ` with `\ ` - https://github.com/gitpod-io/gitpod/issues/4736
+    gp env "DRUPAL_SSH_KEY=$(tr -d '\n' < ~/.ssh/id_rsa | sed 's/ /\\ /g')"
     # Copy key to /workspace in case this workspace times out
     cp ~/.ssh/id_rsa /workspace/.
     # Set repo remote branch to SSH (in case it was added as HTTPS)

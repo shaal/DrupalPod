@@ -77,6 +77,10 @@ if [ "$DP_PROJECT_TYPE" != "project_core" ]; then
     cd "${GITPOD_REPO_ROOT}"/repos/drupal && git checkout "${DP_CORE_VERSION}"
 fi
 
+if [ -n "$DP_MODULE_VERSION" ]; then
+    cd "${WORK_DIR}" && git checkout "$DP_MODULE_VERSION"
+fi
+
 if [ -n "$DP_PATCH_FILE" ]; then
     echo Applying selected patch "$DP_PATCH_FILE"
     cd "${WORK_DIR}" && curl "$DP_PATCH_FILE" | patch -p1
@@ -91,5 +95,5 @@ ddev composer update
 
 # Run site install using a Drupal profile if one was defined
 if [ -n "$DP_INSTALL_PROFILE" ] && [ "$DP_INSTALL_PROFILE" != "''" ]; then
-    ddev drush si "$DP_INSTALL_PROFILE" -y
+    ddev drush si -y --account-pass=admin --site-name='drupalpod' "$DP_INSTALL_PROFILE"
 fi

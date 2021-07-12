@@ -9,13 +9,17 @@ host=git.drupal.org
 SSHKey=$(ssh-keyscan $host 2> /dev/null)
 echo "$SSHKey" >> ~/.ssh/known_hosts
 
+# Ask for SSH keyphrase only once
+if ssh-add -l > /dev/null ; then
+    eval "$(ssh-agent -s)" > /dev/null
+    ssh-add -q ~/.ssh/id_rsa
+fi
+
 # Validate private SSH key in Gitpod with public SSH key in drupal.org
 if ssh -T git@git.drupal.org; then
     echo "Setup was succesful, saving your private key in Gitpod"
-    # Set Gitpod variable anvironment
-    # Due to bug in gp env command, replace `=` with `_` - https://github.com/gitpod-io/gitpod/issues/4493
-    DRUPAL_SSH_KEY=$(sed 's/=/_/g' ~/.ssh/id_rsa)
-    gp env "DRUPAL_SSH_KEY=$DRUPAL_SSH_KEY" > /dev/null
+    # Set private SSH key as Gitpod variable anvironment
+    gp env "DRUPAL_SSH_KEY=$(cat ~/.ssh/id_rsa)" > /dev/null
     # Copy key to /workspace in case this workspace times out
     cp ~/.ssh/id_rsa /workspace/.
     # Set repo remote branch to SSH (in case it was added as HTTPS)

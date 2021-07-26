@@ -1,59 +1,30 @@
 {
-    "name": "joachim-n/drupal-core-development-project",
-    "description": "Composer project for developing Drupal core",
+    "name": "shaal/drupalpod",
+    "description": "Drupal contributions in 1 click",
     "type": "project",
     "license": "GPL-2.0-or-later",
-    "repositories": [
+    "authors": [
         {
-            "type": "path",
-            "url": "repos/drupal",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
-            "url": "repos/drupal/core"
-        },
-        {
-            "type": "path",
-            "url": "repos/drupal/composer/Plugin/ProjectMessage"
-        },
-        {
-            "type": "path",
-            "url": "repos/drupal/composer/Plugin/VendorHardening"
-        },
-        {
-            "type": "composer",
-            "url": "https://packages.drupal.org/8"
+            "name": "Ofer Shaal",
+            "email": "shaalofer@gmail.com"
         }
     ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "require": {
         "composer/installers": "^1.9",
-        "drupal/core": "*",
         "drupal/core-composer-scaffold": "*",
-        "drupal/core-dev": "*",
-        "drupal/drupal": "*",
         "drush/drush": "^10.3.6",
+        "drupal/core": "8.9.x",
+        "drupal/core-dev": "*",
+        "drupal/core-recommended": "*",
         "phpspec/prophecy-phpunit": "*",
         "symfony/var-dumper": "^4.4 | ^5.1"
     },
-    "minimum-stability": "dev",
-    "prefer-stable": true,
-    "config": {
-        "sort-packages": true
-    },
-    "scripts": {
-        "post-root-package-install": [
-            "DrupalGitCloneProject\\ComposerScripts::postRootPackageInstall"
-        ],
-        "post-drupal-scaffold-cmd": [
-            "DrupalGitCloneProject\\ComposerScripts::postDrupalScaffold"
-        ]
-    },
-    "autoload": {
-        "psr-4": {
-            "DrupalGitCloneProject\\": "src/"
+    "repositories": {
+        "drupal": {
+            "type": "composer",
+            "url": "https://packages.drupal.org/8"
         }
     },
     "extra": {
@@ -63,30 +34,14 @@
             }
         },
         "installer-paths": {
-            "web/core": [
-                "type:drupal-core"
-            ],
-            "web/libraries/{$name}": [
-                "type:drupal-library"
-            ],
-            "web/modules/contrib/{$name}": [
-                "type:drupal-module"
-            ],
-            "web/profiles/contrib/{$name}": [
-                "type:drupal-profile"
-            ],
-            "web/themes/contrib/{$name}": [
-                "type:drupal-theme"
-            ],
-            "drush/Commands/contrib/{$name}": [
-                "type:drupal-drush"
-            ],
-            "web/modules/custom/{$name}": [
-                "type:drupal-custom-module"
-            ],
-            "web/themes/custom/{$name}": [
-                "type:drupal-custom-theme"
-            ]
+            "web/core": ["type:drupal-core"],
+            "web/libraries/{$name}": ["type:drupal-library"],
+            "web/modules/contrib/{$name}": ["type:drupal-module"],
+            "web/profiles/contrib/{$name}": ["type:drupal-profile"],
+            "web/themes/contrib/{$name}": ["type:drupal-theme"],
+            "drush/Commands/contrib/{$name}": ["type:drupal-drush"],
+            "web/modules/custom/{$name}": ["type:drupal-custom-module"],
+            "web/themes/custom/{$name}": ["type:drupal-custom-theme"]
         }
     }
 }

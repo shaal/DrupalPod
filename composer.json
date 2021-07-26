@@ -15,7 +15,7 @@
         "composer/installers": "^1.9",
         "drupal/core-composer-scaffold": "*",
         "drush/drush": "^10.3.6",
-        "drupal/core": "8.9.x",
+        "drupal/core": "*",
         "drupal/core-dev": "*",
         "drupal/core-recommended": "*",
         "phpspec/prophecy-phpunit": "*",

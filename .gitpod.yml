@@ -7,6 +7,8 @@ tasks:
   - init: |
       .gitpod/download-ddev-images.sh
       .gitpod/setup-ddev.sh
+      # Stop tracking composer.json changes
+      cp "${GITPOD_REPO_ROOT}"/.gitpod/drupal/git-exclude.template "${GITPOD_REPO_ROOT}"/.git/info/exclude
       composer require drupal/core:^9.2
     command: |
       .gitpod/setup-ddev.sh

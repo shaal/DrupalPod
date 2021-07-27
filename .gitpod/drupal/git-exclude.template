@@ -6,4 +6,4 @@
 # *~
 #
 # Don't track changes in the following files/directories
-composer.json
+./composer.json

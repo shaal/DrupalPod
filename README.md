@@ -12,6 +12,7 @@ No computer is needed because it is all running in the cloud.
 
 * Install additional packages using `ddev composer`.
 * Run Drush commands, using `ddev drush <command>`.
+* Enable/disable xdebug `ddev xdebug [on|off]`.
 * IDE in a browser
   * VScode (default)
   * PHPStorm - run `.gitpod/phpstorm.sh`
@@ -20,9 +21,11 @@ No computer is needed because it is all running in the cloud.
 
 ## Project structure
 
-* Core directory `/web/core` _<sup>* symlinked from `/repos/drupal`</sup>_
-* Module directory `/web/modules/contrib`
-* Theme directory `/web/themes/contrib`
+* Core directory `/web/core`
+* Modules directory `/web/modules/contrib`
+* Themes directory `/web/themes/contrib`
+
+Every Drupal project (core/module/theme) is installed by Composer with all its dependencies, using the source code of that project (git repository).
 
 <br>
 
@@ -32,7 +35,6 @@ No computer is needed because it is all running in the cloud.
 * [Ddev](https://ddev.readthedocs.io/en/stable) - easy setup for PHP projects using Docker
 * [DrupalPod](https://chrome.google.com/webstore/detail/drupalpod-helper-extensio/pjfjhkcfkhbemnbpkakjhmboacefmjjl?hl=en
 ) Browser Extension
-* [Drupal Core Development Project](https://github.com/joachim-n/drupal-core-development-project)
 
 <br>
 
@@ -65,7 +67,6 @@ It validates your SSH keys and stores them for future use.
 
 * [Randy Fay](https://github.com/rfay)
 * [Joe Still](https://github.com/bioshazard)
-* [Joachim](https://github.com/joachim-n)
 
 ---
 

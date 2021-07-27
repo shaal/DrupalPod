@@ -7,7 +7,7 @@ tasks:
   - init: |
       .gitpod/download-ddev-images.sh
       .gitpod/setup-ddev.sh
-      composer install
+      composer require drupal/core:^9.2
     command: |
       .gitpod/setup-ddev.sh
       .gitpod/drupal/ssh/01-check-private-ssh.sh

@@ -104,3 +104,6 @@ fi
 
 # Everyting is ready, now start ddev
 ddev start
+
+#Open preview browser
+gp preview "$(gp url 8080)"

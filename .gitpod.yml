@@ -7,7 +7,7 @@ tasks:
   - init: |
       .gitpod/download-ddev-images.sh
       .gitpod/setup-ddev.sh
-      ddev composer run-script post-root-package-install
+      composer install
     command: |
       .gitpod/setup-ddev.sh
       .gitpod/drupal/ssh/01-check-private-ssh.sh

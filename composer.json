@@ -9,13 +9,18 @@
             "email": "shaalofer@gmail.com"
         }
     ],
+    "config": {
+        "preferred-install": {
+            "drupal/*": "source"
+        }
+    },
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
         "composer/installers": "^1.9",
         "drupal/core-composer-scaffold": "*",
         "drush/drush": "^10.3.6",
-        "drupal/core": "*",
+        "drupal/core": "^9.2",
         "drupal/core-dev": "*",
         "drupal/core-recommended": "*",
         "phpspec/prophecy-phpunit": "*",

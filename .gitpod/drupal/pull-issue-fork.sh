@@ -107,3 +107,10 @@ ddev start
 
 #Open preview browser
 gp preview "$(gp url 8080)"
+
+# Set a specific branch if there's issue_fork
+if [ -n "$DP_ISSUE_FORK" ]; then
+    if ssh -T git@git.drupal.org; then
+        cd "${WORK_DIR}" && git remote set-url "$DP_ISSUE_FORK" git@git.drupal.org:issue/"$DP_ISSUE_FORK".git
+    fi
+fi

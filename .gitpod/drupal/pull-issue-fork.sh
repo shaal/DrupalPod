@@ -103,4 +103,7 @@ fi
             ddev drush en -y "$DP_PROJECT_NAME"
         fi
     fi
+# If project was already initiated, we just need to run `ddev start`
+else
+    ddev start
 fi

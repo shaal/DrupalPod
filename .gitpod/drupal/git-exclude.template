@@ -4,6 +4,6 @@
 # exclude patterns (uncomment them if you want to use them):
 # *.[oa]
 # *~
-# Exclude the following directories for Drupal core development
-vendor
-sites/simpletest
+#
+# Don't track changes in the following files/directories
+composer.json

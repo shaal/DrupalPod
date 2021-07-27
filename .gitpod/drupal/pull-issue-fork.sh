@@ -89,6 +89,9 @@ fi
         cd "${WORK_DIR}" && curl "$DP_PATCH_FILE" | patch -p1
     fi
 
+    # Ignore specific directories during Drupal core development
+    cp "${GITPOD_REPO_ROOT}"/.gitpod/drupal/git-exclude.template "${GITPOD_REPO_ROOT}"/.git/info/exclude
+
     # Save a file to mark workspace already initiated
     touch /workspace/drupalpod_initiated.status
 

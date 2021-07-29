@@ -34,21 +34,19 @@ if [ ! -f /workspace/drupalpod_initiated.status ]; then
     if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
         BASE_DIR=repos
         WORK_DIR="${GITPOD_REPO_ROOT}"/"$BASE_DIR"
-        mkdir -p "${WORK_DIR}"
     elif [ "$DP_PROJECT_TYPE" == "project_module" ]; then
         BASE_DIR=web/modules/contrib
         WORK_DIR="${GITPOD_REPO_ROOT}"/"$BASE_DIR"
-        # mkdir -p "${WORK_DIR}"
     elif [ "$DP_PROJECT_TYPE" == "project_theme" ]; then
         BASE_DIR=web/themes/contrib
         WORK_DIR="${GITPOD_REPO_ROOT}"/"$BASE_DIR"
-        # mkdir -p "${WORK_DIR}"
     fi
 
-    # Clone project
-    if [ ! -d "${WORK_DIR}"/"$DP_PROJECT_NAME" ]; then
-        cd "$WORK_DIR" && git clone https://git.drupalcode.org/project/"$DP_PROJECT_NAME"
-    fi
+    # Ignore specific directories during Drupal core development
+    cp "${GITPOD_REPO_ROOT}"/.gitpod/drupal/git-exclude.template "${GITPOD_REPO_ROOT}"/.git/info/exclude
+    cp "${GITPOD_REPO_ROOT}"/.gitpod/drupal/git-exclude.template "${GITPOD_REPO_ROOT}"/repos/drupal/.git/info/exclude
+    # Stop tracking local changes of DrupalPod's composer.json
+    git update-index --skip-worktree composer.json
 
     # Dynamically generate .gitmodules file
     RELATIVE_WORK_DIR=$BASE_DIR/$DP_PROJECT_NAME
@@ -62,6 +60,17 @@ GITMODULESEND
 
     WORK_DIR="${GITPOD_REPO_ROOT}"/$RELATIVE_WORK_DIR
 
+    # If project type is NOT core, set Drupal core version
+    if [ "$DP_PROJECT_TYPE" != "project_core" ]; then
+        cd "${GITPOD_REPO_ROOT}"/repos/drupal && git checkout "${DP_CORE_VERSION}"
+    fi
+
+    if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
+        ddev composer install
+    else
+        ddev composer require drupal/"$DP_PROJECT_NAME"
+    fi
+
     # Checkout specific branch only if there's issue_fork
     if [ -n "$DP_ISSUE_FORK" ]; then
         # If branch already exist only run checkout,
@@ -74,32 +83,26 @@ GITMODULESEND
         fi
     fi
 
-    # If project type is NOT core, change Drupal core version
-    if [ "$DP_PROJECT_TYPE" != "project_core" ]; then
-        cd "${GITPOD_REPO_ROOT}"/repos/drupal && git checkout "${DP_CORE_VERSION}"
-    fi
-
-    if [ -n "$DP_MODULE_VERSION" ]; then
-        cd "${WORK_DIR}" && git checkout "$DP_MODULE_VERSION"
-    fi
-
     if [ -n "$DP_PATCH_FILE" ]; then
         echo Applying selected patch "$DP_PATCH_FILE"
         cd "${WORK_DIR}" && curl "$DP_PATCH_FILE" | patch -p1
     fi
-
-    # Ignore specific directories during Drupal core development
-    cp "${GITPOD_REPO_ROOT}"/.gitpod/drupal/git-exclude.template "${GITPOD_REPO_ROOT}"/.git/info/exclude
-    cp "${GITPOD_REPO_ROOT}"/.gitpod/drupal/git-exclude.template "${GITPOD_REPO_ROOT}"/repos/drupal/.git/info/exclude
-
+    
     # Save a file to mark workspace already initiated
     touch /workspace/drupalpod_initiated.status
 
-    # Run composer update to prevent errors when Drupal core major version changed since last composer install
-    ddev composer update
-
+    ddev start
     # Run site install using a Drupal profile if one was defined
     if [ -n "$DP_INSTALL_PROFILE" ] && [ "$DP_INSTALL_PROFILE" != "''" ]; then
-        ddev drush si -y --account-pass=admin --site-name='drupalpod' "$DP_INSTALL_PROFILE"
+        ddev drush si -y --account-pass=admin --site-name='DrupalPod' "$DP_INSTALL_PROFILE"
+         # Enable the module
+        if [ "$DP_PROJECT_TYPE" != "project_core" ]; then
+            ddev drush en -y "$DP_PROJECT_NAME"
+        fi
     fi
+else
+    ddev start
 fi
+
+#Open preview browser
+gp preview "$(gp url 8080)"

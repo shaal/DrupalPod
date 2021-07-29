@@ -41,7 +41,10 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "preferred-install": {
+            "drupal/*": "source"
+        }
     },
     "scripts": {
         "post-root-package-install": [

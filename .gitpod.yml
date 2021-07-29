@@ -11,7 +11,7 @@ tasks:
     command: |
       .gitpod/setup-ddev.sh
       .gitpod/drupal/ssh/01-check-private-ssh.sh
-      .gitpod/drupal/pull-issue-fork.sh
+      .gitpod/drupal/setup-dev-environment.sh
 
 # VScode xdebug extension
 vscode:

@@ -11,7 +11,7 @@ tasks:
     command: |
       .gitpod/setup-ddev.sh
       .gitpod/drupal/ssh/01-check-private-ssh.sh
-      .gitpod/drupal/pull-issue-fork.sh
+      .gitpod/drupal/setup-dev-environment.sh
 
 # VScode xdebug extension
 vscode:
@@ -22,41 +22,32 @@ ports:
   # Used by projector
   - port: 6942
     onOpen: ignore
-    visibility: private
   # Direct-connect ddev-webserver port that is the main port
   - port: 8080
-    visibility: private
+    onOpen: ignore
   # Currently un-notified and unsupported mailhog http port
   - port: 8025
     onOpen: ignore
-    visibility: private
   # Currently un-notified and unsupported mailhog https port
   - port: 8026
     onOpen: ignore
-    visibility: private
   # Currently un-notified and unsupported phpmyadmin http port
   - port: 8036
     onOpen: ignore
-    visibility: private
   # Currently un-notified and unsupported phpmyadmin https port
   - port: 8037
     onOpen: ignore
-    visibility: private
   # router http port that we're ignoring.
   - port: 8888
     onOpen: ignore
-    visibility: private
   # router https port that we're ignoring.
   - port: 8889
     onOpen: ignore
-    visibility: private
   # xdebug port
   - port: 9000
     onOpen: ignore
-    visibility: private
   # projector port
   - port: 9999
-    visibility: private
 
 github:
   prebuilds:
@@ -71,7 +62,7 @@ github:
     # add a check to pull requests (defaults to true)
     addCheck: true
     # add a "Review in Gitpod" button as a comment to pull requests (defaults to false)
-    addComment: true
+    addComment: false
     # add a "Review in Gitpod" button to the pull request's description (defaults to false)
     addBadge: true
     # add a label once the prebuild is ready to pull requests (defaults to false)

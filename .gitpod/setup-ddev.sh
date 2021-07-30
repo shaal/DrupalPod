@@ -33,6 +33,8 @@ cat <<COMPOSEEND >"${DDEV_DIR}"/docker-compose.host-docker-internal.yaml
 version: "3.6"
 services:
   web:
+    environment:
+      - DRUSH_OPTIONS_URI=$(gp url 8080)
     extra_hosts:
     - "host.docker.internal:${hostip}"
     # This adds 8080 on the host (bound on all interfaces)

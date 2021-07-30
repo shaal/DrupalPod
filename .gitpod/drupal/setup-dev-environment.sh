@@ -11,16 +11,6 @@ if [ ! -f /workspace/drupalpod_initiated.status ]; then
     SSHKey=$(ssh-keyscan $host 2> /dev/null)
     echo "$SSHKey" >> ~/.ssh/known_hosts
 
-    # Set clone mode (SSH/HTTPS)
-    SSH_CLONE="git@git.drupal.org:"
-    HTTPS_CLONE="https://git.drupalcode.org/"
-
-    if ssh -T git@git.drupal.org; then
-        CLONE_MODE=$SSH_CLONE
-    else
-        CLONE_MODE=$HTTPS_CLONE
-    fi
-
     # Default settings (latest drupal core)
     if [ -z "$DP_PROJECT_TYPE" ]; then
         DP_PROJECT_TYPE=project_core
@@ -59,7 +49,7 @@ GITMODULESEND
         if cd "${WORK_DIR}" && git show-ref -q --heads "$DP_ISSUE_BRANCH"; then
             cd "${WORK_DIR}" && git checkout "$DP_ISSUE_BRANCH"
         else
-            cd "${WORK_DIR}" && git remote add "$DP_ISSUE_FORK" "$CLONE_MODE"issue/"$DP_ISSUE_FORK".git
+            cd "${WORK_DIR}" && git remote add "$DP_ISSUE_FORK" https://git.drupalcode.org/issue/"$DP_ISSUE_FORK".git
             cd "${WORK_DIR}" && git fetch "$DP_ISSUE_FORK"
             cd "${WORK_DIR}" && git checkout -b "$DP_ISSUE_BRANCH" --track "$DP_ISSUE_FORK"/"$DP_ISSUE_BRANCH"
         fi
@@ -96,6 +86,9 @@ GITMODULESEND
             ddev drush en -y "$DP_PROJECT_NAME"
         fi
     fi
+
+    # Update HTTP repo to SSH repo
+    "${GITPOD_REPO_ROOT}"/.gitpod/drupal/ssh/05-set-repo-as-ssh.sh
 else
     ddev start
 fi

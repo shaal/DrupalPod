@@ -1,0 +1,25 @@
+name: Test VSCode Extension
+on:
+  - push
+  - pull_request
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        uses: actions/checkout@v2
+      -
+        uses: actions/setup-node@v2
+        with:
+          node_version: 14.x
+          cache: 'yarn'
+      -
+        run: yarn install
+        working-directory: ./repos/drupalpod-ext
+      # @todo run tests when "vscode-test" package works in GitPod and/or Actions.
+      # -
+      #  run: yarn test
+      #  working-directory: ./repos/drupalpod-ext
+      -
+        run: yarn package
+        working-directory: ./repos/drupalpod-ext

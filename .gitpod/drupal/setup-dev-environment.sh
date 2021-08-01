@@ -75,6 +75,12 @@ GITMODULESEND
         cd "${WORK_DIR}" && curl "$DP_PATCH_FILE" | patch -p1
     fi
 
+    # Create a drush command that runs drush through ddev
+    sudo cp "${GITPOD_REPO_ROOT}"/.gitpod/ddev-drush.template.sh /usr/local/bin/drush
+
+    # Create a phpstorm command
+    sudo cp "${GITPOD_REPO_ROOT}"/.gitpod/phpstorm.template.sh /usr/local/bin/phpstorm
+
     # Save a file to mark workspace already initiated
     touch /workspace/drupalpod_initiated.status
 
@@ -82,8 +88,10 @@ GITMODULESEND
     if [ -n "$DP_INSTALL_PROFILE" ] && [ "$DP_INSTALL_PROFILE" != "''" ]; then
         ddev drush si -y --account-pass=admin --site-name="DrupalPod" "$DP_INSTALL_PROFILE"
         # Enable the module
-        if [ "$DP_PROJECT_TYPE" != "project_core" ]; then
+        if [ "$DP_PROJECT_TYPE" == "project_module" ]; then
             ddev drush en -y "$DP_PROJECT_NAME"
+        elif [ "$DP_PROJECT_TYPE" == "project_theme" ]; then
+            ddev drush then -y "$DP_PROJECT_NAME"
         fi
     fi
 

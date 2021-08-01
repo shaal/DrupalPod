@@ -75,9 +75,6 @@ GITMODULESEND
         cd "${WORK_DIR}" && curl "$DP_PATCH_FILE" | patch -p1
     fi
 
-    # Create a drush command that runs drush through ddev
-    sudo cp "${GITPOD_REPO_ROOT}"/.gitpod/ddev-drush.template.sh /usr/local/bin/drush
-
     # Create a phpstorm command
     sudo cp "${GITPOD_REPO_ROOT}"/.gitpod/phpstorm.template.sh /usr/local/bin/phpstorm
 

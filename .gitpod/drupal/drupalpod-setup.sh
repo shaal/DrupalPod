@@ -11,7 +11,6 @@ if [ ! -f /workspace/drupalpod_initiated.status ] && [ -n "$DP_PROJECT_TYPE" ]; 
     SSHKey=$(ssh-keyscan $host 2> /dev/null)
     echo "$SSHKey" >> ~/.ssh/known_hosts
 
-
     # Clone project (only if it's not core)
     if [ -n "$DP_PROJECT_NAME" ] && [ "$DP_PROJECT_TYPE" != "project_core" ]; then
         mkdir -p "${GITPOD_REPO_ROOT}"/repos

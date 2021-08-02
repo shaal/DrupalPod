@@ -10,8 +10,8 @@
 This project allows you to work on Drupal contributions with a familiar setup of a "normal" Drupal website.\
 No computer is needed because it is all running in the cloud.
 
-* Install additional packages using `composer`.
-* Run Drush commands, using `drush <command>`.
+* Install additional packages - `ddev composer`
+* Run Drush commands - `ddev drush <command>`
 * IDE in a browser
   * VScode (default)
   * PHPStorm - run `phpstorm`

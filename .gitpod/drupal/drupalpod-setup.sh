@@ -3,22 +3,13 @@ if [ -n "$DEBUG_DRUPALPOD" ]; then
     set -x
 fi
 
-# Check if workspace already initiated, to avoid overriding existing work in progress
-if [ ! -f /workspace/drupalpod_initiated.status ]; then
+# Skip setup if it already ran once and if no special setup is set by DrupalPod extension
+if [ ! -f /workspace/drupalpod_initiated.status ] && [ -n "$DP_PROJECT_TYPE" ]; then
     # Add git.drupal.org to known_hosts
     mkdir -p ~/.ssh
     host=git.drupal.org
     SSHKey=$(ssh-keyscan $host 2> /dev/null)
     echo "$SSHKey" >> ~/.ssh/known_hosts
-
-    # Default settings (latest drupal core)
-    if [ -z "$DP_PROJECT_TYPE" ]; then
-        DP_PROJECT_TYPE=project_core
-    fi
-
-    if [ -z "$DP_PROJECT_NAME" ]; then
-        DP_PROJECT_NAME=drupal
-    fi
 
     # Clone project (only if it's not core)
     if [ -n "$DP_PROJECT_NAME" ] && [ "$DP_PROJECT_TYPE" != "project_core" ]; then
@@ -57,17 +48,23 @@ GITMODULESEND
         cd "${WORK_DIR}" && git checkout "$DP_MODULE_VERSION"
     fi
 
+    # Remove default site that was installed during prebuild
+    rm -rf "${GITPOD_REPO_ROOT}"/web
+    rm -rf "${GITPOD_REPO_ROOT}"/vendor
+    rm -f "${GITPOD_REPO_ROOT}"/composer.lock
+
     # Start ddev
     ddev start
 
-    # If project type is NOT core, change Drupal core version
-    if [ "$DP_PROJECT_TYPE" != "project_core" ]; then
+    # If project type is core, run composer install
+    if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
+        cd "${GITPOD_REPO_ROOT}" && ddev composer install
+    # Otherwise, change Drupal core version
+    else
         # Add project source code as symlink (to repos/name_of_project)
         cd "${GITPOD_REPO_ROOT}" && composer config repositories."$DP_PROJECT_NAME" '{"type": "path", "url": "'"repos/$DP_PROJECT_NAME"'", "options": {"symlink": true}}'
         # Get all dependencies of the project
         cd "${GITPOD_REPO_ROOT}" && ddev composer require drupal/"$DP_PROJECT_NAME":\"*\"
-    else
-        cd "${GITPOD_REPO_ROOT}" && ddev composer install
     fi
 
     if [ -n "$DP_PATCH_FILE" ]; then
@@ -82,8 +79,10 @@ GITMODULESEND
     if [ -n "$DP_INSTALL_PROFILE" ] && [ "$DP_INSTALL_PROFILE" != "''" ]; then
         ddev drush si -y --account-pass=admin --site-name="DrupalPod" "$DP_INSTALL_PROFILE"
         # Enable the module
-        if [ "$DP_PROJECT_TYPE" != "project_core" ]; then
+        if [ "$DP_PROJECT_TYPE" == "project_module" ]; then
             ddev drush en -y "$DP_PROJECT_NAME"
+        elif [ "$DP_PROJECT_TYPE" == "project_theme" ]; then
+            ddev drush then -y "$DP_PROJECT_NAME"
         fi
     fi
 

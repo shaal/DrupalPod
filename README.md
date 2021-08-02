@@ -10,19 +10,22 @@
 This project allows you to work on Drupal contributions with a familiar setup of a "normal" Drupal website.\
 No computer is needed because it is all running in the cloud.
 
-* Install additional packages using `ddev composer`.
-* Run Drush commands, using `ddev drush <command>`.
+* Install additional packages - `ddev composer`
+* Run Drush commands - `ddev drush <command>`
 * IDE in a browser
   * VScode (default)
-  * PHPStorm - run `.gitpod/phpstorm.sh`
+  * PHPStorm - run `phpstorm`
 
 <br>
 
 ## Project structure
 
-* Core directory `/web/core` _<sup>* symlinked from `/repos/drupal`</sup>_
-* Module directory `/web/modules/contrib`
-* Theme directory `/web/themes/contrib`
+* Every project is cloned into `/repos/<project_name>`
+* Required by composer
+* Symlinked into a normal Drupal website structure:
+  * Core directory `/web/core`
+  * Module directory `/web/modules/contrib/module_name`
+  * Theme directory `/web/themes/contrib/theme_name`
 
 <br>
 
@@ -46,7 +49,7 @@ From within a Gitpod workspace run:
 Follow the instructions on the screen.
 
 1. `.gitpod/drupal/ssh/04-confirm-ssh-setup.sh` \
-It validates your SSH keys and stores them for future use.
+If SSH keys are valid, it stores your private SSH key as an environment variable in Gitpod.
 
 <br>
 

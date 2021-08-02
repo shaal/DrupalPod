@@ -6,12 +6,14 @@ image:
 tasks:
   - init: |
       .gitpod/download-ddev-images.sh
-      .gitpod/setup-ddev.sh
-      ddev composer run-script post-root-package-install
+      composer run-script post-root-package-install
+      .gitpod/ddev-in-gitpod-setup.sh
+      .gitpod/drupal/install-default-website.sh
     command: |
-      .gitpod/setup-ddev.sh
+      .gitpod/ddev-in-gitpod-setup.sh
+      .gitpod/env-setup.sh
       .gitpod/drupal/ssh/01-check-private-ssh.sh
-      .gitpod/drupal/setup-dev-environment.sh
+      .gitpod/drupal/drupalpod-setup.sh
 
 # VScode xdebug extension
 vscode:

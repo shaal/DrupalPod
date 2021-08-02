@@ -6,8 +6,7 @@ image:
 tasks:
   - init: |
       .gitpod/download-ddev-images.sh
-      .gitpod/ddev-in-gitpod-setup.sh
-      ddev composer run-script post-root-package-install
+      composer run-script post-root-package-install
     command: |
       .gitpod/ddev-in-gitpod-setup.sh
       .gitpod/env-setup.sh

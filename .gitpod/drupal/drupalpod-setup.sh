@@ -75,9 +75,6 @@ GITMODULESEND
         cd "${WORK_DIR}" && curl "$DP_PATCH_FILE" | patch -p1
     fi
 
-    # Create a phpstorm command
-    sudo cp "${GITPOD_REPO_ROOT}"/.gitpod/phpstorm.template.sh /usr/local/bin/phpstorm
-
     # Save a file to mark workspace already initiated
     touch /workspace/drupalpod_initiated.status
 

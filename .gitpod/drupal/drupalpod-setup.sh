@@ -56,9 +56,6 @@ GITMODULESEND
     # Start ddev
     ddev start
 
-    # Wipe database from prebuild's Umami site install
-    ddev drush sql-drop -y
-
     # If project type is core, run composer install
     if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
         cd "${GITPOD_REPO_ROOT}" && ddev composer install
@@ -87,6 +84,9 @@ GITMODULESEND
         elif [ "$DP_PROJECT_TYPE" == "project_theme" ]; then
             ddev drush then -y "$DP_PROJECT_NAME"
         fi
+    else
+        # Wipe database from prebuild's Umami site install
+        ddev drush sql-drop -y
     fi
 
     # Update HTTP repo to SSH repo

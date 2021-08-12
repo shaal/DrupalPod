@@ -51,6 +51,7 @@ GITMODULESEND
     # Remove default site that was installed during prebuild
     rm -rf "${GITPOD_REPO_ROOT}"/web
     rm -rf "${GITPOD_REPO_ROOT}"/vendor
+    rm -f "${GITPOD_REPO_ROOT}"/composer.json
     rm -f "${GITPOD_REPO_ROOT}"/composer.lock
 
     # Start ddev

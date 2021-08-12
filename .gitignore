@@ -1,6 +1,7 @@
 # Drupal
 web/
 vendor/
+composer.json
 composer.lock
 .editorconfig
 .gitattributes

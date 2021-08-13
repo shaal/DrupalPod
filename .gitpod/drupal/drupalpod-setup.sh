@@ -5,12 +5,6 @@ fi
 
 # Check if additional modules should be installed
 # TODO: once Drupalpod extension supports additional modules - change '-z' to `-n`
-if [ -z "$DP_EXTRA_DRUSH" ]; then
-    DRUSH_NAME="drush"
-    DRUSH_PACKAGE="drush/drush"
-    EXTRA_MODULES=1
-fi
-
 if [ -z "$DP_EXTRA_DEVEL" ]; then
     DEVEL_NAME="devel"
     DEVEL_PACKAGE="drupal/devel"
@@ -101,11 +95,13 @@ GITMODULESEND
             "drupal/core-recommended:""$DP_CORE_VERSION"
         fi
 
+        # Install Drush
+        cd "${GITPOD_REPO_ROOT}" && ddev composer require --no-update drush/drush:^10
+
         # Check if any additional modules should be installed
         if [ -n "$EXTRA_MODULES" ]; then
             cd "${GITPOD_REPO_ROOT}" && \
             ddev composer require --no-update \
-            "$DRUSH_PACKAGE" \
             "$DEVEL_PACKAGE" \
             "$ADMIN_TOOLBAR_PACKAGE"
         fi
@@ -137,10 +133,13 @@ GITMODULESEND
         if [ -n "$EXTRA_MODULES" ]; then
             cd "${GITPOD_REPO_ROOT}" && \
             ddev drush en -y \
-            "$DRUSH_NAME" \
             "$DEVEL_NAME" \
             "$ADMIN_TOOLBAR_NAME"
         fi
+
+        # Enable Claro as default admin theme
+        cd "${GITPOD_REPO_ROOT}" && ddev drush then claro
+        cd "${GITPOD_REPO_ROOT}" && ddev drush config-set -y system.theme admin claro
     fi
 
     # Update HTTP repo to SSH repo

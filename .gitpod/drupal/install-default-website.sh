@@ -32,6 +32,7 @@ if [ -n "$DP_SETUP_MODE" ] || [ "$DP_SETUP_MODE" = 'recommended' ]; then
     fi
 else
     cd "${GITPOD_REPO_ROOT}" && cp .gitpod/drupal/templates/drupal-core-development-composer.json composer.json
+    ddev composer run post-root-package-install
 fi
 
 cd "${GITPOD_REPO_ROOT}" && ddev composer install

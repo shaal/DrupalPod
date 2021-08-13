@@ -3,6 +3,26 @@ if [ -n "$DEBUG_DRUPALPOD" ]; then
     set -x
 fi
 
+# Check if additional modules should be installed
+# TODO: once Drupalpod extension supports additional modules - change '-z' to `-n`
+if [ -z "$DP_EXTRA_DRUSH" ]; then
+    DRUSH_NAME="drush"
+    DRUSH_PACKAGE="drush/drush"
+    EXTRA_MODULES=1
+fi
+
+if [ -z "$DP_EXTRA_DEVEL" ]; then
+    DEVEL_NAME="devel"
+    DEVEL_PACKAGE="drupal/devel"
+    EXTRA_MODULES=1
+fi
+
+if [ -z "$DP_EXTRA_ADMIN_TOOLBAR" ]; then
+    ADMIN_TOOLBAR_NAME="admin_toolbar_tools"
+    ADMIN_TOOLBAR_PACKAGE="drupal/admin_toolbar"
+    EXTRA_MODULES=1
+fi
+
 # Skip setup if it already ran once and if no special setup is set by DrupalPod extension
 if [ ! -f /workspace/drupalpod_initiated.status ] && [ -n "$DP_PROJECT_TYPE" ]; then
     # Add git.drupal.org to known_hosts
@@ -59,19 +79,46 @@ GITMODULESEND
 
     # If project type is core, run composer install
     if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
-        cd "${GITPOD_REPO_ROOT}" && ddev composer install
+        cd "${GITPOD_REPO_ROOT}" && cp .gitpod/drupal/templates/drupal-core-development-composer.json composer.json
+        cd "${GITPOD_REPO_ROOT}" && ddev composer run post-root-package-install
     # Otherwise, change Drupal core version
     else
+        # Use drupal/recommended-project composer template
+        cd "${GITPOD_REPO_ROOT}" && cp .gitpod/drupal/templates/drupal-recommended-project-composer.json composer.json
+        
         # Add project source code as symlink (to repos/name_of_project)
-        cd "${GITPOD_REPO_ROOT}" && composer config repositories."$DP_PROJECT_NAME" '{"type": "path", "url": "'"repos/$DP_PROJECT_NAME"'", "options": {"symlink": true}}'
-        # Get all dependencies of the project
-        cd "${GITPOD_REPO_ROOT}" && ddev composer require drupal/"$DP_PROJECT_NAME":\"*\"
+        cd "${GITPOD_REPO_ROOT}" && \
+        composer config \
+        repositories."$DP_PROJECT_NAME" \
+        '{"type": "path", "url": "'"repos/$DP_PROJECT_NAME"'", "options": {"symlink": true}}'
+        
+        # Check if a specific Drupal core version should be installed
+        if [ -n "$DP_CORE_VERSION" ]; then
+            cd "${GITPOD_REPO_ROOT}" && \
+            ddev composer require --no-update \
+            "drupal/core-composer-scaffold:""$DP_CORE_VERSION" \
+            "drupal/core-project-message:""$DP_CORE_VERSION" \
+            "drupal/core-recommended:""$DP_CORE_VERSION"
+        fi
+
+        # Check if any additional modules should be installed
+        if [ -n "$EXTRA_MODULES" ]; then
+            cd "${GITPOD_REPO_ROOT}" && \
+            ddev composer require --no-update \
+            "$DRUSH_PACKAGE" \
+            "$DEVEL_PACKAGE" \
+            "$ADMIN_TOOLBAR_PACKAGE"
+        fi
+        # Add the project (using '*' because the branch under `/repo/name_of_project` defines the version)
+        cd "${GITPOD_REPO_ROOT}" && ddev composer require -- no-update drupal/"$DP_PROJECT_NAME":\"*\"
     fi
 
     if [ -n "$DP_PATCH_FILE" ]; then
         echo Applying selected patch "$DP_PATCH_FILE"
         cd "${WORK_DIR}" && curl "$DP_PATCH_FILE" | patch -p1
     fi
+    
+    cd "${GITPOD_REPO_ROOT}" && ddev composer install
 
     # Save a file to mark workspace already initiated
     touch /workspace/drupalpod_initiated.status
@@ -84,6 +131,15 @@ GITMODULESEND
             ddev drush en -y "$DP_PROJECT_NAME"
         elif [ "$DP_PROJECT_TYPE" == "project_theme" ]; then
             ddev drush then -y "$DP_PROJECT_NAME"
+        fi
+
+        # Enabale extra modules
+        if [ -n "$EXTRA_MODULES" ]; then
+            cd "${GITPOD_REPO_ROOT}" && \
+            ddev drush en -y \
+            "$DRUSH_NAME" \
+            "$DEVEL_NAME" \
+            "$ADMIN_TOOLBAR_NAME"
         fi
     fi
 

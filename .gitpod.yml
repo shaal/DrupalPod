@@ -5,10 +5,12 @@ image:
 # when starting a workspace all docker images are ready
 tasks:
   - init: |
+      printenv > testing123.txt
       .gitpod/download-ddev-images.sh
       .gitpod/ddev-in-gitpod-setup.sh
       .gitpod/drupal/install-default-website.sh
     command: |
+      printenv > testing456.txt
       .gitpod/ddev-in-gitpod-setup.sh
       .gitpod/env-setup.sh
       .gitpod/drupal/ssh/01-check-private-ssh.sh

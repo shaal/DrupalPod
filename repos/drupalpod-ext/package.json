@@ -18,7 +18,7 @@
     "commands": [
       {
         "command": "drupalpod-ext.start",
-        "title": "Welcome to the Drupal Community!",
+        "title": "Getting Started Contributing with DrupalPod",
         "category": "Drupal"
       }
     ],

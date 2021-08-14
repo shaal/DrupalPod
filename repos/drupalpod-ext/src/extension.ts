@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { getHelpContent } from './help-content';
 
 export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
@@ -9,6 +10,8 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.ViewColumn.One,
         {}
       );
+
+      panel.webview.html = getHelpContent();
     })
   );
 

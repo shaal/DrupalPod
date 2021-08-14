@@ -1,6 +1,6 @@
 # DrupalPod Extension
 
-Provides a Contribution Guide for using DrupalPod on startup or by using the `drupalpod.ext-start` command in the Command Palette.
+Provides a Contribution Guide for using [DrupalPod](https://github.com/shaal/DrupalPod) on startup or by using the `drupalpod.ext-start` command in the Command Palette.
 
 The extension should be installed automatically by GitPod (once development is complete).
 

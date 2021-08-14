@@ -12,6 +12,7 @@ repos/drupalpod-ext/node_modules/
 repos/drupalpod-ext/package-lock.json
 repos/drupalpod-ext/out/
 repos/drupalpod-ext/*.vsix
+repos/drupalpod-ext/.vscode-test/
 
 # Ddev-Gitpod
 .ddev/docker-compose.host-docker-internal.yaml

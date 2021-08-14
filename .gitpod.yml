@@ -17,7 +17,9 @@ tasks:
 # VScode xdebug extension
 vscode:
   extensions:
+    # PHP extensions.
     - felixfbecker.php-debug
+    - neilbrayfield.php-docblocker
 
 ports:
   # Used by projector

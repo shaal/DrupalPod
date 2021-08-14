@@ -20,6 +20,7 @@ vscode:
     # PHP extensions.
     - felixfbecker.php-debug
     - neilbrayfield.php-docblocker
+    - bmewburn.vscode-intelephense-client
 
     # Twig extensions.
     - mblode.twig-language-2

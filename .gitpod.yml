@@ -21,6 +21,9 @@ vscode:
     - felixfbecker.php-debug
     - neilbrayfield.php-docblocker
 
+    # Twig extensions.
+    - mblode.twig-language-2
+
 ports:
   # Used by projector
   - port: 6942

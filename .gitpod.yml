@@ -19,6 +19,7 @@ tasks:
 vscode:
   extensions:
     - felixfbecker.php-debug
+    - drupal-mentoring.drupalpod-ext
 
 ports:
   # Used by projector

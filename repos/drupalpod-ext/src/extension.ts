@@ -15,7 +15,8 @@ export async function activate(context: vscode.ExtensionContext) {
     })
   );
 
-  if (!vscode.workspace.getConfiguration('drupalpod.hideOnStartup')) {
+  const config = vscode.workspace.getConfiguration('drupalpod');
+  if (!config.has('hideOnStartup') || !config.get('hideOnStartup')) {
     await vscode.commands.executeCommand('drupalpod-ext.start');
   }
 }

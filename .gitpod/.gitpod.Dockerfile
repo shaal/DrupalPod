@@ -13,7 +13,6 @@ RUN projector install 'PhpStorm 2020.3.2' --no-auto-run
 # Install ddev
 RUN brew update && brew install drud/ddev/ddev
 
-
 # Install GitUI (terminal-ui for git)
 RUN brew install gitui
 
@@ -27,5 +26,5 @@ RUN sudo php composer-setup.php --install-dir /usr/bin --filename composer
 RUN php -r "unlink('composer-setup.php');"
 
 ###
-### Initiate a rebuild of Gitpod's image by updating this comment #3
+### Initiate a rebuild of Gitpod's image by updating this comment #4
 ###

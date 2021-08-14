@@ -48,8 +48,8 @@ body {
             <h2>Getting Started with DrupalPod</h2>
           </header>
           <ol class="list--ordered">
-            <li><span class="emoji">⬇️</span> Wait until the “Terminal” completes its operations. Drupal will open in the panel to the right <span class="emoji">🔜</span></li>
-            <li><span class="emoji">➡️</span> You can use the “Simple Browser” to install and use Drupal. Go ahead and install Drupal now if it is not installed already.
+            <li><span class="emoji">⬇️</span> Wait until the “Terminal” completes its operations. Drupal will open in the panel when it is complete <span class="emoji">➡️</span></li>
+            <li><span class="emoji">➡️</span> You can use the “Simple Browser” to use Drupal. Go ahead and install Drupal now if it is not installed.
               <ul>
                 <li>Note: You will use <code>db</code> as the username, password, database name and host (Advanced Options).</li>
               </ul>

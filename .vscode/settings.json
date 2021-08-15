@@ -30,4 +30,8 @@
   "html.format.enable": true,
   "html.format.wrapLineLength": 80,
   "redhat.telemetry.enabled": false,
+
+  /* php-docblocker settings */
+  "php-docblocker.gap": true,
+  "php-docblocker.useShortNames": true,
 }

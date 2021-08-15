@@ -1,17 +1,24 @@
 #!/usr/bin/env bash
-if [ -n "$DEBUG_DRUPALPOD" ]; then
+if [ -n "$DEBUG_DRUPALPOD" ] || [ -n "$GITPOD_HEADLESS" ]; then
     set -x
+fi
+
+if [ -n "$GITPOD_HEADLESS" ]; then
+    DP_INSTALL_PROFILE='demo_umami'
+    DP_EXTRA_DEVEL=1
+    DP_EXTRA_ADMIN_TOOLBAR=1
+    DP_PROJECT_TYPE='default_drupalpod'
 fi
 
 # Check if additional modules should be installed
 # TODO: once Drupalpod extension supports additional modules - change '-z' to `-n`
-if [ -z "$DP_EXTRA_DEVEL" ]; then
+if [ -n "$DP_EXTRA_DEVEL" ]; then
     DEVEL_NAME="devel"
     DEVEL_PACKAGE="drupal/devel"
     EXTRA_MODULES=1
 fi
 
-if [ -z "$DP_EXTRA_ADMIN_TOOLBAR" ]; then
+if [ -n "$DP_EXTRA_ADMIN_TOOLBAR" ]; then
     ADMIN_TOOLBAR_NAME="admin_toolbar_tools"
     ADMIN_TOOLBAR_PACKAGE="drupal/admin_toolbar"
     EXTRA_MODULES=1
@@ -69,7 +76,7 @@ GITMODULESEND
     rm -f "${GITPOD_REPO_ROOT}"/composer.lock
 
     # Start ddev
-    ddev start
+    cd "${GITPOD_REPO_ROOT}" && ddev start
 
     # If project type is core, run composer install
     if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
@@ -81,11 +88,13 @@ GITMODULESEND
         cd "${GITPOD_REPO_ROOT}" && cp .gitpod/drupal/templates/drupal-recommended-project-composer.json composer.json
         
         # Add project source code as symlink (to repos/name_of_project)
-        cd "${GITPOD_REPO_ROOT}" && \
-        composer config \
-        repositories."$DP_PROJECT_NAME" \
-        '{"type": "path", "url": "'"repos/$DP_PROJECT_NAME"'", "options": {"symlink": true}}'
-        
+        if [ -n "$DP_PROJECT_NAME" ]; then
+            cd "${GITPOD_REPO_ROOT}" && \
+            ddev composer config \
+            repositories."$DP_PROJECT_NAME" \
+            '{"type": "path", "url": "'"repos/$DP_PROJECT_NAME"'", "options": {"symlink": true}}'
+        fi
+
         # Check if a specific Drupal core version should be installed
         if [ -n "$DP_CORE_VERSION" ]; then
             cd "${GITPOD_REPO_ROOT}" && \
@@ -105,19 +114,24 @@ GITMODULESEND
             "$DEVEL_PACKAGE" \
             "$ADMIN_TOOLBAR_PACKAGE"
         fi
-        # Add the project (using '*' because the branch under `/repo/name_of_project` defines the version)
-        cd "${GITPOD_REPO_ROOT}" && ddev composer require -- no-update drupal/"$DP_PROJECT_NAME":\"*\"
+
+        if [ -n "$DP_PROJECT_NAME" ]; then
+            # Add the project (using '*' because the branch under `/repo/name_of_project` defines the version)
+            cd "${GITPOD_REPO_ROOT}" && ddev composer require -- no-update drupal/"$DP_PROJECT_NAME":\"*\"
+        fi
     fi
 
     if [ -n "$DP_PATCH_FILE" ]; then
         echo Applying selected patch "$DP_PATCH_FILE"
         cd "${WORK_DIR}" && curl "$DP_PATCH_FILE" | patch -p1
     fi
-    
+
     cd "${GITPOD_REPO_ROOT}" && ddev composer install
 
-    # Save a file to mark workspace already initiated
-    touch /workspace/drupalpod_initiated.status
+    # Save a file to mark workspace already initiated, unless it was set up during 'init'
+    if [ -z "$GITPOD_HEADLESS" ]; then
+        touch /workspace/drupalpod_initiated.status
+    fi
 
     # Run site install using a Drupal profile if one was defined
     if [ -n "$DP_INSTALL_PROFILE" ] && [ "$DP_INSTALL_PROFILE" != "''" ]; then
@@ -145,8 +159,10 @@ GITMODULESEND
     # Update HTTP repo to SSH repo
     "${GITPOD_REPO_ROOT}"/.gitpod/drupal/ssh/05-set-repo-as-ssh.sh
 else
-    ddev start
+    cd "${GITPOD_REPO_ROOT}" && ddev start
 fi
 
-#Open preview browser
-gp preview "$(gp url 8080)"
+if [ -z "$GITPOD_HEADLESS" ]; then
+    #Open preview browser
+    cd "${GITPOD_REPO_ROOT}" && gp preview "$(gp url 8080)"
+fi

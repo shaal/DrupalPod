@@ -23,7 +23,11 @@
     "*.tpl.php": "php",
     "*.test": "php",
     "*.php": "php",
-    "*.info": "ini"
+    "*.info": "ini",
+    "*.html": "twig",
+  },
+  "emmet.includeLanguages": {
+    "twig": "html"
   },
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,

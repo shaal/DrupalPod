@@ -29,11 +29,14 @@ fi
 
 # Skip setup if it already ran once and if no special setup is set by DrupalPod extension
 if [ ! -f /workspace/drupalpod_initiated.status ] && [ -n "$DP_PROJECT_TYPE" ]; then
+
     # Add git.drupal.org to known_hosts
-    mkdir -p ~/.ssh
-    host=git.drupal.org
-    SSHKey=$(ssh-keyscan $host 2> /dev/null)
-    echo "$SSHKey" >> ~/.ssh/known_hosts
+    if [ -z "$GITPOD_HEADLESS" ]; then
+        mkdir -p ~/.ssh
+        host=git.drupal.org
+        SSHKey=$(ssh-keyscan $host 2> /dev/null)
+        echo "$SSHKey" >> ~/.ssh/known_hosts
+    fi
 
     # Clone project (only if it's not core)
     if [ -n "$DP_PROJECT_NAME" ] && [ "$DP_PROJECT_TYPE" != "project_core" ]; then

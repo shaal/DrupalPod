@@ -38,13 +38,13 @@ if [ ! -f /workspace/drupalpod_initiated.status ] && [ -n "$DP_PROJECT_TYPE" ]; 
         echo "$SSHKey" >> ~/.ssh/known_hosts
     fi
 
-    # Clone project (only if it's not core)
-    if [ -n "$DP_PROJECT_NAME" ] && [ "$DP_PROJECT_TYPE" != "project_core" ]; then
-        mkdir -p "${GITPOD_REPO_ROOT}"/repos
-        cd "${GITPOD_REPO_ROOT}"/repos && git clone https://git.drupalcode.org/project/"$DP_PROJECT_NAME"
-    fi
+    mkdir -p "${GITPOD_REPO_ROOT}"/repos
 
-    WORK_DIR="${GITPOD_REPO_ROOT}"/repos/$DP_PROJECT_NAME
+    # Clone project
+    if [ -n "$DP_PROJECT_NAME" ]; then
+        cd "${GITPOD_REPO_ROOT}"/repos && git clone https://git.drupalcode.org/project/"$DP_PROJECT_NAME"
+        WORK_DIR="${GITPOD_REPO_ROOT}"/repos/$DP_PROJECT_NAME
+    fi
 
     # Dynamically generate .gitmodules file
 cat <<GITMODULESEND > "${GITPOD_REPO_ROOT}"/.gitmodules
@@ -94,9 +94,7 @@ GITMODULESEND
         # Add project source code as symlink (to repos/name_of_project)
         if [ -n "$DP_PROJECT_NAME" ]; then
             cd "${GITPOD_REPO_ROOT}" && \
-            composer config \
-            repositories."$DP_PROJECT_NAME" \
-            '{"type": "path", "url": "'"repos/$DP_PROJECT_NAME"'", "options": {"symlink": true}}'
+            ddev composer config repositories.feeds ' '"'"' {"type": "path", "url": "repos/feeds", "options": {"symlink": true }} '"'"' '
         fi
 
         # Check if a specific Drupal core version should be installed
@@ -107,22 +105,22 @@ GITMODULESEND
             "drupal/core-project-message:""$DP_CORE_VERSION" \
             "drupal/core-recommended:""$DP_CORE_VERSION"
         fi
+    fi
 
-        # Install Drush
-        cd "${GITPOD_REPO_ROOT}" && ddev composer require --no-update drush/drush:^10
+    # Install Drush
+    cd "${GITPOD_REPO_ROOT}" && ddev composer require --no-update drush/drush:^10
 
-        # Check if any additional modules should be installed
-        if [ -n "$EXTRA_MODULES" ]; then
-            cd "${GITPOD_REPO_ROOT}" && \
-            ddev composer require --no-update \
-            "$DEVEL_PACKAGE" \
-            "$ADMIN_TOOLBAR_PACKAGE"
-        fi
+    # Check if any additional modules should be installed
+    if [ -n "$EXTRA_MODULES" ]; then
+        cd "${GITPOD_REPO_ROOT}" && \
+        ddev composer require --no-update \
+        "$DEVEL_PACKAGE" \
+        "$ADMIN_TOOLBAR_PACKAGE"
+    fi
 
-        if [ -n "$DP_PROJECT_NAME" ]; then
-            # Add the project (using '*' because the branch under `/repo/name_of_project` defines the version)
-            cd "${GITPOD_REPO_ROOT}" && ddev composer require --no-update drupal/"$DP_PROJECT_NAME":\"*\"
-        fi
+    if [ -n "$DP_PROJECT_NAME" ]; then
+        # Add the project (using '*' because the branch under `/repo/name_of_project` defines the version)
+        cd "${GITPOD_REPO_ROOT}" && ddev composer require --no-update drupal/"$DP_PROJECT_NAME":\"*\"
     fi
 
     if [ -n "$DP_PATCH_FILE" ]; then

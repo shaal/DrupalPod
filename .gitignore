@@ -8,7 +8,7 @@ composer.lock
 
 # DrupalPod
 .gitmodules
-repos/drupal/
+repos/
 
 # Ddev-Gitpod
 .ddev/docker-compose.host-docker-internal.yaml

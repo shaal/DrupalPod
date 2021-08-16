@@ -92,6 +92,7 @@ GITMODULESEND
         cd "${GITPOD_REPO_ROOT}" && cp .gitpod/drupal/templates/drupal-recommended-project-composer.json composer.json
         
         # Add project source code as symlink (to repos/name_of_project)
+        # double quotes explained - https://stackoverflow.com/a/1250279/5754049
         if [ -n "$DP_PROJECT_NAME" ]; then
             cd "${GITPOD_REPO_ROOT}" && \
             ddev composer config repositories.feeds ' '"'"' {"type": "path", "url": "repos/feeds", "options": {"symlink": true }} '"'"' '

@@ -10,8 +10,11 @@ if [ -n "$GITPOD_HEADLESS" ]; then
     DP_PROJECT_TYPE='default_drupalpod'
 fi
 
+# TODO: once Drupalpod extension supports additional modules - remove these 2 lines
+DP_EXTRA_DEVEL=1
+DP_EXTRA_ADMIN_TOOLBAR=1
+
 # Check if additional modules should be installed
-# TODO: once Drupalpod extension supports additional modules - change '-z' to `-n`
 if [ -n "$DP_EXTRA_DEVEL" ]; then
     DEVEL_NAME="devel"
     DEVEL_PACKAGE="drupal/devel"
@@ -90,7 +93,7 @@ GITMODULESEND
         # Add project source code as symlink (to repos/name_of_project)
         if [ -n "$DP_PROJECT_NAME" ]; then
             cd "${GITPOD_REPO_ROOT}" && \
-            ddev composer config \
+            composer config \
             repositories."$DP_PROJECT_NAME" \
             '{"type": "path", "url": "'"repos/$DP_PROJECT_NAME"'", "options": {"symlink": true}}'
         fi
@@ -117,7 +120,7 @@ GITMODULESEND
 
         if [ -n "$DP_PROJECT_NAME" ]; then
             # Add the project (using '*' because the branch under `/repo/name_of_project` defines the version)
-            cd "${GITPOD_REPO_ROOT}" && ddev composer require -- no-update drupal/"$DP_PROJECT_NAME":\"*\"
+            cd "${GITPOD_REPO_ROOT}" && ddev composer require --no-update drupal/"$DP_PROJECT_NAME":\"*\"
         fi
     fi
 

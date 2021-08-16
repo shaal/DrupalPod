@@ -95,7 +95,9 @@ GITMODULESEND
         # double quotes explained - https://stackoverflow.com/a/1250279/5754049
         if [ -n "$DP_PROJECT_NAME" ]; then
             cd "${GITPOD_REPO_ROOT}" && \
-            ddev composer config repositories.feeds ' '"'"' {"type": "path", "url": "repos/feeds", "options": {"symlink": true }} '"'"' '
+            ddev composer config \
+            repositories."$DP_PROJECT_NAME" \
+            ' '"'"' {"type": "path", "url": "'"repos/$DP_PROJECT_NAME"'", "options": {"symlink": true}} '"'"' '
         fi
 
         # Check if a specific Drupal core version should be installed

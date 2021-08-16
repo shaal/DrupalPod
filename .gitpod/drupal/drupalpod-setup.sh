@@ -58,8 +58,6 @@ GITMODULESEND
     # Ignore specific directories during Drupal core development
     cp "${GITPOD_REPO_ROOT}"/.gitpod/drupal/git-exclude.template "${GITPOD_REPO_ROOT}"/.git/info/exclude
     cp "${GITPOD_REPO_ROOT}"/.gitpod/drupal/git-exclude.template "${GITPOD_REPO_ROOT}"/repos/drupal/.git/info/exclude
-    # Stop tracking local changes of composer.json
-    cd "${GITPOD_REPO_ROOT}" && git update-index --skip-worktree composer.json
 
     # Checkout specific branch only if there's issue_fork
     if [ -n "$DP_ISSUE_FORK" ]; then

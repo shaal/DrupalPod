@@ -159,6 +159,9 @@ GITMODULESEND
         # Enable Claro as default admin theme
         cd "${GITPOD_REPO_ROOT}" && ddev drush then claro
         cd "${GITPOD_REPO_ROOT}" && ddev drush config-set -y system.theme admin claro
+    else
+        # Wipe database from prebuild's Umami site install
+        cd "${GITPOD_REPO_ROOT}" && ddev drush sql-drop -y
     fi
 
     # Update HTTP repo to SSH repo

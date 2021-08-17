@@ -3,6 +3,7 @@ if [ -n "$DEBUG_DRUPALPOD" ] || [ -n "$GITPOD_HEADLESS" ]; then
     set -x
 fi
 
+# Set the default setup during prebuild process
 if [ -n "$GITPOD_HEADLESS" ]; then
     DP_INSTALL_PROFILE='demo_umami'
     DP_EXTRA_DEVEL=1

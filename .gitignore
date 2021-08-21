@@ -1,13 +1,14 @@
 # Drupal
 web/
 vendor/
+composer.json
 composer.lock
 .editorconfig
 .gitattributes
 
 # DrupalPod
 .gitmodules
-repos/drupal/
+repos/
 repos/drupalpod-ext/node_modules/
 repos/drupalpod-ext/package-lock.json
 repos/drupalpod-ext/out/

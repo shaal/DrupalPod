@@ -17,14 +17,14 @@ jobs:
           # cache: 'yarn'
       -
         run: yarn install
-        working-directory: ./repos/drupalpod-ext
+        working-directory: ./src/drupalpod-ext
       # @todo bump the version with each DrupalPod release automatically?
       #   This will mean the release doesn't have the new version in repos?
       # -
       #  run: yarn version --new-version ${{ github.event.release.tag_name }}
-      #  working-directory: ./repos/drupalpod-ext
+      #  working-directory: ./src/drupalpod-ext
       #-
       #  run: git push origin
       -
         run: npm run ovsx publish -p ${{ secrets.OVSX_TOKEN }}
-        working-directory: ./repos/drupalpod-ext
+        working-directory: ./src/drupalpod-ext

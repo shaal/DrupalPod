@@ -20,7 +20,7 @@ To prevent the Contribution Guide from displaying when you start your workspace,
     * Press the "Extensions" button on the left.
     * Press the "Views and More Actions..." button ("..." icon).
     * Click "Install from VISX..." option from the context menu.
-    * Browse to or provide the directory path `/workspace/DrupalPod/repos/drupalpod-ext/ and choose the VISX file to install.
+    * Browse to or provide the directory path `/workspace/DrupalPod/src/drupalpod-ext/ and choose the VISX file to install.
 
 ## Publish
 

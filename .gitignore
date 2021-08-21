@@ -9,11 +9,11 @@ composer.lock
 # DrupalPod
 .gitmodules
 repos/
-repos/drupalpod-ext/node_modules/
-repos/drupalpod-ext/package-lock.json
-repos/drupalpod-ext/out/
-repos/drupalpod-ext/*.vsix
-repos/drupalpod-ext/.vscode-test/
+src/drupalpod-ext/node_modules/
+src/drupalpod-ext/package-lock.json
+src/drupalpod-ext/out/
+src/drupalpod-ext/*.vsix
+src/drupalpod-ext/.vscode-test/
 
 # Ddev-Gitpod
 .ddev/docker-compose.host-docker-internal.yaml

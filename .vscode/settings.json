@@ -35,6 +35,10 @@
   "html.format.wrapLineLength": 80,
   "redhat.telemetry.enabled": false,
 
+  /* phpSniffer settings */
+  "phpSniffer.executablesFolder": "vendor/bin",
+  "phpSniffer.standard": "Drupal",
+
   /* php-docblocker settings */
   "php-docblocker.gap": true,
   "php-docblocker.useShortNames": true,

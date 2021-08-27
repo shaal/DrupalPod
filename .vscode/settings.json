@@ -1,0 +1,53 @@
+{
+  "breadcrumbs.enabled": true,
+  "css.validate": true,
+  "diffEditor.ignoreTrimWhitespace": false,
+  "editor.tabSize": 2,
+  "editor.autoIndent": "full",
+  "editor.insertSpaces": true,
+  "editor.formatOnPaste": true,
+  "editor.formatOnSave": false,
+  "editor.renderWhitespace": "boundary",
+  "editor.wordWrapColumn": 80,
+  "editor.wordWrap": "off",
+  "editor.detectIndentation": true,
+  "editor.rulers": [
+    80
+  ],
+  "files.associations": {
+    "*.inc": "php",
+    "*.module": "php",
+    "*.install": "php",
+    "*.theme": "php",
+    "*.profile": "php",
+    "*.tpl.php": "php",
+    "*.test": "php",
+    "*.php": "php",
+    "*.info": "ini",
+    "*.html": "twig",
+  },
+  "emmet.includeLanguages": {
+    "twig": "html"
+  },
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "html.format.enable": true,
+  "html.format.wrapLineLength": 80,
+  "redhat.telemetry.enabled": false,
+
+  /* phpSniffer settings */
+  "phpSniffer.executablesFolder": "vendor/bin",
+  "phpSniffer.standard": "Drupal",
+
+  /* php-docblocker settings */
+  "php-docblocker.gap": true,
+  "php-docblocker.useShortNames": true,
+
+  // Allow searching files that are in .gitignore
+  "search.useIgnoreFiles": false,
+
+  // Configure glob patterns for excluding files and folders in fulltext searches and quick open. Inherits all glob patterns from the `files.exclude` setting.
+  "search.exclude": {
+    "**/vendor": true,
+  },
+}

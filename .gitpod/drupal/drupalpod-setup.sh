@@ -114,6 +114,9 @@ GITMODULESEND
     # Install Drush
     cd "${GITPOD_REPO_ROOT}" && ddev composer require --no-update drush/drush:^10
 
+    # Install Drupal coder and php_codesniffer.
+    cd "${GITPOD_REPO_ROOT}" && ddev composer require --no-update drupal/coder
+
     # Check if any additional modules should be installed
     if [ -n "$EXTRA_MODULES" ]; then
         cd "${GITPOD_REPO_ROOT}" && \
@@ -133,6 +136,9 @@ GITMODULESEND
     fi
 
     cd "${GITPOD_REPO_ROOT}" && ddev composer install
+
+    # Configure phpcs for drupal.
+    vendor/bin/phpcs --config-set installed_paths vendor/drupal/coder/coder_sniffer
 
     # Save a file to mark workspace already initiated, unless it was set up during 'init'
     if [ -z "$GITPOD_HEADLESS" ]; then

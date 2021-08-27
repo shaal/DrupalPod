@@ -17,7 +17,14 @@ tasks:
 # VScode xdebug extension
 vscode:
   extensions:
+    # PHP extensions.
     - felixfbecker.php-debug
+    - wongjn.php-sniffer
+    - neilbrayfield.php-docblocker
+    - bmewburn.vscode-intelephense-client
+
+    # Twig extensions.
+    - mblode.twig-language-2
 
 ports:
   # Used by projector

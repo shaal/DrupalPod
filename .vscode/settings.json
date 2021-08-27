@@ -42,4 +42,12 @@
   /* php-docblocker settings */
   "php-docblocker.gap": true,
   "php-docblocker.useShortNames": true,
+
+  // Allow searching files that are in .gitignore
+  "search.useIgnoreFiles": false,
+
+  // Configure glob patterns for excluding files and folders in fulltext searches and quick open. Inherits all glob patterns from the `files.exclude` setting.
+  "search.exclude": {
+    "**/vendor": true,
+  },
 }

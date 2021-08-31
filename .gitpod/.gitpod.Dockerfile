@@ -11,10 +11,7 @@ RUN mkdir -p ~/.projector/configs  # Prevents projector install from asking for 
 RUN projector install 'PhpStorm 2020.3.2' --no-auto-run
 
 # Install ddev
-RUN brew update && brew install drud/ddev/ddev
-
-# *** Temporary upgrade to ddev RC version ***
-# RUN brew upgrade drud/ddev-edge/ddev
+RUN brew update && brew install drud/ddev-edge/ddev
 
 # Install GitUI (terminal-ui for git)
 RUN brew install gitui

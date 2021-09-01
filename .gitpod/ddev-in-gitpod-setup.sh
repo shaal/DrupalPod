@@ -19,7 +19,7 @@ cat <<CONFIGEND > "${DDEV_DIR}"/config.gitpod.yaml
 #ddev-gitpod-generated
 php_version: "$DP_PHP_VERSION"
 
-bind_on_all_interfaces: true
+bind_all_interfaces: true
 host_webserver_port: 8080
 # Will ignore the direct-bind https port, which will land on 2222
 host_https_port: 2222

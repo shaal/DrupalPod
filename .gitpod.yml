@@ -27,12 +27,18 @@ vscode:
     - mblode.twig-language-2
 
 ports:
+  # Used by ddev - direct-bind https port
+  - port: 2222
+    onOpen: ignore
+  # Used by ddev - local db clients
+  - port: 3306
+    onOpen: ignore
   # Used by projector
   - port: 6942
     onOpen: ignore
   # Direct-connect ddev-webserver port that is the main port
   - port: 8080
-    onOpen: ignore
+    onOpen: open-preview
   # xdebug port
   - port: 9000
     onOpen: ignore

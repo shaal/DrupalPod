@@ -50,4 +50,5 @@
   "search.exclude": {
     "**/vendor": true,
   },
+  "workbench.startupEditor": "none",
 }

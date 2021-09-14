@@ -47,7 +47,7 @@ ports:
     onOpen: ignore
   # Direct-connect ddev-webserver port that is the main port
   - port: 8080
-    onOpen: open-preview
+    onOpen: ignore
   # xdebug port
   - port: 9000
     onOpen: ignore

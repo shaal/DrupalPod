@@ -25,6 +25,10 @@ host_webserver_port: 8080
 host_https_port: 2222
 # Allows local db clients to run
 host_db_port: 3306
+# Assign MailHog port
+host_mailhog_port: "8025"
+# Assign phpMyAdmin port
+host_phpmyadmin_port: 8036
 CONFIGEND
 
 # We need host.docker.internal inside the container,

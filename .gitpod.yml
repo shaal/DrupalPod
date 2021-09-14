@@ -36,6 +36,12 @@ ports:
   # Used by projector
   - port: 6942
     onOpen: ignore
+  # Used by MailHog
+  - port: 8025
+    onOpen: ignore
+  # Used by phpMyAdmin
+  - port: 8026
+    onOpen: ignore
   # Direct-connect ddev-webserver port that is the main port
   - port: 8080
     onOpen: open-preview

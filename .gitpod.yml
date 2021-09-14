@@ -26,6 +26,9 @@ vscode:
     # Twig extensions.
     - mblode.twig-language-2
 
+    # Help extensions.
+    - drupal-mentoring.drupalpod-ext
+
 ports:
   # Used by ddev - direct-bind https port
   - port: 2222

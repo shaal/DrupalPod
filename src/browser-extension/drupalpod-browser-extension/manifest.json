@@ -1,0 +1,28 @@
+{
+    "manifest_version": 2,
+    "name": "DrupalPod helper extension",
+    "description": "This extension set up a development environment for Drupal contributions",
+    "version": "1.0.4",
+    "homepage_url": "https://www.drupalpod.com",
+    "browser_action": {
+        "default_icon": "icons/DrupalPod-128x128.png",
+        "default_popup": "popup.html",
+        "default_title": "DrupalPod"
+    },
+    "permissions": [
+        "activeTab", "storage"
+    ],
+    "background": {
+        "scripts": ["scripts/background.js"],
+        "persistent": false
+    },
+    "options_ui": {
+        "page": "options.html",
+        "open_in_tab": false
+    },
+    "browser_specific_settings": {
+        "gecko": {
+            "strict_min_version": "89.0"
+        }
+    }
+}

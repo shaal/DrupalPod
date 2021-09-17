@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "DrupalPod helper extension",
     "description": "This extension set up a development environment for Drupal contributions",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "homepage_url": "https://www.drupalpod.com",
     "browser_action": {
         "default_icon": "icons/DrupalPod-128x128.png",

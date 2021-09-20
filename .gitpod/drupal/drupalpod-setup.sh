@@ -91,7 +91,7 @@ GITMODULESEND
     else
         # Use drupal/recommended-project composer template
         cd "${GITPOD_REPO_ROOT}" && cp .gitpod/drupal/templates/drupal-recommended-project-composer.json composer.json
-        
+
         # Add project source code as symlink (to repos/name_of_project)
         # double quotes explained - https://stackoverflow.com/a/1250279/5754049
         if [ -n "$DP_PROJECT_NAME" ]; then
@@ -166,6 +166,13 @@ GITMODULESEND
         # Enable Claro as default admin theme
         cd "${GITPOD_REPO_ROOT}" && ddev drush then claro
         cd "${GITPOD_REPO_ROOT}" && ddev drush config-set -y system.theme admin claro
+
+        # Enable Olivero as default theme
+        if [ -n "$DP_OLIVERO" ]; then
+            cd "${GITPOD_REPO_ROOT}" && \
+            ddev drush then olivero && \
+            ddev drush config-set -y system.theme default olivero
+        fi
     else
         # Wipe database from prebuild's Umami site install
         cd "${GITPOD_REPO_ROOT}" && ddev drush sql-drop -y

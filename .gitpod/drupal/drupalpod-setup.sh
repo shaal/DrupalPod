@@ -171,7 +171,7 @@ GITMODULESEND
         if [ -n "$DP_OLIVERO" ]; then
             cd "${GITPOD_REPO_ROOT}" && \
             ddev drush then olivero && \
-            ddev drush config-set -y system.theme default livero
+            ddev drush config-set -y system.theme default olivero
         fi
     else
         # Wipe database from prebuild's Umami site install

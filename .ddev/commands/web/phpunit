@@ -1,0 +1,7 @@
+#!/bin/bash
+
+## Description: Run PHPUnit
+## Usage: phpunit [flags] [args]
+## Example: "ddev phpunit --group big_pipe" or "ddev phpunit web/core/modules/action"
+
+php ./vendor/bin/phpunit -c web/core/phpunit.xml.dist $@

@@ -140,6 +140,13 @@ GITMODULESEND
     # Configure phpcs for drupal.
     vendor/bin/phpcs --config-set installed_paths vendor/drupal/coder/coder_sniffer
 
+    # Configure phpunit for drupal.
+    if [ -f web/core/phpunit.xml ]; then
+        cp web/core/phpunit.xml.dist web/core/phpunit.xml
+        sed -i 's#SIMPLETEST_BASE_URL" value="#SIMPLETEST_BASE_URL" value="http://drupalpod.ddev.site:8888#' web/core/phpunit.xml
+        sed -i 's#SIMPLETEST_DB" value="#SIMPLETEST_DB" value="mysql://db:db@db/db#' web/core/phpunit.xml
+    fi
+
     # Save a file to mark workspace already initiated, unless it was set up during 'init'
     if [ -z "$GITPOD_HEADLESS" ]; then
         touch /workspace/drupalpod_initiated.status

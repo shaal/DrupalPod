@@ -113,7 +113,7 @@ GITMODULESEND
     fi
 
     # Install phpunit/phpunit and phpspec/prophecy.
-    cd "${GITPOD_REPO_ROOT}" && ddev composer require --dev --no-update phpunit/phpunit --with-dependencies --no-progress
+    cd "${GITPOD_REPO_ROOT}" && ddev composer require --dev --no-update phpunit/phpunit --no-progress --no-suggest
     cd "${GITPOD_REPO_ROOT}" && ddev composer require --dev --no-update phpspec/prophecy-phpunit:^2 --no-progress --no-suggest
 
     # Install Drush

@@ -1,0 +1,13 @@
+#!/bin/bash
+
+## Description: Run Nightwatch
+## Usage: nightwatch [flags] [args]
+## Example: "ddev nightwatch" or "ddev nightwatch --tag core"
+
+# Installs dependencies if not already run.
+if [ ! -d /var/www/html/web/core/node_modules ]; then
+  yarn --cwd /var/www/html/web/core install
+fi
+
+yarn --cwd /var/www/html/web/core test:nightwatch $@
+

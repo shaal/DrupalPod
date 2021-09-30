@@ -9,7 +9,7 @@ mkdir -p /var/www/html/web/sites/simpletest/browser_output
 cd web
 
 BROWSERTEST_OUTPUT_DIRECTORY=/var/www/html/web/sites/simpletest/browser_output \
-BROWSERTEST_OUTPUT_BASE_URL=http://drupalpod.ddev.site \
+BROWSERTEST_OUTPUT_BASE_URL=http://localhost:8080 \
 SIMPLETEST_DB="mysql://db:db@db/db" \
 SIMPLETEST_BASE_URL="http://localhost" \
 php ../vendor/bin/phpunit -c core/phpunit.xml.dist $@

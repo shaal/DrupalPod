@@ -17,3 +17,4 @@ src/**/.vscode-test/
 
 # Ddev-Gitpod
 .ddev/docker-compose.host-docker-internal.yaml
+ready-made-envs/

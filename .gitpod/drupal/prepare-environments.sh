@@ -20,11 +20,12 @@ for d in "${allDrupalSupportedVersions[@]}"; do
   composer create-project drupal/recommended-project:"$d" "$WORK_DIR"/"$d"
 
   # Install Drush
-  cd "$WORK_DIR"/"$d" && composer require \
-  drush/drush:^10 \
-  drupal/admin_toolbar \
-  drupal/coder
-  drupal/devel
+  cd "$WORK_DIR"/"$d" && \
+    composer require \
+      drupal/admin_toolbar \
+      drush/drush:^10 \
+      drupal/coder \
+      drupal/devel
 
   # Create ddev project name without the tilde character ~
   cd "$WORK_DIR"/"$d" && ddev config --project-name latest-"${d/\~/}"

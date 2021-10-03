@@ -3,6 +3,8 @@ if [ -n "$DEBUG_DRUPALPOD" ] || [ -n "$GITPOD_HEADLESS" ]; then
     set -x
 fi
 
+echo "*** Rebuilding ready-made environments from scratch, this will take 25 minutes..."
+
 allProfiles=(minimal standard demo_umami)
 
 WORK_DIR="/workspace/ready-made-envs"

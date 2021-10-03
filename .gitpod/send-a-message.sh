@@ -3,8 +3,15 @@
 # Get current branch
 branch=$(cd "$GITPOD_REPO_ROOT" && git symbolic-ref --short -q HEAD)
 
-eval "$(gp env -e | grep DP_READY_MADE_ENVS_URL)"
-eval "$(gp env -e | grep IFTTT_TOKEN)"
+# Load env vars during prebuild using `gp env` command
+if [ -z "$DP_READY_MADE_ENVS_URL" ]; then
+    eval "$(gp env -e | grep DP_READY_MADE_ENVS_URL)"
+fi
+
+# Load env vars during prebuild using `gp env` command
+if [ -z "$IFTTT_TOKEN" ]; then
+    eval "$(gp env -e | grep IFTTT_TOKEN)"
+fi
 
 # Check the status of ready-made envs file
 # https://stackoverflow.com/a/53358157/5754049

@@ -3,6 +3,9 @@
 # Get current branch
 branch=$(cd "$GITPOD_REPO_ROOT" && git symbolic-ref --short -q HEAD)
 
+eval "$(gp env -e | grep DP_READY_MADE_ENVS_URL)"
+eval "$(gp env -e | grep IFTTT_TOKEN)"
+
 # Check the status of ready-made envs file
 # https://stackoverflow.com/a/53358157/5754049
 url_status=$(wget --server-response --spider --quiet "${DP_READY_MADE_ENVS_URL}" 2>&1 | awk 'NR==1{print $2}')

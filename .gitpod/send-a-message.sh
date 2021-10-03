@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-# Get current branch
-branch=$(cd "$GITPOD_REPO_ROOT" && git symbolic-ref --short -q HEAD)
+# Get current user and current branch
+branch_user="$GITPOD_GIT_USER_NAME, $(printenv GITPOD_WORKSPACE_CONTEXT | jq -r '.ref')"
 
 # Load env vars during prebuild using `gp env` command
 if [ -z "$DP_READY_MADE_ENVS_URL" ]; then
@@ -25,4 +25,4 @@ else
 fi
 
 # Send a message through IFTTT
-curl -X POST -H "Content-Type: application/json" -d "{\"value1\":\"$branch\",\"value2\":\"$message\"}" https://maker.ifttt.com/trigger/drupalpod_prebuild_initiated/with/key/"$IFTTT_TOKEN"
+curl -X POST -H "Content-Type: application/json" -d "{\"value1\":\"$branch_user\",\"value2\":\"$message\"}" https://maker.ifttt.com/trigger/drupalpod_prebuild_initiated/with/key/"$IFTTT_TOKEN"

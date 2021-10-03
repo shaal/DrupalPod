@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Get current user and current branch
-branch_user="$GITPOD_GIT_USER_NAME, $(printenv GITPOD_WORKSPACE_CONTEXT | jq -r '.ref')"
+branch_user="$GITPOD_GIT_USER_NAME, $(git branch --show-current)"
 
 # Load env vars during prebuild using `gp env` command
 if [ -z "$DP_READY_MADE_ENVS_URL" ]; then

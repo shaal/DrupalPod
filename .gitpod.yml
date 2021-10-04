@@ -9,7 +9,7 @@ tasks:
       .gitpod/download-ddev-images.sh
       .gitpod/ddev-in-gitpod-setup.sh
       .gitpod/drupal/prepare-environments.sh
-      .gitpod/drupal/drupalpod-setup.sh
+      .gitpod/drupal/set-default-environment.sh
     command: |
       .gitpod/ddev-in-gitpod-setup.sh
       .gitpod/env-setup.sh

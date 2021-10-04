@@ -30,7 +30,7 @@ for d in "${allDrupalSupportedVersions[@]}"; do
       drupal/devel
 
   # Create ddev project name without the tilde character ~
-  cd "$WORK_DIR"/"$d" && ddev config --project-name latest-"${d/\~/}"
+  cd "$WORK_DIR"/"$d" && ddev config --project-name drupalpod
 
   for p in "${allProfiles[@]}"; do
     echo Building drupal-"$d"-"$p"
@@ -51,7 +51,7 @@ for d in "${allDrupalSupportedVersions[@]}"; do
       ddev drush config-set -y system.theme admin claro
 
     echo *** Save a ddev snapshot
-    cd "$WORK_DIR"/"$d" && ddev snapshot -n drupal-"$d"-"$p"
+    cd "$WORK_DIR"/"$d" && ddev snapshot -n "$p"
   done
 done
 

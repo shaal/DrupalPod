@@ -29,9 +29,6 @@ for d in "${allDrupalSupportedVersions[@]}"; do
       drupal/coder \
       drupal/devel
 
-  #  Stop any existing 'drupalpod' ddev project
-  cd "$WORK_DIR"/"$d" && ddev stop --unlist drupalpod
-
   # Create ddev project name without the tilde character ~
   cd "$WORK_DIR"/"$d" && ddev config --project-name drupalpod
 
@@ -56,6 +53,10 @@ for d in "${allDrupalSupportedVersions[@]}"; do
     echo *** Save a ddev snapshot
     cd "$WORK_DIR"/"$d" && ddev snapshot -n "$p"
   done
+
+  #  Stop any existing 'drupalpod' ddev project
+  cd "$WORK_DIR"/"$d" && ddev stop --unlist drupalpod
+
 done
 
 # compress all environments into a file

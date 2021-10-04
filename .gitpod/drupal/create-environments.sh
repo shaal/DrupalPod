@@ -29,6 +29,9 @@ for d in "${allDrupalSupportedVersions[@]}"; do
       drupal/coder \
       drupal/devel
 
+  #  Stop any existing 'drupalpod' ddev project
+  cd "$WORK_DIR"/"$d" && ddev stop --unlist drupalpod
+
   # Create ddev project name without the tilde character ~
   cd "$WORK_DIR"/"$d" && ddev config --project-name drupalpod
 

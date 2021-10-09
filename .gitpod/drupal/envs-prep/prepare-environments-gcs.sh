@@ -23,5 +23,5 @@ if mc find gcs/drupalpod/ready-made-envs.tar.gz; then
     cd /workspace && tar xzvf ready-made-envs.tar.gz > /dev/null
 else
     # If it's not ready - rebuild environment from scratch
-    cd "$GITPOD_REPO_ROOT" && time .gitpod/drupal/create-environments.sh
+    cd "$GITPOD_REPO_ROOT" && time .gitpod/drupal/envs-prep/create-environments.sh
 fi

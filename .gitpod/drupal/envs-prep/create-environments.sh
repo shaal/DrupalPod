@@ -11,7 +11,7 @@ WORK_DIR="/workspace/ready-made-envs"
 mkdir -p "$WORK_DIR"
 
 # Read all Drupal supported versions from a file into an array
-readarray -t allDrupalSupportedVersions < "${GITPOD_REPO_ROOT}"/.gitpod/drupal/all-drupal-supported-versions.txt
+readarray -t allDrupalSupportedVersions < "${GITPOD_REPO_ROOT}"/.gitpod/drupal/envs-prep/all-drupal-supported-versions.txt
 
 # Run through each Drupal Supported Versions - a
 # Install minimal, standard and umami profiles

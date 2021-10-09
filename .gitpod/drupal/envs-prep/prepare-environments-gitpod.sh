@@ -25,5 +25,5 @@ if [ "$url_status" = 200 ]; then
 
 else
     # If it's not ready - rebuild environment from scratch
-    cd "$GITPOD_REPO_ROOT" && time .gitpod/drupal/create-environments.sh
+    cd "$GITPOD_REPO_ROOT" && time .gitpod/drupal/envs-prep/create-environments.sh
 fi

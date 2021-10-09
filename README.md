@@ -12,6 +12,9 @@ No computer is needed because it is all running in the cloud.
 
 * Install additional packages - `ddev composer`
 * Run Drush commands - `ddev drush <command>`
+* Run tests
+  * Nightwatch - `ddev nightwatch <arguments>`
+  * PHPUnit - `ddev phpunit <arguments>`
 * IDE in a browser
   * VScode (default)
   * PHPStorm - run `phpstorm`

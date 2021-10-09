@@ -66,6 +66,10 @@ cd /workspace &&
   tar czvf ready-made-envs.tar.gz ready-made-envs
 
 # Check if environments file exist in Google Cloud
+
+# Establish connection with Google Cloud through Minio client
+mc config host add gcs https://storage.googleapis.com "$DP_GOOGLE_ACCESS_KEY" "$DP_GOOGLE_SECRET"
+
 if ! mc find gcs/drupalpod/ready-made-envs.tar.gz; then
   # Upload files if it doesn't exist yet
   echo "*** Upload environments file to Google Cloud"

@@ -18,7 +18,7 @@ readarray -t allDrupalSupportedVersions < "${GITPOD_REPO_ROOT}"/.gitpod/drupal/a
 # Create a ddev snapshot
 
 for d in "${allDrupalSupportedVersions[@]}"; do
-  echo *** composer install
+  echo "*** composer install"
   composer create-project drupal/recommended-project:"$d" "$WORK_DIR"/"$d"
 
   # Install Drush
@@ -35,22 +35,22 @@ for d in "${allDrupalSupportedVersions[@]}"; do
   for p in "${allProfiles[@]}"; do
     echo Building drupal-"$d"-"$p"
 
-    echo *** Drush Site Install
+    echo "*** Drush Site Install"
     cd "$WORK_DIR"/"$d" && \
 
     ddev drush si -y --account-pass=admin --site-name="DrupalPod" "$p"
 
-    echo *** Adding extra modules
+    echo "*** Adding extra modules"
     cd "$WORK_DIR"/"$d"  && \
       ddev drush en -y admin_toolbar devel
 
     # Enable Claro as default admin theme
-    echo *** Enable Claro theme
+    echo "*** Enable Claro theme"
     cd "$WORK_DIR"/"$d" && \
       ddev drush then claro && \
       ddev drush config-set -y system.theme admin claro
 
-    echo *** Save a ddev snapshot
+    echo "*** Save a ddev snapshot"
     cd "$WORK_DIR"/"$d" && ddev snapshot -n "$p"
   done
 
@@ -59,6 +59,15 @@ for d in "${allDrupalSupportedVersions[@]}"; do
 
 done
 
+
 # compress all environments into a file
+echo "*** Compress all environments into a file"
 cd /workspace &&
   tar czvf ready-made-envs.tar.gz ready-made-envs
+
+# Check if environments file exist in Google Cloud
+if ! mc find gcs/drupalpod/ready-made-envs.tar.gz; then
+  # Upload files if it doesn't exist yet
+  echo "*** Upload environments file to Google Cloud"
+  mc cp /workspace/ready-made-envs.tar.gz gcs/drupalpod/ready-made-envs.tar.gz
+fi

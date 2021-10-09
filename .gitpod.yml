@@ -8,7 +8,7 @@ tasks:
       .gitpod/send-a-message.sh
       .gitpod/download-ddev-images.sh
       .gitpod/ddev-in-gitpod-setup.sh
-      .gitpod/drupal/prepare-environments.sh
+      .gitpod/drupal/prepare-environments-gcs.sh
       .gitpod/drupal/set-default-environment.sh
     command: |
       .gitpod/ddev-in-gitpod-setup.sh

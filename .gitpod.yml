@@ -5,7 +5,7 @@ image:
 # when starting a workspace all docker images are ready
 tasks:
   - init: |
-      .gitpod/utils/send-a-message.sh
+      .gitpod/utils/send-a-message-gcs.sh
       .gitpod/utils/download-ddev-images.sh
       .gitpod/utils/ddev-in-gitpod-setup.sh
       .gitpod/drupal/envs-prep/prepare-environments-gcs.sh

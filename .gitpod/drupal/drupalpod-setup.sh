@@ -41,7 +41,7 @@ if [ ! -f /workspace/drupalpod_initiated.status ] && [ -n "$DP_PROJECT_TYPE" ]; 
 
     mkdir -p "${GITPOD_REPO_ROOT}"/repos
 
-    # Clone project
+    # Clone selected project into /repos
     if [ -n "$DP_PROJECT_NAME" ]; then
         cd "${GITPOD_REPO_ROOT}"/repos && git clone https://git.drupalcode.org/project/"$DP_PROJECT_NAME"
         WORK_DIR="${GITPOD_REPO_ROOT}"/repos/$DP_PROJECT_NAME
@@ -74,11 +74,42 @@ GITMODULESEND
         cd "${WORK_DIR}" && git checkout "$DP_MODULE_VERSION"
     fi
 
-    # Remove default site that was installed during prebuild
-    rm -rf "${GITPOD_REPO_ROOT}"/web
-    rm -rf "${GITPOD_REPO_ROOT}"/vendor
-    rm -f "${GITPOD_REPO_ROOT}"/composer.json
-    rm -f "${GITPOD_REPO_ROOT}"/composer.lock
+    # If reinstall requested - remove default site that was installed during prebuild
+    if [ -n "$DP_REINSTALL" ]; then
+        rm -rf "${GITPOD_REPO_ROOT}"/web
+        rm -rf "${GITPOD_REPO_ROOT}"/vendor
+        rm -f "${GITPOD_REPO_ROOT}"/composer.json
+        rm -f "${GITPOD_REPO_ROOT}"/composer.lock
+
+        # TODO: Add here -
+        # else
+        # bring the ready-made-env of the correct Drupal Core version, and correct profile backup requested.
+        # (if same as default demo, keep default demo)
+        # (if profile should be 'none' - delete database)
+
+
+        # Create bash script from this php script -
+
+        # // Apply a patch to the scaffold index.php file.
+        # // See https://www.drupal.org/project/drupal/issues/3188703
+        # chdir('web');
+        # shell_exec('patch -p1 <../scaffold/scaffold-patch-index-php.patch');
+
+        # // Symlink the top-level vendor folder into the Drupal core git repo.
+        # chdir('..');
+        # static::makeSymlink('../../vendor', 'repos/drupal/vendor');
+
+        # // Create folders for running tests.
+        # if (!file_exists('web/sites/simpletest')) {
+        #   mkdir('web/sites/simpletest', 0777, TRUE);
+        # }
+        # if (!file_exists('web/sites/simpletest/browser_output')) {
+        #   mkdir('web/sites/simpletest/browser_output', 0777, TRUE);
+        # }
+
+        # // Symlink the simpletest folder into the Drupal core git repo.
+        # static::makeSymlink('../../../web/sites/simpletest', 'repos/drupal/sites/simpletest');
+    fi
 
     # Start ddev
     cd "${GITPOD_REPO_ROOT}" && ddev start
@@ -185,6 +216,9 @@ else
 fi
 
 if [ -z "$GITPOD_HEADLESS" ]; then
-    #Open preview browser
+    # Open preview browser
     cd "${GITPOD_REPO_ROOT}" && gp preview "$(gp url 8080)"
+
+    # Create a snapshot so the user can return to that point
+    cd "${GITPOD_REPO_ROOT}" && ddev snapshot
 fi

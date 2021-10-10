@@ -20,7 +20,7 @@ if mc find gcs/drupalpod/ready-made-envs.tar.gz; then
 
     # Extact the file
     echo "*** Extracting the environments (less than 1 minute)"
-    cd /workspace && time tar zxf ../ready-made-envs.tar.gz --checkpoint=.10000
+    cd /workspace && time tar zxf ready-made-envs.tar.gz --checkpoint=.10000
 else
     # If it's not ready - rebuild environment from scratch
     cd "$GITPOD_REPO_ROOT" && time .gitpod/drupal/envs-prep/create-environments.sh

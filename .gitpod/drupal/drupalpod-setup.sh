@@ -138,7 +138,8 @@ GITMODULESEND
             ddev composer require --no-update \
             "drupal/core-composer-scaffold:""$DP_CORE_VERSION" \
             "drupal/core-project-message:""$DP_CORE_VERSION" \
-            "drupal/core-recommended:""$DP_CORE_VERSION"
+            "drupal/core-recommended:""$DP_CORE_VERSION" \
+            "drupal/core-dev:""$DP_CORE_VERSION"
         fi
     fi
 

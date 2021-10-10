@@ -1,6 +1,6 @@
 # Drupal
-web/
-vendor/
+/web/
+/vendor/
 composer.json
 composer.lock
 .editorconfig

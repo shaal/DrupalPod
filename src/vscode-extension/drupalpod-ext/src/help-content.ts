@@ -82,6 +82,12 @@ body {
                 <li>Manually test an issue</li>
                 <li>Write a patch or contribute to an issue fork</li>
                 <li>Write an automated test</li>
+                <li>Run automated tests:
+                  <ul>
+                    <li>Nightwatch: <code>ddev nightwatch</code></li>
+                    <li>PHPUnit: <code>ddev phpunit</code></li>
+                  </ul>
+                </li>
               </ul>
             </li>
             <li>Find your <a href="https://www.drupal.org/community/contributor-guide/find-your-role">role</a> or <a href="https://www.drupal.org/community/contributor-guide/use-or-improve-your-skills">skill</a> to learn more about how to contribute, or ask if anyone needs some help on an issue in #contribute.</li>

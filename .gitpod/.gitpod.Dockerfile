@@ -25,5 +25,3 @@ RUN php -r "if (hash_file('sha384', 'composer-setup.php') === '906a84df04cea2aa7
 RUN sudo php composer-setup.php --install-dir /usr/bin --filename composer
 RUN php -r "unlink('composer-setup.php');"
 
-### Initiate a rebuild of Gitpod's image by updating this comment #5
-###

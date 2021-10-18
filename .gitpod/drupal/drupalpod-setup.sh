@@ -74,6 +74,11 @@ GITMODULESEND
         cd "${WORK_DIR}" && git checkout "$DP_MODULE_VERSION"
     fi
 
+    if [ -n "$DP_PROJECT_NAME" ]; then
+        # Add the project to composer (it will get the version according to the branch under `/repo/name_of_project`)
+        cd "${GITPOD_REPO_ROOT}" && ddev composer require drupal/"$DP_PROJECT_NAME"
+    fi
+
     # Restoring requested environment + profile installation
     if [ -n "$DP_CORE_VERSION" ]; then
         # Remove default site that was installed during prebuild
@@ -84,11 +89,6 @@ GITMODULESEND
 
          # Copying environment of requested Drupal version
         cd "$GITPOD_REPO_ROOT" && cp -rT ../ready-made-envs/"$DP_CORE_VERSION"-dev/. .
-    fi
-
-    if [ -n "$DP_PROJECT_NAME" ]; then
-        # Add the project (using '*' because the branch under `/repo/name_of_project` defines the version)
-        cd "${GITPOD_REPO_ROOT}" && ddev composer require --no-update drupal/"$DP_PROJECT_NAME":\"*\"
     fi
 
     if [ -n "$DP_PATCH_FILE" ]; then
@@ -180,10 +180,10 @@ GITMODULESEND
 
         # Enable the module or theme
         if [ "$DP_PROJECT_TYPE" == "project_module" ]; then
-            ddev drush en -y "$DP_PROJECT_NAME"
+            cd "${GITPOD_REPO_ROOT}" && ddev drush en -y "$DP_PROJECT_NAME"
         elif [ "$DP_PROJECT_TYPE" == "project_theme" ]; then
-            ddev drush then -y "$DP_PROJECT_NAME"
-            ddev drush config-set -y system.theme default "$DP_PROJECT_NAME"
+            cd "${GITPOD_REPO_ROOT}" && ddev drush then -y "$DP_PROJECT_NAME"
+            cd "${GITPOD_REPO_ROOT}" && ddev drush config-set -y system.theme default "$DP_PROJECT_NAME"
         fi
 
     else
@@ -196,6 +196,8 @@ GITMODULESEND
 
     # Save a file to mark workspace already initiated
     touch /workspace/drupalpod_initiated.status
+else
+    cd "${GITPOD_REPO_ROOT}" && ddev start
 fi
 
 preview

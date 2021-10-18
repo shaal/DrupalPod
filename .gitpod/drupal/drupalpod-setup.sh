@@ -74,11 +74,6 @@ GITMODULESEND
         cd "${WORK_DIR}" && git checkout "$DP_MODULE_VERSION"
     fi
 
-    if [ -n "$DP_PROJECT_NAME" ]; then
-        # Add the project to composer (it will get the version according to the branch under `/repo/name_of_project`)
-        cd "${GITPOD_REPO_ROOT}" && ddev composer require drupal/"$DP_PROJECT_NAME"
-    fi
-
     # Restoring requested environment + profile installation
     if [ -n "$DP_CORE_VERSION" ]; then
         # Remove default site that was installed during prebuild
@@ -105,13 +100,18 @@ GITMODULESEND
         ' '"'"' {"type": "path", "url": "'"repos/$DP_PROJECT_NAME"'", "options": {"symlink": true}} '"'"' '
     fi
 
-    if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
-        #  Clear vendor directory (so composer install will run)
-        cd "$GITPOD_REPO_ROOT" && rm -rf vendor/
+    if [ -n "$DP_PROJECT_NAME" ]; then
+        # Add the project to composer (it will get the version according to the branch under `/repo/name_of_project`)
+        cd "${GITPOD_REPO_ROOT}" && ddev composer require drupal/"$DP_PROJECT_NAME"
     fi
 
-    # Run composer install
-    cd "${GITPOD_REPO_ROOT}" && ddev composer install
+    # if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
+    #     #  Clear vendor directory (so composer install will run)
+    #     cd "$GITPOD_REPO_ROOT" && rm -rf vendor/
+    # fi
+
+    # # Run composer install
+    # cd "${GITPOD_REPO_ROOT}" && ddev composer install
 
     # Prepare special setup to work with Drupal core
     if [ "$DP_PROJECT_TYPE" == "project_core" ]; then

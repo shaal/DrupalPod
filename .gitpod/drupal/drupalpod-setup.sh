@@ -86,6 +86,13 @@ GITMODULESEND
         cd "$GITPOD_REPO_ROOT" && cp -rT ../ready-made-envs/"$DP_CORE_VERSION"-dev/. .
     fi
 
+    # Check if snapshot can be used (when no full reinstall needed)
+    # Run it before any other ddev command (to avoid ddev restart)
+    if [ -z "$DP_REINSTALL" ]; then
+        # Retrieve pre-made snapshot
+        cd "$GITPOD_REPO_ROOT" && ddev snapshot restore "$DP_INSTALL_PROFILE"
+    fi
+
     if [ -n "$DP_PATCH_FILE" ]; then
         echo Applying selected patch "$DP_PATCH_FILE"
         cd "${WORK_DIR}" && curl "$DP_PATCH_FILE" | patch -p1
@@ -150,11 +157,8 @@ GITMODULESEND
 
     if [ -n "$DP_INSTALL_PROFILE" ]; then
 
-        # Check if snapshot can be used, or a full site install required
-        if [ -z "$DP_REINSTALL" ]; then
-            # Retrieve pre-made snapshot
-            cd "$GITPOD_REPO_ROOT" && ddev snapshot restore "$DP_INSTALL_PROFILE"
-        else
+        # Check if a full site install is required
+        if [ -n "$DP_REINSTALL" ]; then
             # New site install
             ddev drush si -y --account-pass=admin --site-name="DrupalPod" "$DP_INSTALL_PROFILE"
 

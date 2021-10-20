@@ -31,6 +31,10 @@ vscode:
     # Help extensions.
     - drupal-mentoring.drupalpod-ext
 
+    # Bash extensions.
+    - timonwong.shellcheck
+    - rogalmic.bash-debug
+
 ports:
   # Used by ddev - direct-bind https port
   - port: 2222

@@ -125,17 +125,21 @@ GITMODULESEND
         cd "$GITPOD_REPO_ROOT"/web && \
         patch -p1 < "$GITPOD_REPO_ROOT"/src/composer-drupal-core-setup/scaffold-patch-index-php.patch
 
-        # repos/drupal/vendor -> ../../vendor
-        if [ ! -L "$GITPOD_REPO_ROOT"/repos/drupal/vendor ]; then
-            cd "$GITPOD_REPO_ROOT"/repos/drupal && \
-            ln -s ../../vendor .
-        fi
-
         # web/core -> ../repos/drupal/core
         if [ ! -L "$GITPOD_REPO_ROOT"/web/core ]; then
             cd "$GITPOD_REPO_ROOT"/web && \
             rm -rf core && \
             ln -s ../repos/drupal/core .
+        fi
+
+        # Due to the symlink above, Drupal website will load everything from
+        # /repos/drupal directory. To solve it, we're adding symlinks to /vendor
+        # and /web/sites/default directories.
+
+        # repos/drupal/vendor -> ../../vendor
+        if [ ! -L "$GITPOD_REPO_ROOT"/repos/drupal/vendor ]; then
+            cd "$GITPOD_REPO_ROOT"/repos/drupal && \
+            ln -s ../../vendor .
         fi
 
         # Create folders for running tests

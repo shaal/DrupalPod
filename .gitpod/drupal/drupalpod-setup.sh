@@ -43,7 +43,7 @@ if [ ! -f /workspace/drupalpod_initiated.status ] && [ -n "$DP_PROJECT_TYPE" ]; 
 
     # Clone selected project into /repos
     if [ -n "$DP_PROJECT_NAME" ]; then
-        cd "${GITPOD_REPO_ROOT}"/repos && git clone https://git.drupalcode.org/project/"$DP_PROJECT_NAME"
+        cd "${GITPOD_REPO_ROOT}"/repos && time git clone https://git.drupalcode.org/project/"$DP_PROJECT_NAME"
         WORK_DIR="${GITPOD_REPO_ROOT}"/repos/$DP_PROJECT_NAME
     fi
 
@@ -90,7 +90,7 @@ GITMODULESEND
     # Run it before any other ddev command (to avoid ddev restart)
     if [ -z "$DP_REINSTALL" ]; then
         # Retrieve pre-made snapshot
-        cd "$GITPOD_REPO_ROOT" && ddev snapshot restore "$DP_INSTALL_PROFILE"
+        cd "$GITPOD_REPO_ROOT" && time ddev snapshot restore "$DP_INSTALL_PROFILE"
     fi
 
     if [ -n "$DP_PATCH_FILE" ]; then
@@ -107,18 +107,16 @@ GITMODULESEND
         ' '"'"' {"type": "path", "url": "'"repos/$DP_PROJECT_NAME"'", "options": {"symlink": true}} '"'"' '
     fi
 
-    if [ -n "$DP_PROJECT_NAME" ]; then
-        # Add the project to composer (it will get the version according to the branch under `/repo/name_of_project`)
-        cd "${GITPOD_REPO_ROOT}" && ddev composer require drupal/"$DP_PROJECT_NAME"
+    if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
+        # Add a special path for core contributions
+        cd "${GITPOD_REPO_ROOT}" && \
+        ddev composer config \
+        repositories.drupal-core-contributions \
+        ' '"'"' {"type": "path", "url": "'"repos/drupal/core"'"} '"'"' '
+
+        # Removing the conflict part of composer
+        echo "$(cat composer.json | jq 'del(.conflict)' --indent 4)" > composer.json
     fi
-
-    # if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
-    #     #  Clear vendor directory (so composer install will run)
-    #     cd "$GITPOD_REPO_ROOT" && rm -rf vendor/
-    # fi
-
-    # # Run composer install
-    # cd "${GITPOD_REPO_ROOT}" && ddev composer install
 
     # Prepare special setup to work with Drupal core
     if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
@@ -150,6 +148,11 @@ GITMODULESEND
             cd "$GITPOD_REPO_ROOT"/repos/drupal/sites && \
             ln -s ../../../web/sites/simpletest .
         fi
+    fi
+
+    if [ -n "$DP_PROJECT_NAME" ]; then
+        # Add the project to composer (it will get the version according to the branch under `/repo/name_of_project`)
+        cd "${GITPOD_REPO_ROOT}" && ddev composer require drupal/"$DP_PROJECT_NAME"
     fi
 
     # Configure phpcs for drupal.

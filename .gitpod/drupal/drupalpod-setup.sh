@@ -134,7 +134,7 @@ GITMODULESEND
 
         # Due to the symlink above, Drupal website will load everything from
         # /repos/drupal directory. To solve it, we're adding symlinks to /vendor
-        # and /web/sites/default directories.
+        # directory and /web/sites/default/settings.php file.
 
         # repos/drupal/vendor -> ../../vendor
         if [ ! -L "$GITPOD_REPO_ROOT"/repos/drupal/vendor ]; then
@@ -144,9 +144,8 @@ GITMODULESEND
 
         # repos/drupal/sites/default -> ../../../web/sites/default
         if [ ! -L "$GITPOD_REPO_ROOT"/repos/drupal/sites/default ]; then
-            cd "$GITPOD_REPO_ROOT"/repos/drupal/sites && \
-            rm -rf default && \
-            ln -s ../../../web/sites/default .
+            cd "$GITPOD_REPO_ROOT"/repos/drupal/sites/default && \
+            ln -s ../../../../web/sites/default/settings.php .
         fi
 
         # Create folders for running tests
@@ -204,6 +203,8 @@ GITMODULESEND
             cd "${GITPOD_REPO_ROOT}" && ddev drush config-set -y system.theme default "$DP_PROJECT_NAME"
         fi
 
+        # Clear cache at end of process
+        # cd "${GITPOD_REPO_ROOT}" && time ddev drush cr
     else
         # Wipe database from prebuild's Umami site install
         cd "${GITPOD_REPO_ROOT}" && ddev drush sql-drop -y

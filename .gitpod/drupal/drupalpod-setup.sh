@@ -142,6 +142,13 @@ GITMODULESEND
             ln -s ../../vendor .
         fi
 
+        # repos/drupal/sites/default -> ../../../web/sites/default
+        if [ ! -L "$GITPOD_REPO_ROOT"/repos/drupal/sites/default ]; then
+            cd "$GITPOD_REPO_ROOT"/repos/drupal/sites && \
+            rm -rf default && \
+            ln -s ../../../web/sites/default .
+        fi
+
         # Create folders for running tests
         mkdir -p "$GITPOD_REPO_ROOT"/web/sites/simpletest
         mkdir -p "$GITPOD_REPO_ROOT"/web/sites/simpletest/browser_output

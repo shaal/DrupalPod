@@ -109,10 +109,10 @@ GITMODULESEND
 
     if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
         # Add a special path for core contributions
-        cd "${GITPOD_REPO_ROOT}" && \
-        ddev composer config \
-        repositories.drupal-core-contributions \
-        ' '"'"' {"type": "path", "url": "'"repos/drupal/core"'"} '"'"' '
+        # cd "${GITPOD_REPO_ROOT}" && \
+        # ddev composer config \
+        # repositories.drupal-core-contributions \
+        # ' '"'"' {"type": "path", "url": "'"repos/drupal/core"'"} '"'"' '
 
         # Removing the conflict part of composer
         echo "$(cat composer.json | jq 'del(.conflict)' --indent 4)" > composer.json

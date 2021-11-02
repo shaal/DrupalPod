@@ -203,8 +203,10 @@ GITMODULESEND
             cd "${GITPOD_REPO_ROOT}" && ddev drush config-set -y system.theme default "$DP_PROJECT_NAME"
         fi
 
-        # Clear cache at end of process
-        # cd "${GITPOD_REPO_ROOT}" && time ddev drush cr
+        # Clear cache at end of process, when working on Drupal core
+        if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
+            cd "${GITPOD_REPO_ROOT}" && time ddev drush cr
+        fi
     else
         # Wipe database from prebuild's Umami site install
         cd "${GITPOD_REPO_ROOT}" && ddev drush sql-drop -y

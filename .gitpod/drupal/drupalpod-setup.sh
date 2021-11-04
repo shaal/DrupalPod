@@ -103,7 +103,7 @@ GITMODULESEND
     if [ -n "$DP_PROJECT_NAME" ]; then
         cd "${GITPOD_REPO_ROOT}" && \
         ddev composer config \
-        repositories."$DP_PROJECT_NAME" \
+        repositories.drupal-core1 \
         ' '"'"' {"type": "path", "url": "'"repos/$DP_PROJECT_NAME"'", "options": {"symlink": true}} '"'"' '
     fi
 
@@ -112,7 +112,7 @@ GITMODULESEND
         # (Without it, /web/modules/contrib is not found by website)
         cd "${GITPOD_REPO_ROOT}" && \
         ddev composer config \
-        repositories.drupal-core-contributions \
+        repositories.drupal-core2 \
         ' '"'"' {"type": "path", "url": "'"repos/drupal/core"'"} '"'"' '
 
         # Removing the conflict part of composer
@@ -122,31 +122,10 @@ GITMODULESEND
     # Prepare special setup to work with Drupal core
     if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
 
-        # Set special setup for composer for working on Drupal core
-        cd "$GITPOD_REPO_ROOT"/web && \
-        patch -p1 < "$GITPOD_REPO_ROOT"/src/composer-drupal-core-setup/scaffold-patch-index-php.patch
-
-        # web/core -> ../repos/drupal/core
-        if [ ! -L "$GITPOD_REPO_ROOT"/web/core ]; then
-            cd "$GITPOD_REPO_ROOT"/web && \
-            rm -rf core && \
-            ln -s ../repos/drupal/core .
-        fi
-
-        # Due to the symlink above, Drupal website will load everything from
-        # /repos/drupal directory. To solve it, we're adding symlinks to /vendor
-        # directory and /web/sites/default/settings.php file.
-
         # repos/drupal/vendor -> ../../vendor
         if [ ! -L "$GITPOD_REPO_ROOT"/repos/drupal/vendor ]; then
             cd "$GITPOD_REPO_ROOT"/repos/drupal && \
             ln -s ../../vendor .
-        fi
-
-        # repos/drupal/sites/default -> ../../../web/sites/default
-        if [ ! -L "$GITPOD_REPO_ROOT"/repos/drupal/sites/default ]; then
-            cd "$GITPOD_REPO_ROOT"/repos/drupal/sites/default && \
-            ln -s ../../../../web/sites/default/settings.php .
         fi
 
         # Create folders for running tests
@@ -163,10 +142,22 @@ GITMODULESEND
 
     if [ -n "$DP_PROJECT_NAME" ]; then
         # Add the project to composer (it will get the version according to the branch under `/repo/name_of_project`)
-        cd "${GITPOD_REPO_ROOT}" && ddev composer require drupal/"$DP_PROJECT_NAME"
+        cd "${GITPOD_REPO_ROOT}" && time ddev composer require drupal/"$DP_PROJECT_NAME"
+    fi
+
+    # Patch index.php for Drupal core development (must run after composer require above)
+    if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
+
+        # Update composer.lock to allow composer's symlink of repos/drupal/core
+        cd "${GITPOD_REPO_ROOT}" && time ddev composer require drupal/core
+
+        # Set special setup for composer for working on Drupal core
+        cd "$GITPOD_REPO_ROOT"/web && \
+        patch -p1 < "$GITPOD_REPO_ROOT"/src/composer-drupal-core-setup/scaffold-patch-index-and-update-php.patch
     fi
 
     # Configure phpcs for drupal.
+    cd "$GITPOD_REPO_ROOT" && \
     vendor/bin/phpcs --config-set installed_paths vendor/drupal/coder/coder_sniffer
 
     if [ -n "$DP_INSTALL_PROFILE" ]; then
@@ -204,9 +195,10 @@ GITMODULESEND
             cd "${GITPOD_REPO_ROOT}" && ddev drush config-set -y system.theme default "$DP_PROJECT_NAME"
         fi
 
-        # Clear cache at end of process, when working on Drupal core
+        # When working on core, we should the database of profile installed, to
+        # catch up with latest version since Drupalpod's Prebuild ran
         if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
-            cd "${GITPOD_REPO_ROOT}" && time ddev drush cr
+            cd "${GITPOD_REPO_ROOT}" && time ddev drush updb -y
         fi
     else
         # Wipe database from prebuild's Umami site install

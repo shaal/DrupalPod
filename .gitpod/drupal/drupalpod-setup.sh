@@ -64,8 +64,8 @@ GITMODULESEND
     cp "${GITPOD_REPO_ROOT}"/.gitpod/drupal/git-exclude.template "${GITPOD_REPO_ROOT}"/.git/info/exclude
     cp "${GITPOD_REPO_ROOT}"/.gitpod/drupal/git-exclude.template "${GITPOD_REPO_ROOT}"/repos/drupal/.git/info/exclude
 
-    # Checkout specific branch only if there's issue_fork
-    if [ -n "$DP_ISSUE_FORK" ]; then
+    # Checkout specific branch only if there's issue_branch
+    if [ -n "$DP_ISSUE_BRANCH" ]; then
         # If branch already exist only run checkout,
         if cd "${WORK_DIR}" && git show-ref -q --heads "$DP_ISSUE_BRANCH"; then
             cd "${WORK_DIR}" && git checkout "$DP_ISSUE_BRANCH"

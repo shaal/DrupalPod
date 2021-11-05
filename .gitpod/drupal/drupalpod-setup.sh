@@ -39,13 +39,17 @@ if [ ! -f /workspace/drupalpod_initiated.status ] && [ -n "$DP_PROJECT_TYPE" ]; 
         echo "$SSHKey" >> ~/.ssh/known_hosts
     fi
 
-    mkdir -p "${GITPOD_REPO_ROOT}"/repos
-
-    # Clone selected project into /repos
-    if [ -n "$DP_PROJECT_NAME" ]; then
+    # Get the required repo ready
+    if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
+        # If core - get latest commit of required version
+        cd "${GITPOD_REPO_ROOT}"/repos/drupal && git pull origin "$DP_CORE_VERSION"
+    else
+        # If not core - clone selected project into /repos
         cd "${GITPOD_REPO_ROOT}"/repos && time git clone https://git.drupalcode.org/project/"$DP_PROJECT_NAME"
-        WORK_DIR="${GITPOD_REPO_ROOT}"/repos/$DP_PROJECT_NAME
     fi
+
+    # Set WORK_DIR
+    WORK_DIR="${GITPOD_REPO_ROOT}"/repos/$DP_PROJECT_NAME
 
     # Dynamically generate .gitmodules file
 cat <<GITMODULESEND > "${GITPOD_REPO_ROOT}"/.gitmodules

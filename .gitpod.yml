@@ -13,7 +13,7 @@ tasks:
       .gitpod/utils/ddev-in-gitpod-setup.sh
       .gitpod/utils/env-setup.sh
       .gitpod/drupal/ssh/01-check-private-ssh.sh
-      .gitpod/drupal/drupalpod-setup.sh
+      time .gitpod/drupal/drupalpod-setup.sh
 
 # VScode xdebug extension
 vscode:

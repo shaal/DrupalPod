@@ -42,7 +42,7 @@ if [ ! -f /workspace/drupalpod_initiated.status ] && [ -n "$DP_PROJECT_TYPE" ]; 
     # Get the required repo ready
     if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
         # If core - get latest commit of required version
-        cd "${GITPOD_REPO_ROOT}"/repos/drupal && git pull origin "$DP_CORE_VERSION"
+        cd "${GITPOD_REPO_ROOT}"/repos/drupal && git fetch origin && git checkout origin/"$DP_CORE_VERSION"
     else
         # If not core - clone selected project into /repos
         cd "${GITPOD_REPO_ROOT}"/repos && time git clone https://git.drupalcode.org/project/"$DP_PROJECT_NAME"

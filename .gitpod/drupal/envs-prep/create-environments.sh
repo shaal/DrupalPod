@@ -3,15 +3,22 @@ if [ -n "$DEBUG_DRUPALPOD" ] || [ -n "$GITPOD_HEADLESS" ]; then
     set -x
 fi
 
+# Prerequisite:
+# 1) Stop and unlist current ddev project:
+#   ddev stop --unlist drupalpod
+# 2) Empty existing ready-made-envs directory:
+#   rm -rf /workspace/ready-made-envs
+# 3) Manually delete or rename default envs backup file from Google cloud
 echo "*** Rebuilding ready-made environments from scratch, this will take 25 minutes..."
-
-allProfiles=(minimal standard demo_umami)
 
 WORK_DIR="/workspace/ready-made-envs"
 mkdir -p "$WORK_DIR"
 
 # Read all Drupal supported versions from a file into an array
 readarray -t allDrupalSupportedVersions < "${GITPOD_REPO_ROOT}"/.gitpod/drupal/envs-prep/all-drupal-supported-versions.txt
+
+# Array of all possible install profiles to be prepared during ready_made_envs
+allProfiles=(minimal standard demo_umami)
 
 # Run through each Drupal Supported Versions - a
 # Install minimal, standard and umami profiles

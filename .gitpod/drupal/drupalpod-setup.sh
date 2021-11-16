@@ -91,6 +91,10 @@ GITMODULESEND
 
         # Copying environment of requested Drupal version
         cd "$GITPOD_REPO_ROOT" && cp -rT ../ready-made-envs/"$DP_CORE_VERSION"-dev/. .
+
+        # Patch Drush to fix `drush cr` when core is symlinked
+        cd "$GITPOD_REPO_ROOT" && \
+        patch -p1 < "$GITPOD_REPO_ROOT"/src/composer-drupal-core-setup/drush-cr-when-core-is-symlinked.patch
     fi
 
     # Check if snapshot can be used (when no full reinstall needed)

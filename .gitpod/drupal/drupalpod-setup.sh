@@ -86,7 +86,10 @@ GITMODULESEND
         rm -f "${GITPOD_REPO_ROOT}"/composer.json
         rm -f "${GITPOD_REPO_ROOT}"/composer.lock
 
-         # Copying environment of requested Drupal version
+        # @todo: Change "~9.2" into a variable "$DEFAULT_DP_ENV", so it can be
+        #  compared before copying ready-made-env files in drupalpod-setup.sh
+
+        # Copying environment of requested Drupal version
         cd "$GITPOD_REPO_ROOT" && cp -rT ../ready-made-envs/"$DP_CORE_VERSION"-dev/. .
     fi
 

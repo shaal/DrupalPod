@@ -4,7 +4,12 @@ set -eu -o pipefail
 #     set -x
 # fi
 
-DOCKER_REPO=drupalpod/ddev-gitpod-base:20211105-"$(git branch --show-current)"
+# Run `docker login` to authenticate and push new images to docker hub
+# Update /.gitpod.yml with the new image file
+
+# "%Y-%m-%d"
+TODAY=$(date +"%Y%m%d")
+DOCKER_REPO=drupalpod/drupalpod-gitpod-base:"$TODAY"-"$(git branch --show-current)"
 
 echo "Pushing ${DOCKER_REPO}"
 set -x

@@ -91,6 +91,11 @@ GITMODULESEND
 
         # Copying environment of requested Drupal version
         cd "$GITPOD_REPO_ROOT" && cp -rT ../ready-made-envs/"$DP_CORE_VERSION"-dev/. .
+
+        # Get rid of ready-made-envs directory, to minimize storage of workspace
+        if [ -z "$DEBUG_DRUPALPOD" ]; then
+            rm -rf "$GITPOD_REPO_ROOT"/../ready-made-envs
+    fi
     fi
 
     # Check if snapshot can be used (when no full reinstall needed)

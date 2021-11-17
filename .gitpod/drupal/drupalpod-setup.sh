@@ -3,6 +3,9 @@ if [ -n "$DEBUG_DRUPALPOD" ] || [ -n "$GITPOD_HEADLESS" ]; then
     set -x
 fi
 
+# Measure the time it takes to go through the script
+script_start_time=$(date +%s)
+
 # Set the default setup during prebuild process
 if [ -n "$GITPOD_HEADLESS" ]; then
     DP_INSTALL_PROFILE='demo_umami'
@@ -95,7 +98,7 @@ GITMODULESEND
         # Get rid of ready-made-envs directory, to minimize storage of workspace
         if [ -z "$DEBUG_DRUPALPOD" ]; then
             rm -rf "$GITPOD_REPO_ROOT"/../ready-made-envs
-    fi
+        fi
     fi
 
     # Check if snapshot can be used (when no full reinstall needed)
@@ -224,6 +227,11 @@ GITMODULESEND
 
     # Save a file to mark workspace already initiated
     touch /workspace/drupalpod_initiated.status
+
+    # Finish measuring script time
+    script_end_time=$(date +%s)
+    runtime=$((script_end_time-script_start_time))
+    echo "drupalpod-setup.sh script ran for" $runtime "seconds"
 else
     cd "${GITPOD_REPO_ROOT}" && ddev start
 fi

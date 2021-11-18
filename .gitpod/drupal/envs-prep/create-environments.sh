@@ -8,7 +8,8 @@ fi
 #   ddev stop --unlist drupalpod
 # 2) Empty existing ready-made-envs directory:
 #   rm -rf /workspace/ready-made-envs
-# 3) Manually delete or rename default envs backup file from Google cloud
+# 3) Manually delete or rename default envs backup file from Google cloud:
+#   https://console.cloud.google.com/storage/browser
 echo "*** Rebuilding ready-made environments from scratch, this will take 25 minutes..."
 
 WORK_DIR="/workspace/ready-made-envs"
@@ -81,4 +82,8 @@ if ! mc find gcs/drupalpod/ready-made-envs.tar.gz; then
   # Upload files if it doesn't exist yet
   echo "*** Upload environments file to Google Cloud"
   mc cp /workspace/ready-made-envs.tar.gz gcs/drupalpod/ready-made-envs.tar.gz
+else
+  # File already exist, send a message to manually delete and then upload the file
+  echo "*** File was NOT uploaded to Google Cloud, please delete existing file and run:"
+  echo "mc cp /workspace/ready-made-envs.tar.gz gcs/drupalpod/ready-made-envs.tar.gz"
 fi

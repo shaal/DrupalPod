@@ -31,6 +31,38 @@ if [ -n "$DP_EXTRA_ADMIN_TOOLBAR" ]; then
     EXTRA_MODULES=1
 fi
 
+# @todo: Temporary fix until DrupalPod browser extension gets updated with correct supported versions
+# Supported versions:
+# 9.4.x-dev
+# 9.3.x-dev
+# 9.2.x-dev
+# ~9.2.0
+# ~9.1.0
+# 8.9.x-dev
+# ~8.9.0
+
+# Legacy DrupalPod browser extension versions:
+# 9.2.0
+# 8.9.x
+# 9.0.x
+# 9.1.x
+# 9.2.x
+# 9.3.x
+
+if [ "$DP_CORE_VERSION" == '9.2.0' ]; then
+    DP_CORE_VERSION='~9.2.0'
+elif [ "$DP_CORE_VERSION" == '8.9.x' ]; then
+    DP_CORE_VERSION='8.9.x-dev'
+elif [ "$DP_CORE_VERSION" == '9.0.x' ]; then
+    DP_CORE_VERSION='9.2.x-dev'
+elif [ "$DP_CORE_VERSION" == '9.1.x' ]; then
+    DP_CORE_VERSION='9.2.x-dev'
+elif [ "$DP_CORE_VERSION" == '9.2.x' ]; then
+    DP_CORE_VERSION='9.2.x-dev'
+elif [ "$DP_CORE_VERSION" == '9.3.x' ]; then
+    DP_CORE_VERSION='9.3.x-dev'
+fi
+
 # Skip setup if it already ran once and if no special setup is set by DrupalPod extension
 if [ ! -f /workspace/drupalpod_initiated.status ] && [ -n "$DP_PROJECT_TYPE" ]; then
 
@@ -47,7 +79,8 @@ if [ ! -f /workspace/drupalpod_initiated.status ] && [ -n "$DP_PROJECT_TYPE" ]; 
         # If core - get latest commit of required version
         cd "${GITPOD_REPO_ROOT}"/repos/drupal && git fetch origin && git checkout origin/"$DP_CORE_VERSION"
     else
-        # If not core - clone selected project into /repos
+        # If not core - clone selected project into /repos and remove drupal core
+        rm -rf "${GITPOD_REPO_ROOT}"/repos/drupal
         cd "${GITPOD_REPO_ROOT}"/repos && time git clone https://git.drupalcode.org/project/"$DP_PROJECT_NAME"
     fi
 
@@ -93,7 +126,7 @@ GITMODULESEND
         #  compared before copying ready-made-env files in drupalpod-setup.sh
 
         # Copying environment of requested Drupal version
-        cd "$GITPOD_REPO_ROOT" && cp -rT ../ready-made-envs/"$DP_CORE_VERSION"-dev/. .
+        cd "$GITPOD_REPO_ROOT" && cp -rT ../ready-made-envs/"$DP_CORE_VERSION"/. .
 
         # Get rid of ready-made-envs directory, to minimize storage of workspace
         if [ -z "$DEBUG_DRUPALPOD" ]; then

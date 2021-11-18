@@ -127,11 +127,6 @@ GITMODULESEND
 
         # Copying environment of requested Drupal version
         cd "$GITPOD_REPO_ROOT" && cp -rT ../ready-made-envs/"$DP_CORE_VERSION"/. .
-
-        # Get rid of ready-made-envs directory, to minimize storage of workspace
-        if [ -z "$DEBUG_DRUPALPOD" ]; then
-            rm -rf "$GITPOD_REPO_ROOT"/../ready-made-envs
-        fi
     fi
 
     # Check if snapshot can be used (when no full reinstall needed)
@@ -153,6 +148,9 @@ GITMODULESEND
         ddev composer config \
         repositories.drupal-core1 \
         ' '"'"' {"type": "path", "url": "'"repos/$DP_PROJECT_NAME"'", "options": {"symlink": true}} '"'"' '
+
+        cd "$GITPOD_REPO_ROOT" && \
+        ddev composer config minimum-stability dev
     fi
 
     # Prepare special setup to work with Drupal core
@@ -257,6 +255,8 @@ GITMODULESEND
 
     # Take a snapshot
     cd "${GITPOD_REPO_ROOT}" && ddev snapshot
+    echo "Your database state was locally saved, you can revert to it by typing:"
+    echo "ddev snapshot restore --latest"
 
     # Save a file to mark workspace already initiated
     touch /workspace/drupalpod_initiated.status
@@ -269,4 +269,10 @@ else
     cd "${GITPOD_REPO_ROOT}" && ddev start
 fi
 
+# Open internal preview browser with current website
 preview
+
+# Get rid of ready-made-envs directory, to minimize storage of workspace
+if [ -z "$DEBUG_DRUPALPOD" ]; then
+    rm -rf "$GITPOD_REPO_ROOT"/../ready-made-envs
+fi

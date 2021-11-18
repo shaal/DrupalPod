@@ -6,6 +6,9 @@ fi
 # Measure the time it takes to go through the script
 script_start_time=$(date +%s)
 
+# Load default envs
+xargs < "$GITPOD_REPO_ROOT"/.env
+
 # Set the default setup during prebuild process
 if [ -n "$GITPOD_HEADLESS" ]; then
     DP_INSTALL_PROFILE='demo_umami'
@@ -122,11 +125,11 @@ GITMODULESEND
         rm -f "${GITPOD_REPO_ROOT}"/composer.json
         rm -f "${GITPOD_REPO_ROOT}"/composer.lock
 
-        # @todo: Change "~9.2" into a variable "$DEFAULT_DP_ENV", so it can be
-        #  compared before copying ready-made-env files in drupalpod-setup.sh
-
-        # Copying environment of requested Drupal version
-        cd "$GITPOD_REPO_ROOT" && cp -rT ../ready-made-envs/"$DP_CORE_VERSION"/. .
+        # Copying the ready-made environment of requested Drupal core version
+        # $DP_DEFAULT_CORE version was already copied during prebuild, so it can be skipeped now
+        if [ "$DP_CORE_VERSION" != "$DP_DEFAULT_CORE" ]; then
+            cd "$GITPOD_REPO_ROOT" && cp -rT ../ready-made-envs/"$DP_CORE_VERSION"/. .
+        fi
     fi
 
     # Check if snapshot can be used (when no full reinstall needed)

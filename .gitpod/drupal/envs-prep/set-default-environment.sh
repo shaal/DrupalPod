@@ -4,7 +4,7 @@ if [ -n "$DEBUG_DRUPALPOD" ]; then
 fi
 
 # Load default envs
-xargs < "$GITPOD_REPO_ROOT"/.env
+export "$(grep -v '^#' "$GITPOD_REPO_ROOT"/.env | xargs -d '\n')"
 
 # Copying environment of default Drupal core version ($DP_DEFAULT_CORE from .env file)
 cd "$GITPOD_REPO_ROOT" && cp -rT ../ready-made-envs/"$DP_DEFAULT_CORE"/. .

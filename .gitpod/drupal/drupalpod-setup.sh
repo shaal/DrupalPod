@@ -7,7 +7,7 @@ fi
 script_start_time=$(date +%s)
 
 # Load default envs
-xargs < "$GITPOD_REPO_ROOT"/.env
+export "$(grep -v '^#' "$GITPOD_REPO_ROOT"/.env | xargs -d '\n')"
 
 # Set the default setup during prebuild process
 if [ -n "$GITPOD_HEADLESS" ]; then

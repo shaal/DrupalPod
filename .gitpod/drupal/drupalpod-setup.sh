@@ -118,7 +118,9 @@ GITMODULESEND
     fi
 
     # Restoring requested environment + profile installation
-    if [ -n "$DP_CORE_VERSION" ]; then
+    # $DP_DEFAULT_CORE version was already copied during prebuild,
+    # so it can be skipeped if it's the same as requested Drupal core version.
+    if [ "$DP_CORE_VERSION" != "$DP_DEFAULT_CORE" ]; then
         # Remove default site that was installed during prebuild
         rm -rf "${GITPOD_REPO_ROOT}"/web
         rm -rf "${GITPOD_REPO_ROOT}"/vendor
@@ -126,10 +128,7 @@ GITMODULESEND
         rm -f "${GITPOD_REPO_ROOT}"/composer.lock
 
         # Copying the ready-made environment of requested Drupal core version
-        # $DP_DEFAULT_CORE version was already copied during prebuild, so it can be skipeped now
-        if [ "$DP_CORE_VERSION" != "$DP_DEFAULT_CORE" ]; then
-            cd "$GITPOD_REPO_ROOT" && cp -rT ../ready-made-envs/"$DP_CORE_VERSION"/. .
-        fi
+        cd "$GITPOD_REPO_ROOT" && cp -rT ../ready-made-envs/"$DP_CORE_VERSION"/. .
     fi
 
     # Check if snapshot can be used (when no full reinstall needed)

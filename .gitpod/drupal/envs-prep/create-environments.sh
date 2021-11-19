@@ -4,13 +4,15 @@ if [ -n "$DEBUG_DRUPALPOD" ] || [ -n "$GITPOD_HEADLESS" ]; then
 fi
 
 # Prerequisite:
-# 1) Stop and unlist current ddev project:
-#   ddev stop --unlist drupalpod
-# 2) Empty existing ready-made-envs directory:
-#   rm -rf /workspace/ready-made-envs
-# 3) Manually delete or rename default envs backup file from Google cloud:
+# Manually delete or rename default envs backup file from Google cloud:
 #   https://console.cloud.google.com/storage/browser
 echo "*** Rebuilding ready-made environments from scratch, this will take 25 minutes..."
+
+# Stop and unlist current ddev project
+ddev stop --unlist drupalpod
+
+# Empty existing ready-made-envs directory
+rm -rf /workspace/ready-made-envs
 
 WORK_DIR="/workspace/ready-made-envs"
 mkdir -p "$WORK_DIR"
@@ -26,19 +28,20 @@ allProfiles=(minimal standard demo_umami)
 # Create a ddev snapshot
 
 for d in "${allDrupalSupportedVersions[@]}"; do
+  # Create ddev config
+  mkdir -p "$WORK_DIR"/"$d"
+  cd "$WORK_DIR"/"$d" && ddev config --docroot=web --create-docroot --project-type=drupal9 --project-name=drupalpod
+
   echo "*** composer install"
-  composer create-project drupal/recommended-project:"$d" "$WORK_DIR"/"$d"
+  cd "$WORK_DIR"/"$d" && ddev composer create -y --no-install drupal/recommended-project:"$d"
 
   # Install Drush
   cd "$WORK_DIR"/"$d" && \
-    composer require \
+    ddev composer require \
       drupal/admin_toolbar \
       drush/drush:^10 \
       drupal/coder \
       drupal/devel
-
-  # Create ddev project name without the tilde character ~
-  cd "$WORK_DIR"/"$d" && ddev config --project-name drupalpod
 
   for p in "${allProfiles[@]}"; do
     echo Building drupal-"$d"-"$p"

@@ -14,6 +14,3 @@ src/**/package-lock.json
 src/**/out/
 src/**/*.vsix
 src/**/.vscode-test/
-
-# Ddev-Gitpod
-.ddev/docker-compose.host-docker-internal.yaml

@@ -133,7 +133,7 @@ GITMODULESEND
 
     # Check if snapshot can be used (when no full reinstall needed)
     # Run it before any other ddev command (to avoid ddev restart)
-    if [ -z "$DP_REINSTALL" ]; then
+    if [ -z "$DP_REINSTALL" ] && [ ! "$DP_INSTALL_PROFILE" ]; then
         # Retrieve pre-made snapshot
         cd "$GITPOD_REPO_ROOT" && time ddev snapshot restore "$DP_INSTALL_PROFILE"
     fi
@@ -210,7 +210,7 @@ GITMODULESEND
     cd "$GITPOD_REPO_ROOT" && \
     vendor/bin/phpcs --config-set installed_paths vendor/drupal/coder/coder_sniffer
 
-    if [ -n "$DP_INSTALL_PROFILE" ]; then
+    if [ ! "$DP_INSTALL_PROFILE" ]; then
 
         # Check if a full site install is required
         if [ -n "$DP_REINSTALL" ]; then

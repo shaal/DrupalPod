@@ -7,3 +7,4 @@
 # Exclude the following directories for Drupal core development
 vendor
 sites/simpletest
+sites/default/settings.php

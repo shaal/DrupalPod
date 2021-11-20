@@ -13,7 +13,7 @@ mysql_version: ""
 nfs_mount_enabled: false
 mutagen_enabled: false
 use_dns_when_possible: true
-composer_version: ""
+composer_version: "2"
 web_environment: []
 
 # Key features of ddev's config.yaml:
@@ -62,10 +62,10 @@ web_environment: []
 # see https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 # For example Europe/Dublin or MST7MDT
 
-# composer_version: ""
-# if composer_version:"" it will use the current ddev default composer release.
+# composer_version: "2"
+# if composer_version:"2" it will use the most recent composer v2
 # It can also be set to "1", to get most recent composer v1
-# or "2" for most recent composer v2.
+# or "" for the default v2 created at release time.
 # It can be set to any existing specific composer version.
 # After first project 'ddev start' this will not be updated until it changes
 
@@ -95,7 +95,8 @@ web_environment: []
 # Currently only these containers are supported. Some containers can also be
 # omitted globally in the ~/.ddev/global_config.yaml. Note that if you omit
 # the "db" container, several standard features of ddev that access the
-# database container will be unusable.
+# database container will be unusable. In the global configuration it is also
+# possible to omit ddev-router, but not here.
 
 # nfs_mount_enabled: false
 # Great performance improvement but requires host configuration first.
@@ -178,7 +179,7 @@ web_environment: []
 # This is to enable experimentation with alternate file mounting strategies.
 # For advanced users only!
 
-# bind_on_all_interfaces: false
+# bind_all_interfaces: false
 # If true, host ports will be bound on all network interfaces,
 # not just the localhost interface. This means that ports
 # will be available on the local network if the host firewall

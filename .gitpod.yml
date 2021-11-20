@@ -1,16 +1,17 @@
-image:
-  file: .gitpod/.gitpod.Dockerfile
+image: drupalpod/drupalpod-gitpod-base:20211116-ready-made-envs
 
 # ddev and composer are running as part of the prebuild
 # when starting a workspace all docker images are ready
 tasks:
   - init: |
-      .gitpod/download-ddev-images.sh
-      .gitpod/ddev-in-gitpod-setup.sh
-      .gitpod/drupal/drupalpod-setup.sh
+      .gitpod/utils/send-a-message-gcs.sh
+      .gitpod/utils/download-ddev-images.sh
+      .gitpod/utils/ddev-in-gitpod-setup.sh
+      .gitpod/drupal/envs-prep/prepare-environments-gcs.sh
+      .gitpod/drupal/envs-prep/set-default-environment.sh
     command: |
-      .gitpod/ddev-in-gitpod-setup.sh
-      .gitpod/env-setup.sh
+      .gitpod/utils/ddev-in-gitpod-setup.sh
+      .gitpod/utils/env-setup.sh
       .gitpod/drupal/ssh/01-check-private-ssh.sh
       .gitpod/drupal/drupalpod-setup.sh
 
@@ -28,6 +29,10 @@ vscode:
 
     # Help extensions.
     - drupal-mentoring.drupalpod-ext
+
+    # Bash extensions.
+    - timonwong.shellcheck
+    - rogalmic.bash-debug
 
 ports:
   # Used by ddev - direct-bind https port

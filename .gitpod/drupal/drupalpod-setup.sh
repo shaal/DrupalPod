@@ -3,6 +3,12 @@ if [ -n "$DEBUG_DRUPALPOD" ] || [ -n "$GITPOD_HEADLESS" ]; then
     set -x
 fi
 
+# Measure the time it takes to go through the script
+script_start_time=$(date +%s)
+
+# Load default envs
+export "$(grep -v '^#' "$GITPOD_REPO_ROOT"/.env | xargs -d '\n')"
+
 # Set the default setup during prebuild process
 if [ -n "$GITPOD_HEADLESS" ]; then
     DP_INSTALL_PROFILE='demo_umami'
@@ -28,6 +34,38 @@ if [ -n "$DP_EXTRA_ADMIN_TOOLBAR" ]; then
     EXTRA_MODULES=1
 fi
 
+# @todo: Temporary fix until DrupalPod browser extension gets updated with correct supported versions
+# Supported versions:
+# 9.4.x-dev
+# 9.3.x-dev
+# 9.2.x-dev
+# ~9.2.0
+# ~9.1.0
+# 8.9.x-dev
+# ~8.9.0
+
+# Legacy DrupalPod browser extension versions:
+# 9.2.0
+# 8.9.x
+# 9.0.x
+# 9.1.x
+# 9.2.x
+# 9.3.x
+
+if [ "$DP_CORE_VERSION" == '9.2.0' ]; then
+    DP_CORE_VERSION='~9.2.0'
+elif [ "$DP_CORE_VERSION" == '8.9.x' ]; then
+    DP_CORE_VERSION='8.9.x-dev'
+elif [ "$DP_CORE_VERSION" == '9.0.x' ]; then
+    DP_CORE_VERSION='9.2.x-dev'
+elif [ "$DP_CORE_VERSION" == '9.1.x' ]; then
+    DP_CORE_VERSION='9.2.x-dev'
+elif [ "$DP_CORE_VERSION" == '9.2.x' ]; then
+    DP_CORE_VERSION='9.2.x-dev'
+elif [ "$DP_CORE_VERSION" == '9.3.x' ]; then
+    DP_CORE_VERSION='9.3.x-dev'
+fi
+
 # Skip setup if it already ran once and if no special setup is set by DrupalPod extension
 if [ ! -f /workspace/drupalpod_initiated.status ] && [ -n "$DP_PROJECT_TYPE" ]; then
 
@@ -39,13 +77,24 @@ if [ ! -f /workspace/drupalpod_initiated.status ] && [ -n "$DP_PROJECT_TYPE" ]; 
         echo "$SSHKey" >> ~/.ssh/known_hosts
     fi
 
-    mkdir -p "${GITPOD_REPO_ROOT}"/repos
+    # Ignore specific directories during Drupal core development
+    cp "${GITPOD_REPO_ROOT}"/.gitpod/drupal/templates/git-exclude.template "${GITPOD_REPO_ROOT}"/.git/info/exclude
 
-    # Clone project
-    if [ -n "$DP_PROJECT_NAME" ]; then
-        cd "${GITPOD_REPO_ROOT}"/repos && git clone https://git.drupalcode.org/project/"$DP_PROJECT_NAME"
-        WORK_DIR="${GITPOD_REPO_ROOT}"/repos/$DP_PROJECT_NAME
+    # Get the required repo ready
+    if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
+        # If core - get latest commit of required version
+        cd "${GITPOD_REPO_ROOT}"/repos/drupal && git fetch origin && git checkout origin/"$DP_CORE_VERSION"
+
+        # Ignore specific directories during Drupal core development
+        cp "${GITPOD_REPO_ROOT}"/.gitpod/drupal/templates/git-exclude.template "${GITPOD_REPO_ROOT}"/repos/drupal/.git/info/exclude
+    else
+        # If not core - clone selected project into /repos and remove drupal core
+        rm -rf "${GITPOD_REPO_ROOT}"/repos/drupal
+        cd "${GITPOD_REPO_ROOT}"/repos && time git clone https://git.drupalcode.org/project/"$DP_PROJECT_NAME"
     fi
+
+    # Set WORK_DIR
+    WORK_DIR="${GITPOD_REPO_ROOT}"/repos/$DP_PROJECT_NAME
 
     # Dynamically generate .gitmodules file
 cat <<GITMODULESEND > "${GITPOD_REPO_ROOT}"/.gitmodules
@@ -56,12 +105,8 @@ cat <<GITMODULESEND > "${GITPOD_REPO_ROOT}"/.gitmodules
     ignore = dirty
 GITMODULESEND
 
-    # Ignore specific directories during Drupal core development
-    cp "${GITPOD_REPO_ROOT}"/.gitpod/drupal/git-exclude.template "${GITPOD_REPO_ROOT}"/.git/info/exclude
-    cp "${GITPOD_REPO_ROOT}"/.gitpod/drupal/git-exclude.template "${GITPOD_REPO_ROOT}"/repos/drupal/.git/info/exclude
-
-    # Checkout specific branch only if there's issue_fork
-    if [ -n "$DP_ISSUE_FORK" ]; then
+    # Checkout specific branch only if there's issue_branch
+    if [ -n "$DP_ISSUE_BRANCH" ]; then
         # If branch already exist only run checkout,
         if cd "${WORK_DIR}" && git show-ref -q --heads "$DP_ISSUE_BRANCH"; then
             cd "${WORK_DIR}" && git checkout "$DP_ISSUE_BRANCH"
@@ -74,61 +119,25 @@ GITMODULESEND
         cd "${WORK_DIR}" && git checkout "$DP_MODULE_VERSION"
     fi
 
-    # Remove default site that was installed during prebuild
-    rm -rf "${GITPOD_REPO_ROOT}"/web
-    rm -rf "${GITPOD_REPO_ROOT}"/vendor
-    rm -f "${GITPOD_REPO_ROOT}"/composer.json
-    rm -f "${GITPOD_REPO_ROOT}"/composer.lock
+    # Restoring requested environment + profile installation
+    # $DP_DEFAULT_CORE version was already copied during prebuild,
+    # so it can be skipeped if it's the same as requested Drupal core version.
+    if [ "$DP_CORE_VERSION" != "$DP_DEFAULT_CORE" ]; then
+        # Remove default site that was installed during prebuild
+        rm -rf "${GITPOD_REPO_ROOT}"/web
+        rm -rf "${GITPOD_REPO_ROOT}"/vendor
+        rm -f "${GITPOD_REPO_ROOT}"/composer.json
+        rm -f "${GITPOD_REPO_ROOT}"/composer.lock
 
-    # Start ddev
-    cd "${GITPOD_REPO_ROOT}" && ddev start
-
-    # If project type is core, run composer install
-    if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
-        cd "${GITPOD_REPO_ROOT}" && cp .gitpod/drupal/templates/drupal-core-development-composer.json composer.json
-        cd "${GITPOD_REPO_ROOT}" && ddev composer run post-root-package-install
-    # Otherwise, change Drupal core version
-    else
-        # Use drupal/recommended-project composer template
-        cd "${GITPOD_REPO_ROOT}" && cp .gitpod/drupal/templates/drupal-recommended-project-composer.json composer.json
-
-        # Add project source code as symlink (to repos/name_of_project)
-        # double quotes explained - https://stackoverflow.com/a/1250279/5754049
-        if [ -n "$DP_PROJECT_NAME" ]; then
-            cd "${GITPOD_REPO_ROOT}" && \
-            ddev composer config \
-            repositories."$DP_PROJECT_NAME" \
-            ' '"'"' {"type": "path", "url": "'"repos/$DP_PROJECT_NAME"'", "options": {"symlink": true}} '"'"' '
-        fi
-
-        # Check if a specific Drupal core version should be installed
-        if [ -n "$DP_CORE_VERSION" ]; then
-            cd "${GITPOD_REPO_ROOT}" && \
-            ddev composer require --no-update \
-            "drupal/core-composer-scaffold:""$DP_CORE_VERSION" \
-            "drupal/core-project-message:""$DP_CORE_VERSION" \
-            "drupal/core-recommended:""$DP_CORE_VERSION" \
-            "drupal/core-dev:""$DP_CORE_VERSION"
-        fi
+        # Copying the ready-made environment of requested Drupal core version
+        cd "$GITPOD_REPO_ROOT" && cp -rT ../ready-made-envs/"$DP_CORE_VERSION"/. .
     fi
 
-    # Install Drush
-    cd "${GITPOD_REPO_ROOT}" && ddev composer require --no-update drush/drush:^10
-
-    # Install Drupal coder and php_codesniffer.
-    cd "${GITPOD_REPO_ROOT}" && ddev composer require --no-update drupal/coder
-
-    # Check if any additional modules should be installed
-    if [ -n "$EXTRA_MODULES" ]; then
-        cd "${GITPOD_REPO_ROOT}" && \
-        ddev composer require --no-update \
-        "$DEVEL_PACKAGE" \
-        "$ADMIN_TOOLBAR_PACKAGE"
-    fi
-
-    if [ -n "$DP_PROJECT_NAME" ]; then
-        # Add the project (using '*' because the branch under `/repo/name_of_project` defines the version)
-        cd "${GITPOD_REPO_ROOT}" && ddev composer require --no-update drupal/"$DP_PROJECT_NAME":\"*\"
+    # Check if snapshot can be used (when no full reinstall needed)
+    # Run it before any other ddev command (to avoid ddev restart)
+    if [ ! "$DP_REINSTALL" ] && [ "$DP_INSTALL_PROFILE" != "''" ]; then
+        # Retrieve pre-made snapshot
+        cd "$GITPOD_REPO_ROOT" && time ddev snapshot restore "$DP_INSTALL_PROFILE"
     fi
 
     if [ -n "$DP_PATCH_FILE" ]; then
@@ -136,56 +145,138 @@ GITMODULESEND
         cd "${WORK_DIR}" && curl "$DP_PATCH_FILE" | patch -p1
     fi
 
-    cd "${GITPOD_REPO_ROOT}" && ddev composer install
+    # Add project source code as symlink (to repos/name_of_project)
+    # double quotes explained - https://stackoverflow.com/a/1250279/5754049
+    if [ -n "$DP_PROJECT_NAME" ]; then
+        cd "${GITPOD_REPO_ROOT}" && \
+        ddev composer config \
+        repositories.drupal-core1 \
+        ' '"'"' {"type": "path", "url": "'"repos/$DP_PROJECT_NAME"'", "options": {"symlink": true}} '"'"' '
 
-    # Configure phpcs for drupal.
-    vendor/bin/phpcs --config-set installed_paths vendor/drupal/coder/coder_sniffer
-
-    # Save a file to mark workspace already initiated, unless it was set up during 'init'
-    if [ -z "$GITPOD_HEADLESS" ]; then
-        touch /workspace/drupalpod_initiated.status
+        cd "$GITPOD_REPO_ROOT" && \
+        ddev composer config minimum-stability dev
     fi
 
-    # Run site install using a Drupal profile if one was defined
-    if [ -n "$DP_INSTALL_PROFILE" ] && [ "$DP_INSTALL_PROFILE" != "''" ]; then
-        ddev drush si -y --account-pass=admin --site-name="DrupalPod" "$DP_INSTALL_PROFILE"
-        # Enable the module
+    # Prepare special setup to work with Drupal core
+    if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
+        # Add a special path when working on core contributions
+        # (Without it, /web/modules/contrib is not found by website)
+        cd "${GITPOD_REPO_ROOT}" && \
+        ddev composer config \
+        repositories.drupal-core2 \
+        ' '"'"' {"type": "path", "url": "'"repos/drupal/core"'"} '"'"' '
+
+        # Patch Drush to fix `drush cr` when core is symlinked
+        # https://github.com/drush-ops/drush/pull/4713
+        cd "$GITPOD_REPO_ROOT" && \
+        patch -p1 < "$GITPOD_REPO_ROOT"/src/composer-drupal-core-setup/drush-cr-when-core-is-symlinked.patch
+
+        # Removing the conflict part of composer
+        echo "$(cat composer.json | jq 'del(.conflict)' --indent 4)" > composer.json
+
+        # repos/drupal/vendor -> ../../vendor
+        if [ ! -L "$GITPOD_REPO_ROOT"/repos/drupal/vendor ]; then
+            cd "$GITPOD_REPO_ROOT"/repos/drupal && \
+            ln -s ../../vendor .
+        fi
+
+        # Create folders for running tests
+        mkdir -p "$GITPOD_REPO_ROOT"/web/sites/simpletest
+        mkdir -p "$GITPOD_REPO_ROOT"/web/sites/simpletest/browser_output
+
+        # Symlink the simpletest folder into the Drupal core git repo.
+        # repos/drupal/sites/simpletest -> ../../../web/sites/simpletest
+        if [ ! -L "$GITPOD_REPO_ROOT"/repos/drupal/sites/simpletest ]; then
+            cd "$GITPOD_REPO_ROOT"/repos/drupal/sites && \
+            ln -s ../../../web/sites/simpletest .
+        fi
+    fi
+
+    if [ -n "$DP_PROJECT_NAME" ]; then
+        # Add the project to composer (it will get the version according to the branch under `/repo/name_of_project`)
+        cd "${GITPOD_REPO_ROOT}" && time ddev composer require drupal/"$DP_PROJECT_NAME"
+    fi
+
+    # Patch index.php for Drupal core development (must run after composer require above)
+    if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
+
+        # Update composer.lock to allow composer's symlink of repos/drupal/core
+        cd "${GITPOD_REPO_ROOT}" && time ddev composer require drupal/core
+
+        # Set special setup for composer for working on Drupal core
+        cd "$GITPOD_REPO_ROOT"/web && \
+        patch -p1 < "$GITPOD_REPO_ROOT"/src/composer-drupal-core-setup/scaffold-patch-index-and-update-php.patch
+    fi
+
+    # Configure phpcs for drupal.
+    cd "$GITPOD_REPO_ROOT" && \
+    vendor/bin/phpcs --config-set installed_paths vendor/drupal/coder/coder_sniffer
+
+    if [ "$DP_INSTALL_PROFILE" != "''" ]; then
+
+        # Check if a full site install is required
+        if [ -n "$DP_REINSTALL" ]; then
+            # New site install
+            ddev drush si -y --account-pass=admin --site-name="DrupalPod" "$DP_INSTALL_PROFILE"
+
+            # Enabale extra modules
+            if [ -n "$EXTRA_MODULES" ]; then
+                cd "${GITPOD_REPO_ROOT}" && \
+                ddev drush en -y \
+                "$DEVEL_NAME" \
+                "$ADMIN_TOOLBAR_NAME"
+            fi
+
+            # Enable Claro as default admin theme
+            cd "${GITPOD_REPO_ROOT}" && ddev drush then claro
+            cd "${GITPOD_REPO_ROOT}" && ddev drush config-set -y system.theme admin claro
+
+            # Enable Olivero as default theme
+            if [ -n "$DP_OLIVERO" ]; then
+                cd "${GITPOD_REPO_ROOT}" && \
+                ddev drush then olivero && \
+                ddev drush config-set -y system.theme default olivero
+            fi
+        fi
+
+        # Enable the module or theme
         if [ "$DP_PROJECT_TYPE" == "project_module" ]; then
-            ddev drush en -y "$DP_PROJECT_NAME"
+            cd "${GITPOD_REPO_ROOT}" && ddev drush en -y "$DP_PROJECT_NAME"
         elif [ "$DP_PROJECT_TYPE" == "project_theme" ]; then
-            ddev drush then -y "$DP_PROJECT_NAME"
+            cd "${GITPOD_REPO_ROOT}" && ddev drush then -y "$DP_PROJECT_NAME"
+            cd "${GITPOD_REPO_ROOT}" && ddev drush config-set -y system.theme default "$DP_PROJECT_NAME"
         fi
 
-        # Enabale extra modules
-        if [ -n "$EXTRA_MODULES" ]; then
-            cd "${GITPOD_REPO_ROOT}" && \
-            ddev drush en -y \
-            "$DEVEL_NAME" \
-            "$ADMIN_TOOLBAR_NAME"
-        fi
-
-        # Enable Claro as default admin theme
-        cd "${GITPOD_REPO_ROOT}" && ddev drush then claro
-        cd "${GITPOD_REPO_ROOT}" && ddev drush config-set -y system.theme admin claro
-
-        # Enable Olivero as default theme
-        if [ -n "$DP_OLIVERO" ]; then
-            cd "${GITPOD_REPO_ROOT}" && \
-            ddev drush then olivero && \
-            ddev drush config-set -y system.theme default olivero
+        # When working on core, we should the database of profile installed, to
+        # catch up with latest version since Drupalpod's Prebuild ran
+        if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
+            cd "${GITPOD_REPO_ROOT}" && time ddev drush updb -y
         fi
     else
         # Wipe database from prebuild's Umami site install
         cd "${GITPOD_REPO_ROOT}" && ddev drush sql-drop -y
     fi
 
-    # Update HTTP repo to SSH repo
-    "${GITPOD_REPO_ROOT}"/.gitpod/drupal/ssh/05-set-repo-as-ssh.sh
+    # Take a snapshot
+    cd "${GITPOD_REPO_ROOT}" && ddev snapshot
+    echo "Your database state was locally saved, you can revert to it by typing:"
+    echo "ddev snapshot restore --latest"
+
+    # Save a file to mark workspace already initiated
+    touch /workspace/drupalpod_initiated.status
+
+    # Finish measuring script time
+    script_end_time=$(date +%s)
+    runtime=$((script_end_time-script_start_time))
+    echo "drupalpod-setup.sh script ran for" $runtime "seconds"
 else
     cd "${GITPOD_REPO_ROOT}" && ddev start
 fi
 
-if [ -z "$GITPOD_HEADLESS" ]; then
-    #Open preview browser
-    cd "${GITPOD_REPO_ROOT}" && gp preview "$(gp url 8080)"
+# Open internal preview browser with current website
+preview
+
+# Get rid of ready-made-envs directory, to minimize storage of workspace
+if [ -z "$DEBUG_DRUPALPOD" ]; then
+    rm -rf "$GITPOD_REPO_ROOT"/../ready-made-envs
 fi

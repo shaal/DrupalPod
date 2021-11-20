@@ -32,6 +32,12 @@ for d in "${allDrupalSupportedVersions[@]}"; do
   mkdir -p "$WORK_DIR"/"$d"
   cd "$WORK_DIR"/"$d" && ddev config --docroot=web --create-docroot --project-type=drupal9 --project-name=drupalpod
 
+  # Check that if version ends with 'x'
+  case $d in *.x)
+    echo "Yes $d";
+    echo "No $d";
+  esac
+
   echo "*** composer install"
   cd "$WORK_DIR"/"$d" && ddev composer create -y --no-install drupal/recommended-project:"$d"
 

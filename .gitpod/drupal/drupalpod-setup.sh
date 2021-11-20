@@ -36,13 +36,13 @@ fi
 
 # @todo: Temporary fix until DrupalPod browser extension gets updated with correct supported versions
 # Supported versions:
-# 9.4.x-dev
-# 9.3.x-dev
-# 9.2.x-dev
-# ~9.2.0
-# ~9.1.0
-# 8.9.x-dev
-# ~8.9.0
+# 9.4.x
+# 9.3.x
+# 9.2.x
+# 9.2.0
+# 9.1.0
+# 8.9.x
+# 8.9.0
 
 # Legacy DrupalPod browser extension versions:
 # 9.2.0
@@ -52,19 +52,13 @@ fi
 # 9.2.x
 # 9.3.x
 
-if [ "$DP_CORE_VERSION" == '9.2.0' ]; then
-    DP_CORE_VERSION='~9.2.0'
-elif [ "$DP_CORE_VERSION" == '8.9.x' ]; then
-    DP_CORE_VERSION='8.9.x-dev'
-elif [ "$DP_CORE_VERSION" == '9.0.x' ]; then
-    DP_CORE_VERSION='9.2.x-dev'
+if [ "$DP_CORE_VERSION" == '9.0.x' ]; then
+    DP_CORE_VERSION='9.2.x'
 elif [ "$DP_CORE_VERSION" == '9.1.x' ]; then
-    DP_CORE_VERSION='9.2.x-dev'
-elif [ "$DP_CORE_VERSION" == '9.2.x' ]; then
-    DP_CORE_VERSION='9.2.x-dev'
-elif [ "$DP_CORE_VERSION" == '9.3.x' ]; then
-    DP_CORE_VERSION='9.3.x-dev'
+    DP_CORE_VERSION='9.2.x'
 fi
+
+# When end with x, add `-dev` as suffix, otherwise it's stabe prefix with `~`
 
 # Skip setup if it already ran once and if no special setup is set by DrupalPod extension
 if [ ! -f /workspace/drupalpod_initiated.status ] && [ -n "$DP_PROJECT_TYPE" ]; then
@@ -129,8 +123,26 @@ GITMODULESEND
         rm -f "${GITPOD_REPO_ROOT}"/composer.json
         rm -f "${GITPOD_REPO_ROOT}"/composer.lock
 
-        # Copying the ready-made environment of requested Drupal core version
-        cd "$GITPOD_REPO_ROOT" && cp -rT ../ready-made-envs/"$DP_CORE_VERSION"/. .
+
+        # Check if DP_CORE_VERSION is in the array of ready-made-versions
+
+        # Read all Drupal supported versions from a file into an array
+        readarray -t allDrupalSupportedVersions < "${GITPOD_REPO_ROOT}"/.gitpod/drupal/envs-prep/all-drupal-supported-versions.txt
+
+        for d in "${allDrupalSupportedVersions[@]}"; do
+            if [ "$d" == "$DP_CORE_VERSION" ]; then
+                ready_made_env_exist=1
+            fi
+        done
+
+        if [ "$ready_made_env_exist" ]; then
+            # Copying the ready-made environment of requested Drupal core version
+            cd "$GITPOD_REPO_ROOT" && cp -rT ../ready-made-envs/"$DP_CORE_VERSION"/. .
+        else
+        # @todo:
+        #  If not, run composer create-proejct -
+            cd "$GITPOD_REPO_ROOT" && ddev composer create -y --no-install drupal/recommended-project:"$DP_CORE_VERSION"
+        fi
     fi
 
     # Check if snapshot can be used (when no full reinstall needed)

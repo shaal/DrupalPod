@@ -77,10 +77,16 @@ if [ ! -f /workspace/drupalpod_initiated.status ] && [ -n "$DP_PROJECT_TYPE" ]; 
         echo "$SSHKey" >> ~/.ssh/known_hosts
     fi
 
+    # Ignore specific directories during Drupal core development
+    cp "${GITPOD_REPO_ROOT}"/.gitpod/drupal/git-exclude.template "${GITPOD_REPO_ROOT}"/.git/info/exclude
+
     # Get the required repo ready
     if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
         # If core - get latest commit of required version
         cd "${GITPOD_REPO_ROOT}"/repos/drupal && git fetch origin && git checkout origin/"$DP_CORE_VERSION"
+
+        # Ignore specific directories during Drupal core development
+        cp "${GITPOD_REPO_ROOT}"/.gitpod/drupal/git-exclude.template "${GITPOD_REPO_ROOT}"/repos/drupal/.git/info/exclude
     else
         # If not core - clone selected project into /repos and remove drupal core
         rm -rf "${GITPOD_REPO_ROOT}"/repos/drupal
@@ -98,10 +104,6 @@ cat <<GITMODULESEND > "${GITPOD_REPO_ROOT}"/.gitmodules
     url = https://git.drupalcode.org/project/$DP_PROJECT_NAME.git
     ignore = dirty
 GITMODULESEND
-
-    # Ignore specific directories during Drupal core development
-    cp "${GITPOD_REPO_ROOT}"/.gitpod/drupal/git-exclude.template "${GITPOD_REPO_ROOT}"/.git/info/exclude
-    cp "${GITPOD_REPO_ROOT}"/.gitpod/drupal/git-exclude.template "${GITPOD_REPO_ROOT}"/repos/drupal/.git/info/exclude
 
     # Checkout specific branch only if there's issue_branch
     if [ -n "$DP_ISSUE_BRANCH" ]; then

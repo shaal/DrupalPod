@@ -32,14 +32,19 @@ for d in "${allDrupalSupportedVersions[@]}"; do
   mkdir -p "$WORK_DIR"/"$d"
   cd "$WORK_DIR"/"$d" && ddev config --docroot=web --create-docroot --project-type=drupal9 --project-name=drupalpod
 
-  # Check that if version ends with 'x'
-  case $d in *.x)
-    echo "Yes $d";
-    echo "No $d";
+  # For versions end with x - add `-dev` suffix (ie. 9.3.x-dev)
+  # For versions without x - add `~` prefix (ie. ~9.2.0)
+  case $d in
+    *.x)
+    install_version="$d"-dev
+    ;;
+    *)
+    install_version=~"$d"
+    ;;
   esac
 
   echo "*** composer install"
-  cd "$WORK_DIR"/"$d" && ddev composer create -y --no-install drupal/recommended-project:"$d"
+  cd "$WORK_DIR"/"$d" && ddev composer create -y --no-install drupal/recommended-project:"$install_version"
 
   # Install Drush
   cd "$WORK_DIR"/"$d" && \

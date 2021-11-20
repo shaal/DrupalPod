@@ -58,8 +58,6 @@ elif [ "$DP_CORE_VERSION" == '9.1.x' ]; then
     DP_CORE_VERSION='9.2.x'
 fi
 
-# When end with x, add `-dev` as suffix, otherwise it's stabe prefix with `~`
-
 # Skip setup if it already ran once and if no special setup is set by DrupalPod extension
 if [ ! -f /workspace/drupalpod_initiated.status ] && [ -n "$DP_PROJECT_TYPE" ]; then
 
@@ -139,17 +137,33 @@ GITMODULESEND
             # Copying the ready-made environment of requested Drupal core version
             cd "$GITPOD_REPO_ROOT" && cp -rT ../ready-made-envs/"$DP_CORE_VERSION"/. .
         else
-        # @todo:
-        #  If not, run composer create-proejct -
-            cd "$GITPOD_REPO_ROOT" && ddev composer create -y --no-install drupal/recommended-project:"$DP_CORE_VERSION"
+            # If not, run composer create-proejct with the requested version
+
+            # I used 
+            # For versions end with x - add `-dev` suffix (ie. 9.3.x-dev)
+            # For versions without x - add `~` prefix (ie. ~9.2.0)
+            d="$DP_CORE_VERSION"
+            case $d in
+                *.x)
+                install_version="$d"-dev
+                ;;
+                *)
+                install_version=~"$d"
+                ;;
+            esac
+            cd "$GITPOD_REPO_ROOT" && ddev composer create -y --no-install drupal/recommended-project:"$install_version"
         fi
     fi
 
     # Check if snapshot can be used (when no full reinstall needed)
     # Run it before any other ddev command (to avoid ddev restart)
     if [ ! "$DP_REINSTALL" ] && [ "$DP_INSTALL_PROFILE" != "''" ]; then
-        # Retrieve pre-made snapshot
-        cd "$GITPOD_REPO_ROOT" && time ddev snapshot restore "$DP_INSTALL_PROFILE"
+
+        if [ "$ready_made_env_exist" ]; then
+            # Retrieve pre-made snapshot
+            cd "$GITPOD_REPO_ROOT" && \
+            time ddev snapshot restore "$DP_INSTALL_PROFILE"
+        fi
     fi
 
     if [ -n "$DP_PATCH_FILE" ]; then
@@ -226,8 +240,8 @@ GITMODULESEND
 
     if [ "$DP_INSTALL_PROFILE" != "''" ]; then
 
-        # Check if a full site install is required
-        if [ -n "$DP_REINSTALL" ]; then
+        # Install from scratch, if a full site install is required or ready-made-env doesn't exist
+        if [ -n "$DP_REINSTALL" ] || [ ! "$ready_made_env_exist" ]; then
             # New site install
             ddev drush si -y --account-pass=admin --site-name="DrupalPod" "$DP_INSTALL_PROFILE"
 

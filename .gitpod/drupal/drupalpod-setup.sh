@@ -133,7 +133,7 @@ GITMODULESEND
 
     # Check if snapshot can be used (when no full reinstall needed)
     # Run it before any other ddev command (to avoid ddev restart)
-    if [ -z "$DP_REINSTALL" ] && [ ! "$DP_INSTALL_PROFILE" ]; then
+    if [ ! "$DP_REINSTALL" ] && [ ! "$DP_INSTALL_PROFILE" ]; then
         # Retrieve pre-made snapshot
         cd "$GITPOD_REPO_ROOT" && time ddev snapshot restore "$DP_INSTALL_PROFILE"
     fi

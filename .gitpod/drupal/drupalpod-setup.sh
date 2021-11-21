@@ -111,9 +111,20 @@ GITMODULESEND
         cd "${WORK_DIR}" && git checkout "$DP_MODULE_VERSION"
     fi
 
+    # Check if DP_CORE_VERSION is in the array of ready-made-versions
+    # Read all Drupal supported versions from a file into an array
+    readarray -t allDrupalSupportedVersions < "${GITPOD_REPO_ROOT}"/.gitpod/drupal/envs-prep/all-drupal-supported-versions.txt
+
+    for d in "${allDrupalSupportedVersions[@]}"; do
+        if [ "$d" == "$DP_CORE_VERSION" ]; then
+            ready_made_env_exist=1
+        fi
+    done
+
     # Restoring requested environment + profile installation
     # $DP_DEFAULT_CORE version was already copied during prebuild,
     # so it can be skipeped if it's the same as requested Drupal core version.
+
     if [ "$DP_CORE_VERSION" != "$DP_DEFAULT_CORE" ]; then
         # Remove default site that was installed during prebuild
         rm -rf "${GITPOD_REPO_ROOT}"/web
@@ -121,25 +132,12 @@ GITMODULESEND
         rm -f "${GITPOD_REPO_ROOT}"/composer.json
         rm -f "${GITPOD_REPO_ROOT}"/composer.lock
 
-
-        # Check if DP_CORE_VERSION is in the array of ready-made-versions
-
-        # Read all Drupal supported versions from a file into an array
-        readarray -t allDrupalSupportedVersions < "${GITPOD_REPO_ROOT}"/.gitpod/drupal/envs-prep/all-drupal-supported-versions.txt
-
-        for d in "${allDrupalSupportedVersions[@]}"; do
-            if [ "$d" == "$DP_CORE_VERSION" ]; then
-                ready_made_env_exist=1
-            fi
-        done
-
         if [ "$ready_made_env_exist" ]; then
             # Copying the ready-made environment of requested Drupal core version
             cd "$GITPOD_REPO_ROOT" && cp -rT ../ready-made-envs/"$DP_CORE_VERSION"/. .
         else
             # If not, run composer create-proejct with the requested version
 
-            # I used 
             # For versions end with x - add `-dev` suffix (ie. 9.3.x-dev)
             # For versions without x - add `~` prefix (ie. ~9.2.0)
             d="$DP_CORE_VERSION"
@@ -158,7 +156,6 @@ GITMODULESEND
     # Check if snapshot can be used (when no full reinstall needed)
     # Run it before any other ddev command (to avoid ddev restart)
     if [ ! "$DP_REINSTALL" ] && [ "$DP_INSTALL_PROFILE" != "''" ]; then
-
         if [ "$ready_made_env_exist" ]; then
             # Retrieve pre-made snapshot
             cd "$GITPOD_REPO_ROOT" && \

@@ -32,8 +32,19 @@ for d in "${allDrupalSupportedVersions[@]}"; do
   mkdir -p "$WORK_DIR"/"$d"
   cd "$WORK_DIR"/"$d" && ddev config --docroot=web --create-docroot --project-type=drupal9 --project-name=drupalpod
 
+  # For versions end with x - add `-dev` suffix (ie. 9.3.x-dev)
+  # For versions without x - add `~` prefix (ie. ~9.2.0)
+  case $d in
+    *.x)
+    install_version="$d"-dev
+    ;;
+    *)
+    install_version=~"$d"
+    ;;
+  esac
+
   echo "*** composer install"
-  cd "$WORK_DIR"/"$d" && ddev composer create -y --no-install drupal/recommended-project:"$d"
+  cd "$WORK_DIR"/"$d" && ddev composer create -y --no-install drupal/recommended-project:"$install_version"
 
   # Install Drush
   cd "$WORK_DIR"/"$d" && \
@@ -87,6 +98,8 @@ if ! mc find gcs/drupalpod/ready-made-envs.tar.gz; then
   mc cp /workspace/ready-made-envs.tar.gz gcs/drupalpod/ready-made-envs.tar.gz
 else
   # File already exist, send a message to manually delete and then upload the file
-  echo "*** File was NOT uploaded to Google Cloud, please delete existing file and run:"
-  echo "mc cp /workspace/ready-made-envs.tar.gz gcs/drupalpod/ready-made-envs.tar.gz"
+  echo "*** File already exist, uploading a copy of the file with branch and date info"
+  TODAY=$(date +"%Y-%m-%d")
+  CURRENT_BRANCH=branch---"$(git branch --show-current)"
+  mc cp /workspace/ready-made-envs.tar.gz gcs/drupalpod/"$CURRENT_BRANCH"/"$TODAY"/ready-made-envs.tar.gz
 fi

@@ -36,13 +36,13 @@ fi
 
 # @todo: Temporary fix until DrupalPod browser extension gets updated with correct supported versions
 # Supported versions:
-# 9.4.x-dev
-# 9.3.x-dev
-# 9.2.x-dev
-# ~9.2.0
-# ~9.1.0
-# 8.9.x-dev
-# ~8.9.0
+# 9.4.x
+# 9.3.x
+# 9.2.x
+# 9.2.0
+# 9.1.0
+# 8.9.x
+# 8.9.0
 
 # Legacy DrupalPod browser extension versions:
 # 9.2.0
@@ -52,18 +52,10 @@ fi
 # 9.2.x
 # 9.3.x
 
-if [ "$DP_CORE_VERSION" == '9.2.0' ]; then
-    DP_CORE_VERSION='~9.2.0'
-elif [ "$DP_CORE_VERSION" == '8.9.x' ]; then
-    DP_CORE_VERSION='8.9.x-dev'
-elif [ "$DP_CORE_VERSION" == '9.0.x' ]; then
-    DP_CORE_VERSION='9.2.x-dev'
+if [ "$DP_CORE_VERSION" == '9.0.x' ]; then
+    DP_CORE_VERSION='9.2.x'
 elif [ "$DP_CORE_VERSION" == '9.1.x' ]; then
-    DP_CORE_VERSION='9.2.x-dev'
-elif [ "$DP_CORE_VERSION" == '9.2.x' ]; then
-    DP_CORE_VERSION='9.2.x-dev'
-elif [ "$DP_CORE_VERSION" == '9.3.x' ]; then
-    DP_CORE_VERSION='9.3.x-dev'
+    DP_CORE_VERSION='9.2.x'
 fi
 
 # Skip setup if it already ran once and if no special setup is set by DrupalPod extension
@@ -119,9 +111,20 @@ GITMODULESEND
         cd "${WORK_DIR}" && git checkout "$DP_MODULE_VERSION"
     fi
 
+    # Check if DP_CORE_VERSION is in the array of ready-made-versions
+    # Read all Drupal supported versions from a file into an array
+    readarray -t allDrupalSupportedVersions < "${GITPOD_REPO_ROOT}"/.gitpod/drupal/envs-prep/all-drupal-supported-versions.txt
+
+    for d in "${allDrupalSupportedVersions[@]}"; do
+        if [ "$d" == "$DP_CORE_VERSION" ]; then
+            ready_made_env_exist=1
+        fi
+    done
+
     # Restoring requested environment + profile installation
     # $DP_DEFAULT_CORE version was already copied during prebuild,
     # so it can be skipeped if it's the same as requested Drupal core version.
+
     if [ "$DP_CORE_VERSION" != "$DP_DEFAULT_CORE" ]; then
         # Remove default site that was installed during prebuild
         rm -rf "${GITPOD_REPO_ROOT}"/web
@@ -129,15 +132,35 @@ GITMODULESEND
         rm -f "${GITPOD_REPO_ROOT}"/composer.json
         rm -f "${GITPOD_REPO_ROOT}"/composer.lock
 
-        # Copying the ready-made environment of requested Drupal core version
-        cd "$GITPOD_REPO_ROOT" && cp -rT ../ready-made-envs/"$DP_CORE_VERSION"/. .
+        if [ "$ready_made_env_exist" ]; then
+            # Copying the ready-made environment of requested Drupal core version
+            cd "$GITPOD_REPO_ROOT" && cp -rT ../ready-made-envs/"$DP_CORE_VERSION"/. .
+        else
+            # If not, run composer create-proejct with the requested version
+
+            # For versions end with x - add `-dev` suffix (ie. 9.3.x-dev)
+            # For versions without x - add `~` prefix (ie. ~9.2.0)
+            d="$DP_CORE_VERSION"
+            case $d in
+                *.x)
+                install_version="$d"-dev
+                ;;
+                *)
+                install_version=~"$d"
+                ;;
+            esac
+            cd "$GITPOD_REPO_ROOT" && ddev composer create -y --no-install drupal/recommended-project:"$install_version"
+        fi
     fi
 
     # Check if snapshot can be used (when no full reinstall needed)
     # Run it before any other ddev command (to avoid ddev restart)
     if [ ! "$DP_REINSTALL" ] && [ "$DP_INSTALL_PROFILE" != "''" ]; then
-        # Retrieve pre-made snapshot
-        cd "$GITPOD_REPO_ROOT" && time ddev snapshot restore "$DP_INSTALL_PROFILE"
+        if [ "$ready_made_env_exist" ]; then
+            # Retrieve pre-made snapshot
+            cd "$GITPOD_REPO_ROOT" && \
+            time ddev snapshot restore "$DP_INSTALL_PROFILE"
+        fi
     fi
 
     if [ -n "$DP_PATCH_FILE" ]; then
@@ -214,8 +237,8 @@ GITMODULESEND
 
     if [ "$DP_INSTALL_PROFILE" != "''" ]; then
 
-        # Check if a full site install is required
-        if [ -n "$DP_REINSTALL" ]; then
+        # Install from scratch, if a full site install is required or ready-made-env doesn't exist
+        if [ -n "$DP_REINSTALL" ] || [ ! "$ready_made_env_exist" ]; then
             # New site install
             ddev drush si -y --account-pass=admin --site-name="DrupalPod" "$DP_INSTALL_PROFILE"
 

@@ -74,8 +74,24 @@ if [ ! -f /workspace/drupalpod_initiated.status ] && [ -n "$DP_PROJECT_TYPE" ]; 
 
     # Get the required repo ready
     if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
-        # If core - get latest commit of required version
-        cd "${GITPOD_REPO_ROOT}"/repos/drupal && git fetch origin && git checkout origin/"$DP_CORE_VERSION"
+        # Find if requested core version is dev or stable
+        d="$DP_CORE_VERSION"
+        case $d in
+            *.x)
+            # If dev - use git checkout origin/*
+            checkout_type=origin
+            ;;
+            *)
+            # stable - use git checkout tags/*
+            checkout_type=tags
+            ;;
+        esac
+
+        # Use origin or tags in git checkout command
+        cd "${GITPOD_REPO_ROOT}"/repos/drupal && \
+        git fetch origin && \
+        git fetch --all --tags && \
+        git checkout "$checkout_type"/"$DP_CORE_VERSION"
 
         # Ignore specific directories during Drupal core development
         cp "${GITPOD_REPO_ROOT}"/.gitpod/drupal/templates/git-exclude.template "${GITPOD_REPO_ROOT}"/repos/drupal/.git/info/exclude
@@ -107,7 +123,7 @@ GITMODULESEND
             cd "${WORK_DIR}" && git fetch "$DP_ISSUE_FORK"
             cd "${WORK_DIR}" && git checkout -b "$DP_ISSUE_BRANCH" --track "$DP_ISSUE_FORK"/"$DP_ISSUE_BRANCH"
         fi
-    elif [ -n "$DP_MODULE_VERSION" ]; then
+    elif [ -n "$DP_MODULE_VERSION" ] && [ "$DP_PROJECT_TYPE" != "project_core" ]; then
         cd "${WORK_DIR}" && git checkout "$DP_MODULE_VERSION"
     fi
 

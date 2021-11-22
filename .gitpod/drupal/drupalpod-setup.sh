@@ -231,20 +231,18 @@ GITMODULESEND
         fi
     fi
 
-    if [ -n "$DP_PROJECT_NAME" ]; then
-        # Add the project to composer (it will get the version according to the branch under `/repo/name_of_project`)
-        cd "${GITPOD_REPO_ROOT}" && time ddev composer require drupal/"$DP_PROJECT_NAME"
-    fi
-
-    # Patch index.php for Drupal core development (must run after composer require above)
+    # Patch index.php for Drupal core development (must run after composer require)
     if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
 
         # Update composer.lock to allow composer's symlink of repos/drupal/core
-        cd "${GITPOD_REPO_ROOT}" && time ddev composer require drupal/core
+        cd "${GITPOD_REPO_ROOT}" && time ddev composer require drupal/core drupal/drupal
 
         # Set special setup for composer for working on Drupal core
         cd "$GITPOD_REPO_ROOT"/web && \
         patch -p1 < "$GITPOD_REPO_ROOT"/src/composer-drupal-core-setup/scaffold-patch-index-and-update-php.patch
+    elif [ -n "$DP_PROJECT_NAME" ]; then
+        # Add the project to composer (it will get the version according to the branch under `/repo/name_of_project`)
+        cd "${GITPOD_REPO_ROOT}" && time ddev composer require drupal/"$DP_PROJECT_NAME"
     fi
 
     # Configure phpcs for drupal.

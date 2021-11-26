@@ -267,21 +267,24 @@ GITMODULESEND
             # Enable Claro as default admin theme
             cd "${GITPOD_REPO_ROOT}" && ddev drush then claro
             cd "${GITPOD_REPO_ROOT}" && ddev drush config-set -y system.theme admin claro
+        fi
 
-            # Enable Olivero as default theme
+        # Enable the requested module
+        if [ "$DP_PROJECT_TYPE" == "project_module" ]; then
+            cd "${GITPOD_REPO_ROOT}" && ddev drush en -y "$DP_PROJECT_NAME"
+        fi
+
+        # Enable the requested theme
+        if [ "$DP_PROJECT_TYPE" == "project_theme" ]; then
+            cd "${GITPOD_REPO_ROOT}" && ddev drush then -y "$DP_PROJECT_NAME"
+            cd "${GITPOD_REPO_ROOT}" && ddev drush config-set -y system.theme default "$DP_PROJECT_NAME"
+        else
+            # Otherwise, check if Olivero should be set as default theme
             if [ -n "$DP_OLIVERO" ]; then
                 cd "${GITPOD_REPO_ROOT}" && \
                 ddev drush then olivero && \
                 ddev drush config-set -y system.theme default olivero
             fi
-        fi
-
-        # Enable the module or theme
-        if [ "$DP_PROJECT_TYPE" == "project_module" ]; then
-            cd "${GITPOD_REPO_ROOT}" && ddev drush en -y "$DP_PROJECT_NAME"
-        elif [ "$DP_PROJECT_TYPE" == "project_theme" ]; then
-            cd "${GITPOD_REPO_ROOT}" && ddev drush then -y "$DP_PROJECT_NAME"
-            cd "${GITPOD_REPO_ROOT}" && ddev drush config-set -y system.theme default "$DP_PROJECT_NAME"
         fi
 
         # When working on core, we should the database of profile installed, to

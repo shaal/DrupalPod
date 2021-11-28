@@ -9,9 +9,11 @@ set -eu -o pipefail
 
 # "%Y-%m-%d"
 TODAY=$(date +"%Y%m%d")
-DOCKER_REPO=drupalpod/drupalpod-gitpod-base:"$TODAY"-"$(git branch --show-current)"
+DOCKER_REPO=drupalpod/drupalpod-gitpod-base:"$TODAY"-base-experimental4
 
 echo "Pushing ${DOCKER_REPO}"
 set -x
 # Build only current architecture and load into docker
-docker buildx build -t "${DOCKER_REPO}" --push --platform=linux/amd64 .
+# docker buildx build -t "${DOCKER_REPO}" --push --platform=linux/amd64 .
+docker build -t "${DOCKER_REPO}" .
+docker image push "${DOCKER_REPO}"

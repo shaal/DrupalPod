@@ -112,7 +112,7 @@ RUN php -r "unlink('composer-setup.php');"
 
 # End workspace-base
 
-FROM scratch as ddev-gitpod-base
+FROM scratch as drupalpod-gitpod-base
 SHELL ["/bin/bash", "-c"]
 ENV HOMEBREW_INSTALL_FROM_API=true
 ENV PATH=$PATH:/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin/

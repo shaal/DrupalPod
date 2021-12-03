@@ -1,5 +1,7 @@
 image: drupalpod/drupalpod-gitpod-base:20211116-ready-made-envs
 
+experimentalNetwork: true
+
 # ddev and composer are running as part of the prebuild
 # when starting a workspace all docker images are ready
 tasks:

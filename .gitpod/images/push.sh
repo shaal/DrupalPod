@@ -9,7 +9,7 @@ set -eu -o pipefail
 
 # "%Y-%m-%d"
 TODAY=$(date +"%Y%m%d")
-DOCKER_REPO=drupalpod/drupalpod-gitpod-base:"$TODAY"-base-experimental4
+DOCKER_REPO=drupalpod/drupalpod-gitpod-base:"$TODAY"-optimized
 
 echo "Pushing ${DOCKER_REPO}"
 set -x

@@ -9,4 +9,4 @@ if [ -z "$DP_PHP_VERSION" ]; then
 fi
 
 # Misc housekeeping before start
-# ddev config global --instrumentation-opt-in=false
+ddev config global --instrumentation-opt-in=false

@@ -214,6 +214,13 @@ GITMODULESEND
         cd "$GITPOD_REPO_ROOT" && \
         patch -p1 < "$GITPOD_REPO_ROOT"/src/composer-drupal-core-setup/drush-cr-when-core-is-symlinked.patch
 
+        # Patch the scaffold index.php and index.php files.
+        # See https://www.drupal.org/project/drupal/issues/3188703
+        # See https://www.drupal.org/project/drupal/issues/1792310
+        echo "$(cat composer.json | jq '.scripts."post-install-cmd" |= . + ["src/composer-drupal-core-setup/patch-core-and-drush.sh"]')" > composer.json
+
+        echo "$(cat composer.json | jq '.scripts."post-update-cmd" |= . + ["src/composer-drupal-core-setup/patch-core-and-drush.sh"]')" > composer.json
+
         # Removing the conflict part of composer
         echo "$(cat composer.json | jq 'del(.conflict)' --indent 4)" > composer.json
 
@@ -245,10 +252,6 @@ GITMODULESEND
 
         # Update composer.lock to allow composer's symlink of repos/drupal/core
         cd "${GITPOD_REPO_ROOT}" && time ddev composer require drupal/core
-
-        # Set special setup for composer for working on Drupal core
-        cd "$GITPOD_REPO_ROOT"/web && \
-        patch -p1 < "$GITPOD_REPO_ROOT"/src/composer-drupal-core-setup/scaffold-patch-index-and-update-php.patch
     fi
 
     # Configure phpcs for drupal.

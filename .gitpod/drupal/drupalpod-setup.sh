@@ -149,6 +149,10 @@ GITMODULESEND
         rm -f "${GITPOD_REPO_ROOT}"/composer.lock
 
         if [ "$ready_made_env_exist" ]; then
+            # Extact the file
+            echo "*** Extracting the environments (less than 1 minute)"
+            cd /workspace && time tar zxf ready-made-envs.tar.gz --checkpoint=.10000
+
             # Copying the ready-made environment of requested Drupal core version
             cd "$GITPOD_REPO_ROOT" && cp -rT ../ready-made-envs/"$DP_CORE_VERSION"/. .
         else

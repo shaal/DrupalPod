@@ -165,7 +165,11 @@ GITMODULESEND
                 install_version=~"$d"
                 ;;
             esac
-            cd "$GITPOD_REPO_ROOT" && ddev composer create -y --no-install drupal/recommended-project:"$install_version"
+
+            # Create required composer.json and composer.lock files
+            cd "$GITPOD_REPO_ROOT" && ddev . composer create -n --no-install drupal/recommended-project:"$install_version" temp-composer-files
+            cp "$GITPOD_REPO_ROOT"/temp-composer-files/* "$GITPOD_REPO_ROOT"/.
+            rm -rf "$GITPOD_REPO_ROOT"/temp-composer-files
         fi
     fi
 
@@ -205,11 +209,6 @@ GITMODULESEND
         repositories.drupal-core2 \
         ' '"'"' {"type": "path", "url": "'"repos/drupal/core"'"} '"'"' '
 
-        # Patch Drush to fix `drush cr` when core is symlinked
-        # https://github.com/drush-ops/drush/pull/4713
-        cd "$GITPOD_REPO_ROOT" && \
-        patch -p1 < "$GITPOD_REPO_ROOT"/src/composer-drupal-core-setup/drush-cr-when-core-is-symlinked.patch
-
         # Removing the conflict part of composer
         echo "$(cat composer.json | jq 'del(.conflict)' --indent 4)" > composer.json
 
@@ -235,7 +234,14 @@ GITMODULESEND
     if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
 
         # Update composer.lock to allow composer's symlink of repos/drupal/core
-        cd "${GITPOD_REPO_ROOT}" && time ddev composer require drupal/core drupal/drupal
+        if [ "$ready_made_env_exist" ]; then
+            cd "${GITPOD_REPO_ROOT}" && time ddev composer require drupal/core drupal/drupal
+        else
+            cd "${GITPOD_REPO_ROOT}" && time ddev composer config repositories.lenient composer https://packages.drupal.org/lenient
+            cd "${GITPOD_REPO_ROOT}" && time ddev composer require \
+                                        drush/drush:^11 \
+                                        drupal/coder
+        fi
 
         # Set special setup for composer for working on Drupal core
         cd "$GITPOD_REPO_ROOT"/web && \
@@ -244,6 +250,11 @@ GITMODULESEND
         # Add the project to composer (it will get the version according to the branch under `/repo/name_of_project`)
         cd "${GITPOD_REPO_ROOT}" && time ddev composer require drupal/"$DP_PROJECT_NAME"
     fi
+
+    # Patch Drush to fix `drush cr` when core is symlinked
+    # https://github.com/drush-ops/drush/pull/4713
+    cd "$GITPOD_REPO_ROOT" && \
+    patch -p1 < "$GITPOD_REPO_ROOT"/src/composer-drupal-core-setup/drush-cr-when-core-is-symlinked.patch
 
     # Configure phpcs for drupal.
     cd "$GITPOD_REPO_ROOT" && \

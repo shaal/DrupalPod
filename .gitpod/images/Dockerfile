@@ -75,7 +75,7 @@ ENV PATH=$PATH:/home/gitpod/.nvm/versions/node/v${NODE_VERSION}/bin
 
 # Install ddev
 # RUN brew install drud/ddev/ddev
-RUN curl -LO https://raw.githubusercontent.com/drud/ddev/master/scripts/install_ddev.sh && bash install_ddev.sh
+RUN wget -P /tmp https://raw.githubusercontent.com/drud/ddev/master/scripts/install_ddev.sh && bash /tmp/install_ddev.sh v1.19.0-alpha1
 
 # Install GitUI (terminal-ui for git)
 # RUN brew install gitui
@@ -88,8 +88,8 @@ RUN sudo apt-get -qq install -y dialog
 
 # Install Minio client
 # RUN brew install minio-mc
-RUN wget https://dl.min.io/client/mc/release/linux-amd64/mcli_20211116203736.0.0_amd64.deb
-RUN sudo dpkg -i mcli_20211116203736.0.0_amd64.deb
+RUN wget https://dl.min.io/client/mc/release/linux-amd64/mcli_20220107060138.0.0_amd64.deb
+RUN sudo dpkg -i mcli_20220107060138.0.0_amd64.deb
 RUN sudo mv /usr/local/bin/mcli /usr/local/bin/mc
 
 # Install composer
@@ -105,10 +105,17 @@ RUN add-apt-repository -y ppa:ondrej/php \
 # RUN sudo apt-get -qq install -y php libapache2-mod-php
 
 # Install latest composer
-RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-RUN php -r "if (hash_file('sha384', 'composer-setup.php') === '906a84df04cea2aa72f40b5f787e49f22d4c2f19492ac310e8cba5b96ac8b64115ac402c8cd292b8a03482574915d1a8') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
-RUN sudo php composer-setup.php --install-dir /usr/bin --filename composer
-RUN php -r "unlink('composer-setup.php');"
+# RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+# RUN php -r "if (hash_file('sha384', 'composer-setup.php') === '906a84df04cea2aa72f40b5f787e49f22d4c2f19492ac310e8cba5b96ac8b64115ac402c8cd292b8a03482574915d1a8') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+# RUN sudo php composer-setup.php --install-dir /usr/bin --filename composer
+# RUN php -r "unlink('composer-setup.php');"
+
+# RUN ./latest-composer.sh
+# Dockerfile
+FROM php:7.4.1-fpm
+# Install Composer
+# RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+COPY --from=composer /usr/bin/composer /usr/bin/composer
 
 # End workspace-base
 

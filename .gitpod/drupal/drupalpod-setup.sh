@@ -242,16 +242,18 @@ GITMODULESEND
         fi
     fi
 
-    if [ -n "$DP_PROJECT_NAME" ]; then
-        # Add the project to composer (it will get the version according to the branch under `/repo/name_of_project`)
-        cd "${GITPOD_REPO_ROOT}" && time ddev composer require drupal/"$DP_PROJECT_NAME"
-    fi
-
-    # Patch index.php for Drupal core development (must run after composer require above)
+    # Patch index.php for Drupal core development (must run after composer require)
     if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
 
         # Update composer.lock to allow composer's symlink of repos/drupal/core
-        cd "${GITPOD_REPO_ROOT}" && time ddev composer require drupal/core
+        cd "${GITPOD_REPO_ROOT}" && time ddev composer require drupal/core drupal/drupal
+
+        # Set special setup for composer for working on Drupal core
+        cd "$GITPOD_REPO_ROOT"/web && \
+        patch -p1 < "$GITPOD_REPO_ROOT"/src/composer-drupal-core-setup/scaffold-patch-index-and-update-php.patch
+    elif [ -n "$DP_PROJECT_NAME" ]; then
+        # Add the project to composer (it will get the version according to the branch under `/repo/name_of_project`)
+        cd "${GITPOD_REPO_ROOT}" && time ddev composer require drupal/"$DP_PROJECT_NAME"
     fi
 
     # Configure phpcs for drupal.
@@ -276,21 +278,24 @@ GITMODULESEND
             # Enable Claro as default admin theme
             cd "${GITPOD_REPO_ROOT}" && ddev drush then claro
             cd "${GITPOD_REPO_ROOT}" && ddev drush config-set -y system.theme admin claro
+        fi
 
-            # Enable Olivero as default theme
+        # Enable the requested module
+        if [ "$DP_PROJECT_TYPE" == "project_module" ]; then
+            cd "${GITPOD_REPO_ROOT}" && ddev drush en -y "$DP_PROJECT_NAME"
+        fi
+
+        # Enable the requested theme
+        if [ "$DP_PROJECT_TYPE" == "project_theme" ]; then
+            cd "${GITPOD_REPO_ROOT}" && ddev drush then -y "$DP_PROJECT_NAME"
+            cd "${GITPOD_REPO_ROOT}" && ddev drush config-set -y system.theme default "$DP_PROJECT_NAME"
+        else
+            # Otherwise, check if Olivero should be set as default theme
             if [ -n "$DP_OLIVERO" ]; then
                 cd "${GITPOD_REPO_ROOT}" && \
                 ddev drush then olivero && \
                 ddev drush config-set -y system.theme default olivero
             fi
-        fi
-
-        # Enable the module or theme
-        if [ "$DP_PROJECT_TYPE" == "project_module" ]; then
-            cd "${GITPOD_REPO_ROOT}" && ddev drush en -y "$DP_PROJECT_NAME"
-        elif [ "$DP_PROJECT_TYPE" == "project_theme" ]; then
-            cd "${GITPOD_REPO_ROOT}" && ddev drush then -y "$DP_PROJECT_NAME"
-            cd "${GITPOD_REPO_ROOT}" && ddev drush config-set -y system.theme default "$DP_PROJECT_NAME"
         fi
 
         # When working on core, we should the database of profile installed, to

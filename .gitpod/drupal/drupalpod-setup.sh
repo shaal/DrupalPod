@@ -239,8 +239,14 @@ GITMODULESEND
         else
             cd "${GITPOD_REPO_ROOT}" && time ddev composer config repositories.lenient composer https://packages.drupal.org/lenient
             cd "${GITPOD_REPO_ROOT}" && time ddev composer require \
-                                        drush/drush:^11 \
+                                        drush/drush \
                                         drupal/coder
+
+            # Download extra modules
+            if [ -n "$EXTRA_MODULES" ]; then
+                cd "${GITPOD_REPO_ROOT}" && \
+                ddev composer require "$ADMIN_TOOLBAR_PACKAGE"
+            fi
         fi
 
         # Set special setup for composer for working on Drupal core
@@ -264,6 +270,8 @@ GITMODULESEND
 
         # Install from scratch, if a full site install is required or ready-made-env doesn't exist
         if [ -n "$DP_REINSTALL" ] || [ ! "$ready_made_env_exist" ]; then
+            # @TODO - should ddev be restarted here?
+
             # New site install
             ddev drush si -y --account-pass=admin --site-name="DrupalPod" "$DP_INSTALL_PROFILE"
 

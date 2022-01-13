@@ -270,7 +270,8 @@ GITMODULESEND
 
         # Install from scratch, if a full site install is required or ready-made-env doesn't exist
         if [ -n "$DP_REINSTALL" ] || [ ! "$ready_made_env_exist" ]; then
-            # @TODO - should ddev be restarted here?
+            # restart ddev - so settings.php gets updated to include settings.ddev.php
+            ddev restart
 
             # New site install
             ddev drush si -y --account-pass=admin --site-name="DrupalPod" "$DP_INSTALL_PROFILE"

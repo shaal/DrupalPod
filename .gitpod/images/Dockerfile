@@ -1,8 +1,29 @@
 FROM gitpod/workspace-base as workspace-base
 SHELL ["/bin/bash", "-c"]
-ENV HOMEBREW_INSTALL_FROM_API=true
+# ENV HOMEBREW_INSTALL_FROM_API=true
 
 RUN sudo apt-get -qq update
+# RUN sudo apt-get -qq install -y apt-utils
+
+# code from https://github.com/gitpod-io/workspace-images/blob/master/chunks/tool-docker/Dockerfile
+USER root
+# https://docs.docker.com/engine/install/ubuntu/
+RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
+    $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null \
+    && install-packages docker-ce docker-ce-cli containerd.io
+
+RUN curl -o /usr/bin/slirp4netns -fsSL https://github.com/rootless-containers/slirp4netns/releases/download/v1.1.12/slirp4netns-$(uname -m) \
+    && chmod +x /usr/bin/slirp4netns
+
+RUN curl -o /usr/local/bin/docker-compose -fsSL https://github.com/docker/compose/releases/download/v2.2.2/docker-compose-linux-$(uname -m) \
+    && chmod +x /usr/local/bin/docker-compose
+
+# https://github.com/wagoodman/dive
+RUN curl -o /tmp/dive.deb -fsSL https://github.com/wagoodman/dive/releases/download/v0.10.0/dive_0.10.0_linux_amd64.deb \
+    && apt-get install /tmp/dive.deb \
+    && rm /tmp/dive.deb
+
 # Install required libraries for Projector + PhpStorm
 # https://github.com/JetBrains/projector-installer
 
@@ -19,28 +40,6 @@ RUN sudo apt-get -qq update
 # Install additional packages
 # RUN sudo apt-get -qq install -y patchutils telnet netcat
 
-### Docker ###
-# LABEL dazzle/layer=tool-docker
-# LABEL dazzle/test=tests/tool-docker.yaml
-# USER root
-# ENV TRIGGER_REBUILD=3
-# # https://docs.docker.com/engine/install/ubuntu/
-# RUN curl -o /var/lib/apt/dazzle-marks/docker.gpg -fsSL https://download.docker.com/linux/ubuntu/gpg \
-#     && apt-key add /var/lib/apt/dazzle-marks/docker.gpg \
-#     && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" \
-#     && install-packages docker-ce docker-ce-cli containerd.io
-
-# RUN curl -o /usr/bin/slirp4netns -fsSL https://github.com/rootless-containers/slirp4netns/releases/download/v1.1.12/slirp4netns-$(uname -m) \
-#     && chmod +x /usr/bin/slirp4netns
-
-# RUN curl -o /usr/local/bin/docker-compose -fsSL https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64 \
-#     && chmod +x /usr/local/bin/docker-compose
-
-# # https://github.com/wagoodman/dive
-# RUN curl -o /tmp/dive.deb -fsSL https://github.com/wagoodman/dive/releases/download/v0.10.0/dive_0.10.0_linux_amd64.deb \
-#     && apt install /tmp/dive.deb \
-#     && rm /tmp/dive.deb
-
 ### Homebrew ###
 # LABEL dazzle/layer=tool-brew
 # LABEL dazzle/test=tests/tool-brew.yaml
@@ -53,25 +52,19 @@ RUN sudo apt-get -qq update
 # # ENV INFOPATH="$INFOPATH:/home/linuxbrew/.linuxbrew/share/info"
 # ENV HOMEBREW_NO_AUTO_UPDATE=1
 
-# Install nodeJS
-# RUN brew install node
-# RUN sudo apt-get -qq install -y nodejs
-# RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
-# RUN source ~/.bashrc
-# RUN nvm install 16
 ### Node.js ###
 USER gitpod
 ENV NODE_VERSION=16.13.2
-ENV TRIGGER_REBUILD=1
-RUN curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | PROFILE=/dev/null bash \
+# from https://github.com/gitpod-io/workspace-images/blob/master/chunks/lang-node/Dockerfile
+RUN curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | PROFILE=/dev/null bash \
     && bash -c ". .nvm/nvm.sh \
-        && nvm install $NODE_VERSION \
-        && nvm alias default $NODE_VERSION \
-        && npm install -g yarn" \
+    && nvm install v${NODE_VERSION} \
+    && nvm alias default v${NODE_VERSION} \
+    && npm install -g typescript yarn node-gyp" \
     && echo ". ~/.nvm/nvm-lazy.sh"  >> /home/gitpod/.bashrc.d/50-node
 # above, we are adding the lazy nvm init to .bashrc, because one is executed on interactive shells, the other for non-interactive shells (e.g. plugin-host)
 COPY --chown=gitpod:gitpod nvm-lazy.sh /home/gitpod/.nvm/nvm-lazy.sh
-ENV PATH=$PATH:/home/gitpod/.nvm/versions/node/v${NODE_VERSION}/bin
+ENV PATH=/home/gitpod/.nvm/versions/node/v${NODE_VERSION}/bin:$PATH
 
 # Install ddev
 # RUN brew install drud/ddev/ddev
@@ -84,7 +77,7 @@ RUN sudo tar xzf /tmp/gitui-linux-musl.tar.gz -C /usr/bin
 
 # Install dialog (interactive script)
 # RUN brew install dialog
-RUN sudo apt-get -qq install -y dialog
+# RUN sudo apt-get -qq install -y dialog
 
 # Install Minio client
 # RUN brew install minio-mc
@@ -121,9 +114,9 @@ COPY --from=composer /usr/bin/composer /usr/bin/composer
 
 FROM scratch as drupalpod-gitpod-base
 SHELL ["/bin/bash", "-c"]
-ENV HOMEBREW_INSTALL_FROM_API=true
-ENV PATH=$PATH:/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin/
-ENV MANPATH="$MANPATH:/home/linuxbrew/.linuxbrew/share/man"
-ENV INFOPATH="$INFOPATH:/home/linuxbrew/.linuxbrew/share/info"
+# ENV HOMEBREW_INSTALL_FROM_API=true
+# ENV PATH=$PATH:/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin/
+# ENV MANPATH="$MANPATH:/home/linuxbrew/.linuxbrew/share/man"
+# ENV INFOPATH="$INFOPATH:/home/linuxbrew/.linuxbrew/share/info"
 
 COPY --from=workspace-base / /

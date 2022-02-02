@@ -61,9 +61,9 @@ RUN sudo apt-get -qq update
 # RUN nvm install 16
 ### Node.js ###
 USER gitpod
-ENV NODE_VERSION=16.13.0
+ENV NODE_VERSION=16.13.2
 ENV TRIGGER_REBUILD=1
-RUN curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | PROFILE=/dev/null bash \
+RUN curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | PROFILE=/dev/null bash \
     && bash -c ". .nvm/nvm.sh \
         && nvm install $NODE_VERSION \
         && nvm alias default $NODE_VERSION \
@@ -75,11 +75,11 @@ ENV PATH=$PATH:/home/gitpod/.nvm/versions/node/v${NODE_VERSION}/bin
 
 # Install ddev
 # RUN brew install drud/ddev/ddev
-RUN wget -P /tmp https://raw.githubusercontent.com/drud/ddev/master/scripts/install_ddev.sh && bash /tmp/install_ddev.sh v1.19.0-alpha1
+RUN wget -P /tmp https://raw.githubusercontent.com/drud/ddev/master/scripts/install_ddev.sh && bash /tmp/install_ddev.sh v1.19.0-alpha3
 
 # Install GitUI (terminal-ui for git)
 # RUN brew install gitui
-RUN wget https://github.com/extrawurst/gitui/releases/download/v0.18.0/gitui-linux-musl.tar.gz -P /tmp
+RUN wget https://github.com/extrawurst/gitui/releases/download/v0.20.1/gitui-linux-musl.tar.gz -P /tmp
 RUN sudo tar xzf /tmp/gitui-linux-musl.tar.gz -C /usr/bin
 
 # Install dialog (interactive script)
@@ -88,8 +88,8 @@ RUN sudo apt-get -qq install -y dialog
 
 # Install Minio client
 # RUN brew install minio-mc
-RUN wget https://dl.min.io/client/mc/release/linux-amd64/mcli_20220107060138.0.0_amd64.deb
-RUN sudo dpkg -i mcli_20220107060138.0.0_amd64.deb
+RUN wget https://dl.min.io/client/mc/release/linux-amd64/mcli_20220202020324.0.0_amd64.deb
+RUN sudo dpkg -i mcli_20220202020324.0.0_amd64.deb
 RUN sudo mv /usr/local/bin/mcli /usr/local/bin/mc
 
 # Install composer
@@ -112,7 +112,7 @@ RUN add-apt-repository -y ppa:ondrej/php \
 
 # RUN ./latest-composer.sh
 # Dockerfile
-FROM php:7.4.1-fpm
+FROM php:7.4.27-fpm
 # Install Composer
 # RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 COPY --from=composer /usr/bin/composer /usr/bin/composer

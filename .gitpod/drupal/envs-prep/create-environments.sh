@@ -30,7 +30,7 @@ allProfiles=(minimal standard demo_umami)
 for d in "${allDrupalSupportedVersions[@]}"; do
   # Create ddev config
   mkdir -p "$WORK_DIR"/"$d"
-  cd "$WORK_DIR"/"$d" && ddev config --docroot=web --create-docroot --project-type=drupal9 --project-name=drupalpod
+  cd "$WORK_DIR"/"$d" && ddev config --docroot=web --create-docroot --project-type=drupal9 --php-version=8.0 --project-name=drupalpod
 
   # For versions end with x - add `-dev` suffix (ie. 9.3.x-dev)
   # For versions without x - add `~` prefix (ie. ~9.2.0)
@@ -55,13 +55,24 @@ for d in "${allDrupalSupportedVersions[@]}"; do
   ddev composer config --no-plugins allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
   ddev composer config --no-plugins allow-plugins.phpstan/extension-installer true
 
-  # Install Drush
+  # Install additional packages
+
+  # @todo: temporary fix until devel works with drupal 10.x
+  # devel
+  if [ "$d" == '10.0.x' ]; then
+    COMPOSER_DEVEL=''
+  else
+    COMPOSER_DEVEL='drupal/devel'
+  fi
+
   cd "$WORK_DIR"/"$d" && \
     ddev composer require \
-      drupal/admin_toolbar \
-      drush/drush \
-      drupal/coder \
-      drupal/devel
+    drupal/admin_toolbar \
+    drush/drush \
+    drupal/coder \
+    # @todo: temporary fix until devel works with drupal 10.x
+    # drupal/devel
+    $COMPOSER_DEVEL
 
   for p in "${allProfiles[@]}"; do
     echo Building drupal-"$d"-"$p"
@@ -72,8 +83,21 @@ for d in "${allDrupalSupportedVersions[@]}"; do
     ddev drush si -y --account-pass=admin --site-name="DrupalPod" "$p"
 
     echo "*** Adding extra modules"
+
+    # @todo: temporary fix until devel works with drupal 10.x
+    # devel
+    if [ "$d" == '10.0.x' ]; then
+      ENABLE_DEVEL=''
+    else
+      ENABLE_DEVEL='devel'
+    fi
+
     cd "$WORK_DIR"/"$d"  && \
-      ddev drush en -y admin_toolbar devel
+      ddev drush en -y \
+      admin_toolbar \
+      # @todo: temporary fix until devel works with drupal 10.x
+      # devel
+      $ENABLE_DEVEL
 
     # Enable Claro as default admin theme
     echo "*** Enable Claro theme"

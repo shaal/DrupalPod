@@ -30,8 +30,6 @@ ADMIN_TOOLBAR_PACKAGE="drupal/admin_toolbar"
 # 9.4.x
 # 9.3.x
 # 9.3.0
-# 8.9.x
-# 8.9.0
 
 # Legacy DrupalPod browser extension versions:
 # 9.2.0

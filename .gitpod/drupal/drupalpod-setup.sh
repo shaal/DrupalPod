@@ -58,6 +58,11 @@ elif [ "$DP_CORE_VERSION" == '9.1.x' ]; then
     DP_CORE_VERSION='9.2.x'
 fi
 
+# For Drupal core issues, that use branch, always use issue page version
+if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
+    DP_CORE_VERSION="$DP_MODULE_VERSION"
+fi
+
 # Skip setup if it already ran once and if no special setup is set by DrupalPod extension
 if [ ! -f /workspace/drupalpod_initiated.status ] && [ -n "$DP_PROJECT_TYPE" ]; then
 
@@ -198,6 +203,9 @@ GITMODULESEND
     ddev composer config --no-plugins allow-plugins.drupal/core-vendor-hardening true
     ddev composer config --no-plugins allow-plugins.drupal/core-composer-scaffold true
 
+    ddev composer config --no-plugins allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
+    ddev composer config --no-plugins allow-plugins.phpstan/extension-installer true
+
     # Add project source code as symlink (to repos/name_of_project)
     # double quotes explained - https://stackoverflow.com/a/1250279/5754049
     if [ -n "$DP_PROJECT_NAME" ]; then
@@ -265,9 +273,6 @@ GITMODULESEND
             cd "$GITPOD_REPO_ROOT"/repos/drupal/sites && \
             ln -s ../../../web/sites/simpletest .
         fi
-    fi
-
-    if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
 
         # Update composer.lock to allow composer's symlink of repos/drupal/core
         if [ "$ready_made_env_exist" ]; then
@@ -281,6 +286,7 @@ GITMODULESEND
             # Download extra modules
             if [ -n "$EXTRA_MODULES" ]; then
                 cd "${GITPOD_REPO_ROOT}" && \
+                ddev composer require "$DEVEL_PACKAGE"
                 ddev composer require "$ADMIN_TOOLBAR_PACKAGE"
             fi
         fi

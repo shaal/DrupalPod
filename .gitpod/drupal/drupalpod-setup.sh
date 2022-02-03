@@ -25,12 +25,11 @@ ADMIN_TOOLBAR_NAME="admin_toolbar_tools"
 ADMIN_TOOLBAR_PACKAGE="drupal/admin_toolbar"
 
 # @todo: Temporary fix until DrupalPod browser extension gets updated with correct supported versions
-# Supported versions:
+# Ready-made-envs versions:
+# 10.0.x
 # 9.4.x
 # 9.3.x
-# 9.2.x
-# 9.2.0
-# 9.1.0
+# 9.3.0
 # 8.9.x
 # 8.9.0
 
@@ -43,9 +42,9 @@ ADMIN_TOOLBAR_PACKAGE="drupal/admin_toolbar"
 # 9.3.x
 
 if [ "$DP_CORE_VERSION" == '9.0.x' ]; then
-    DP_CORE_VERSION='9.2.x'
+    DP_CORE_VERSION='9.3.x'
 elif [ "$DP_CORE_VERSION" == '9.1.x' ]; then
-    DP_CORE_VERSION='9.2.x'
+    DP_CORE_VERSION='9.3.x'
 fi
 
 # For Drupal core issues, that use branch, always use issue page version

@@ -17,22 +17,12 @@ if [ -n "$GITPOD_HEADLESS" ]; then
     DP_PROJECT_TYPE='default_drupalpod'
 fi
 
-# TODO: once Drupalpod extension supports additional modules - remove these 2 lines
-DP_EXTRA_DEVEL=1
-DP_EXTRA_ADMIN_TOOLBAR=1
-
 # Check if additional modules should be installed
-if [ -n "$DP_EXTRA_DEVEL" ]; then
-    DEVEL_NAME="devel"
-    DEVEL_PACKAGE="drupal/devel"
-    EXTRA_MODULES=1
-fi
+DEVEL_NAME="devel"
+DEVEL_PACKAGE="drupal/devel"
 
-if [ -n "$DP_EXTRA_ADMIN_TOOLBAR" ]; then
-    ADMIN_TOOLBAR_NAME="admin_toolbar_tools"
-    ADMIN_TOOLBAR_PACKAGE="drupal/admin_toolbar"
-    EXTRA_MODULES=1
-fi
+ADMIN_TOOLBAR_NAME="admin_toolbar_tools"
+ADMIN_TOOLBAR_PACKAGE="drupal/admin_toolbar"
 
 # @todo: Temporary fix until DrupalPod browser extension gets updated with correct supported versions
 # Supported versions:
@@ -62,6 +52,12 @@ fi
 if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
     DP_CORE_VERSION="$DP_MODULE_VERSION"
 fi
+
+# TODO: once Drupalpod extension supports additional modules - remove these 2 lines
+if [ "$DP_CORE_VERSION" != '10.0.x' ]; then
+    DP_EXTRA_DEVEL=1
+fi
+DP_EXTRA_ADMIN_TOOLBAR=1
 
 # Skip setup if it already ran once and if no special setup is set by DrupalPod extension
 if [ ! -f /workspace/drupalpod_initiated.status ] && [ -n "$DP_PROJECT_TYPE" ]; then
@@ -284,9 +280,12 @@ GITMODULESEND
                                         drupal/coder
 
             # Download extra modules
-            if [ -n "$EXTRA_MODULES" ]; then
+            if [ -n "$DP_EXTRA_DEVEL" ]; then
                 cd "${GITPOD_REPO_ROOT}" && \
                 ddev composer require "$DEVEL_PACKAGE"
+            fi
+            if [ -n "$DP_EXTRA_ADMIN_TOOLBAR" ]; then
+                cd "${GITPOD_REPO_ROOT}" && \
                 ddev composer require "$ADMIN_TOOLBAR_PACKAGE"
             fi
         fi
@@ -309,12 +308,17 @@ GITMODULESEND
             # New site install
             ddev drush si -y --account-pass=admin --site-name="DrupalPod" "$DP_INSTALL_PROFILE"
 
-            # Enabale extra modules
-            if [ -n "$EXTRA_MODULES" ]; then
+            # Enable extra modules
+            if [ -n "$DP_EXTRA_ADMIN_TOOLBAR" ]; then
                 cd "${GITPOD_REPO_ROOT}" && \
                 ddev drush en -y \
-                "$DEVEL_NAME" \
                 "$ADMIN_TOOLBAR_NAME"
+            fi
+
+            if [ -n "$DP_EXTRA_DEVEL" ]; then
+                cd "${GITPOD_REPO_ROOT}" && \
+                ddev drush en -y \
+                "$DEVEL_NAME"
             fi
 
             # Enable Claro as default admin theme

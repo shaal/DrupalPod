@@ -1,5 +1,4 @@
-image: drupalpod/drupalpod-gitpod-base:20211116-ready-made-envs
-
+image: drupalpod/drupalpod-gitpod-base:20220202-optimized
 # ddev and composer are running as part of the prebuild
 # when starting a workspace all docker images are ready
 tasks:
@@ -35,17 +34,11 @@ vscode:
     - rogalmic.bash-debug
 
 ports:
-  # Used by ddev - direct-bind https port
-  - port: 2222
-    onOpen: ignore
   # Used by ddev - local db clients
   - port: 3306
     onOpen: ignore
-  # Used by projector
-  - port: 6942
-    onOpen: ignore
   # Used by MailHog
-  - port: 8025
+  - port: 8027
     onOpen: ignore
   # Used by phpMyAdmin
   - port: 8036
@@ -53,11 +46,12 @@ ports:
   # Direct-connect ddev-webserver port that is the main port
   - port: 8080
     onOpen: ignore
+  # Ignore host https port
+  - port: 8443
+    onOpen: ignore
   # xdebug port
   - port: 9000
     onOpen: ignore
-  # projector port
-  - port: 9999
 
 github:
   prebuilds:

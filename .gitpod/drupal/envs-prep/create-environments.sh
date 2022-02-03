@@ -46,6 +46,11 @@ for d in "${allDrupalSupportedVersions[@]}"; do
   echo "*** composer install"
   cd "$WORK_DIR"/"$d" && ddev composer create -y --no-install drupal/recommended-project:"$install_version"
 
+  # Composer 2.2 - programmatically set allow-plugins
+  ddev composer config allow-plugins.composer/installers true
+  ddev composer config allow-plugins.drupal/core-composer-scaffold  true
+  ddev composer config allow-plugins.drupal/core-project-message true
+
   # Install Drush
   cd "$WORK_DIR"/"$d" && \
     ddev composer require \
@@ -85,7 +90,7 @@ done
 # compress all environments into a file
 echo "*** Compress all environments into a file"
 cd /workspace &&
-  tar czvf ready-made-envs.tar.gz ready-made-envs
+  tar czf ready-made-envs.tar.gz ready-made-envs
 
 # Check if environments file exist in Google Cloud
 
@@ -100,6 +105,6 @@ else
   # File already exist, send a message to manually delete and then upload the file
   echo "*** File already exist, uploading a copy of the file with branch and date info"
   TODAY=$(date +"%Y-%m-%d")
-  CURRENT_BRANCH=branch---"$(git branch --show-current)"
+  CURRENT_BRANCH=branch---"$(cd "$GITPOD_REPO_ROOT" && git branch --show-current)"
   mc cp /workspace/ready-made-envs.tar.gz gcs/drupalpod/"$CURRENT_BRANCH"/"$TODAY"/ready-made-envs.tar.gz
 fi

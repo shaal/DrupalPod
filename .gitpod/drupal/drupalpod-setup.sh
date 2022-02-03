@@ -149,6 +149,10 @@ GITMODULESEND
         rm -f "${GITPOD_REPO_ROOT}"/composer.lock
 
         if [ "$ready_made_env_exist" ]; then
+            # Extact the file
+            echo "*** Extracting the environments (less than 1 minute)"
+            cd /workspace && time tar zxf ready-made-envs.tar.gz --checkpoint=.10000
+
             # Copying the ready-made environment of requested Drupal core version
             cd "$GITPOD_REPO_ROOT" && cp -rT ../ready-made-envs/"$DP_CORE_VERSION"/. .
         else
@@ -209,6 +213,13 @@ GITMODULESEND
         # https://github.com/drush-ops/drush/pull/4713
         cd "$GITPOD_REPO_ROOT" && \
         patch -p1 < "$GITPOD_REPO_ROOT"/src/composer-drupal-core-setup/drush-cr-when-core-is-symlinked.patch
+
+        # Patch the scaffold index.php and index.php files.
+        # See https://www.drupal.org/project/drupal/issues/3188703
+        # See https://www.drupal.org/project/drupal/issues/1792310
+        echo "$(cat composer.json | jq '.scripts."post-install-cmd" |= . + ["src/composer-drupal-core-setup/patch-core-and-drush.sh"]')" > composer.json
+
+        echo "$(cat composer.json | jq '.scripts."post-update-cmd" |= . + ["src/composer-drupal-core-setup/patch-core-and-drush.sh"]')" > composer.json
 
         # Removing the conflict part of composer
         echo "$(cat composer.json | jq 'del(.conflict)' --indent 4)" > composer.json

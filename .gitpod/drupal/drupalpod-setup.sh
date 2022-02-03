@@ -169,7 +169,11 @@ GITMODULESEND
                 install_version=~"$d"
                 ;;
             esac
-            cd "$GITPOD_REPO_ROOT" && ddev composer create -y --no-install drupal/recommended-project:"$install_version"
+
+            # Create required composer.json and composer.lock files
+            cd "$GITPOD_REPO_ROOT" && ddev . composer create -n --no-install drupal/recommended-project:"$install_version" temp-composer-files
+            cp "$GITPOD_REPO_ROOT"/temp-composer-files/* "$GITPOD_REPO_ROOT"/.
+            rm -rf "$GITPOD_REPO_ROOT"/temp-composer-files
         fi
     fi
 
@@ -246,7 +250,20 @@ GITMODULESEND
     if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
 
         # Update composer.lock to allow composer's symlink of repos/drupal/core
-        cd "${GITPOD_REPO_ROOT}" && time ddev composer require drupal/core drupal/drupal
+        if [ "$ready_made_env_exist" ]; then
+            cd "${GITPOD_REPO_ROOT}" && time ddev composer require drupal/core drupal/drupal
+        else
+            cd "${GITPOD_REPO_ROOT}" && time ddev composer config repositories.lenient composer https://packages.drupal.org/lenient
+            cd "${GITPOD_REPO_ROOT}" && time ddev composer require \
+                                        drush/drush \
+                                        drupal/coder
+
+            # Download extra modules
+            if [ -n "$EXTRA_MODULES" ]; then
+                cd "${GITPOD_REPO_ROOT}" && \
+                ddev composer require "$ADMIN_TOOLBAR_PACKAGE"
+            fi
+        fi
 
         # Set special setup for composer for working on Drupal core
         cd "$GITPOD_REPO_ROOT"/web && \
@@ -256,6 +273,11 @@ GITMODULESEND
         cd "${GITPOD_REPO_ROOT}" && time ddev composer require drupal/"$DP_PROJECT_NAME"
     fi
 
+    # Patch Drush to fix `drush cr` when core is symlinked
+    # https://github.com/drush-ops/drush/pull/4713
+    cd "$GITPOD_REPO_ROOT" && \
+    patch -p1 < "$GITPOD_REPO_ROOT"/src/composer-drupal-core-setup/drush-cr-when-core-is-symlinked.patch
+
     # Configure phpcs for drupal.
     cd "$GITPOD_REPO_ROOT" && \
     vendor/bin/phpcs --config-set installed_paths vendor/drupal/coder/coder_sniffer
@@ -264,6 +286,9 @@ GITMODULESEND
 
         # Install from scratch, if a full site install is required or ready-made-env doesn't exist
         if [ -n "$DP_REINSTALL" ] || [ ! "$ready_made_env_exist" ]; then
+            # restart ddev - so settings.php gets updated to include settings.ddev.php
+            ddev restart
+
             # New site install
             ddev drush si -y --account-pass=admin --site-name="DrupalPod" "$DP_INSTALL_PROFILE"
 

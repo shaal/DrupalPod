@@ -55,7 +55,7 @@ for d in "${allDrupalSupportedVersions[@]}"; do
   cd "$WORK_DIR"/"$d" && \
     ddev composer require \
       drupal/admin_toolbar \
-      drush/drush:^10 \
+      drush/drush \
       drupal/coder \
       drupal/devel
 

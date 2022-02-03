@@ -46,10 +46,14 @@ for d in "${allDrupalSupportedVersions[@]}"; do
   echo "*** composer install"
   cd "$WORK_DIR"/"$d" && ddev composer create -y --no-install drupal/recommended-project:"$install_version"
 
-  # Composer 2.2 - programmatically set allow-plugins
-  ddev composer config allow-plugins.composer/installers true
-  ddev composer config allow-plugins.drupal/core-composer-scaffold  true
-  ddev composer config allow-plugins.drupal/core-project-message true
+  # Programmatically fix Composer 2.2 allow-plugins to avoid errors
+  ddev composer config --no-plugins allow-plugins.composer/installers true
+  ddev composer config --no-plugins allow-plugins.drupal/core-project-message true
+  ddev composer config --no-plugins allow-plugins.drupal/core-vendor-hardening true
+  ddev composer config --no-plugins allow-plugins.drupal/core-composer-scaffold true
+
+  ddev composer config --no-plugins allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
+  ddev composer config --no-plugins allow-plugins.phpstan/extension-installer true
 
   # Install Drush
   cd "$WORK_DIR"/"$d" && \

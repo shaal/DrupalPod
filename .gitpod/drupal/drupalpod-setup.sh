@@ -192,6 +192,12 @@ GITMODULESEND
         cd "${WORK_DIR}" && curl "$DP_PATCH_FILE" | patch -p1
     fi
 
+    # Programmatically fix Composer 2.2 allow-plugins to avoid errors
+    ddev composer config --no-plugins allow-plugins.composer/installers true
+    ddev composer config --no-plugins allow-plugins.drupal/core-project-message true
+    ddev composer config --no-plugins allow-plugins.drupal/core-vendor-hardening true
+    ddev composer config --no-plugins allow-plugins.drupal/core-composer-scaffold true
+
     # Add project source code as symlink (to repos/name_of_project)
     # double quotes explained - https://stackoverflow.com/a/1250279/5754049
     if [ -n "$DP_PROJECT_NAME" ]; then
@@ -213,16 +219,31 @@ GITMODULESEND
         repositories.drupal-core2 \
         ' '"'"' {"type": "path", "url": "'"repos/drupal/core"'"} '"'"' '
 
-        # Patch Drush to fix `drush cr` when core is symlinked
-        # https://github.com/drush-ops/drush/pull/4713
-        cd "$GITPOD_REPO_ROOT" && \
-        patch -p1 < "$GITPOD_REPO_ROOT"/src/composer-drupal-core-setup/drush-cr-when-core-is-symlinked.patch
+        cd "${GITPOD_REPO_ROOT}" && \
+        ddev composer config \
+        repositories.drupal-core3 \
+        ' '"'"' {"type": "path", "url": "'"repos/drupal/composer/Metapackage/CoreRecommended"'"} '"'"' '
 
-        # Patch the scaffold index.php and index.php files.
+        cd "${GITPOD_REPO_ROOT}" && \
+        ddev composer config \
+        repositories.drupal-core4 \
+        ' '"'"' {"type": "path", "url": "'"repos/drupal/composer/Metapackage/DevDependencies"'"} '"'"' '
+
+        cd "${GITPOD_REPO_ROOT}" && \
+        ddev composer config \
+        repositories.drupal-core5 \
+        ' '"'"' {"type": "path", "url": "'"repos/drupal/composer/Plugin/ProjectMessage"'"} '"'"' '
+
+        cd "${GITPOD_REPO_ROOT}" && \
+        ddev composer config \
+        repositories.drupal-core6 \
+        ' '"'"' {"type": "path", "url": "'"repos/drupal/composer/Plugin/VendorHardening"'"} '"'"' '
+
+        # Patch the scaffold index.php and update.php files + patch Drush to fix `drush cr
         # See https://www.drupal.org/project/drupal/issues/3188703
         # See https://www.drupal.org/project/drupal/issues/1792310
+        # See https://github.com/drush-ops/drush/pull/4713
         echo "$(cat composer.json | jq '.scripts."post-install-cmd" |= . + ["src/composer-drupal-core-setup/patch-core-and-drush.sh"]')" > composer.json
-
         echo "$(cat composer.json | jq '.scripts."post-update-cmd" |= . + ["src/composer-drupal-core-setup/patch-core-and-drush.sh"]')" > composer.json
 
         # Removing the conflict part of composer
@@ -246,7 +267,6 @@ GITMODULESEND
         fi
     fi
 
-    # Patch index.php for Drupal core development (must run after composer require)
     if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
 
         # Update composer.lock to allow composer's symlink of repos/drupal/core
@@ -264,19 +284,10 @@ GITMODULESEND
                 ddev composer require "$ADMIN_TOOLBAR_PACKAGE"
             fi
         fi
-
-        # Set special setup for composer for working on Drupal core
-        cd "$GITPOD_REPO_ROOT"/web && \
-        patch -p1 < "$GITPOD_REPO_ROOT"/src/composer-drupal-core-setup/scaffold-patch-index-and-update-php.patch
     elif [ -n "$DP_PROJECT_NAME" ]; then
         # Add the project to composer (it will get the version according to the branch under `/repo/name_of_project`)
         cd "${GITPOD_REPO_ROOT}" && time ddev composer require drupal/"$DP_PROJECT_NAME"
     fi
-
-    # Patch Drush to fix `drush cr` when core is symlinked
-    # https://github.com/drush-ops/drush/pull/4713
-    cd "$GITPOD_REPO_ROOT" && \
-    patch -p1 < "$GITPOD_REPO_ROOT"/src/composer-drupal-core-setup/drush-cr-when-core-is-symlinked.patch
 
     # Configure phpcs for drupal.
     cd "$GITPOD_REPO_ROOT" && \

@@ -10,7 +10,9 @@ export "$(grep -v '^#' "$GITPOD_REPO_ROOT"/.env | xargs -d '\n')"
 cd "$GITPOD_REPO_ROOT" && cp -rT ../ready-made-envs/"$DP_DEFAULT_CORE"/. .
 
 # Restoring Umami installation
-cd "$GITPOD_REPO_ROOT" && ddev snapshot restore demo_umami
+# @todo: remove `mmariadb_10.3.gz` when https://github.com/drud/ddev/issues/3570 is resolved.
+# cd "$GITPOD_REPO_ROOT" && ddev snapshot restore demo_umami
+cd "$GITPOD_REPO_ROOT" && ddev snapshot restore demo_umami-mariadb_10.3.gz
 
 # Clear ready-made-envs directory
 cd "$GITPOD_REPO_ROOT" && rm -rf ../ready-made-envs

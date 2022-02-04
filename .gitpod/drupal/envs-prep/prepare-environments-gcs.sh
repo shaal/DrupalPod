@@ -19,7 +19,7 @@ READY_MADE_ENV_SOURCE=''
 if mc find gcs/drupalpod/"$CURRENT_BRANCH"/ready-made-envs.tar.gz; then
     READY_MADE_ENV_SOURCE=gcs/drupalpod/"$CURRENT_BRANCH"/ready-made-envs.tar.gz
 elif mc find gcs/drupalpod/main/ready-made-envs.tar.gz; then
-    READY_MADE_ENV_SOURCE=gcs/drupalpod/"$CURRENT_BRANCH"/ready-made-envs.tar.gz
+    READY_MADE_ENV_SOURCE=gcs/drupalpod/main/ready-made-envs.tar.gz
 fi
 
 # Check if ready-made envs file exist

@@ -6,7 +6,7 @@ fi
 # Prerequisite:
 # Manually delete or rename default envs backup file from Google cloud:
 #   https://console.cloud.google.com/storage/browser
-echo "*** Rebuilding ready-made environments from scratch, this will take 25 minutes..."
+echo "*** Rebuilding ready-made environments from scratch, this will take 8 minutes... (2 minutes per drupal version)"
 
 # Stop and unlist current ddev project
 ddev stop --unlist drupalpod
@@ -65,13 +65,13 @@ for d in "${allDrupalSupportedVersions[@]}"; do
     COMPOSER_DEVEL='drupal/devel'
   fi
 
+  # @todo: temporary fix until devel works with drupal 10.x
+  # replace $COMPOSER_DEVEL with drupal/devel
   cd "$WORK_DIR"/"$d" && \
     ddev composer require \
     drupal/admin_toolbar \
     drush/drush \
     drupal/coder \
-    # @todo: temporary fix until devel works with drupal 10.x
-    # drupal/devel
     $COMPOSER_DEVEL
 
   for p in "${allProfiles[@]}"; do
@@ -92,11 +92,11 @@ for d in "${allDrupalSupportedVersions[@]}"; do
       ENABLE_DEVEL='devel'
     fi
 
+    # @todo: temporary fix until devel works with drupal 10.x
+    # replace $ENABLE_DEVEL with devel
     cd "$WORK_DIR"/"$d"  && \
       ddev drush en -y \
       admin_toolbar \
-      # @todo: temporary fix until devel works with drupal 10.x
-      # devel
       $ENABLE_DEVEL
 
     # Enable Claro as default admin theme
@@ -125,14 +125,16 @@ cd /workspace &&
 # Establish connection with Google Cloud through Minio client
 mc config host add gcs https://storage.googleapis.com "$DP_GOOGLE_ACCESS_KEY" "$DP_GOOGLE_SECRET"
 
-if ! mc find gcs/drupalpod/ready-made-envs.tar.gz; then
+if ! mc find gcs/drupalpod/"$CURRENT_BRANCH"/ready-made-envs.tar.gz; then
   # Upload files if it doesn't exist yet
   echo "*** Upload environments file to Google Cloud"
-  mc cp /workspace/ready-made-envs.tar.gz gcs/drupalpod/ready-made-envs.tar.gz
+  echo "drupalpod/$CURRENT_BRANCH/ready-made-envs.tar.gz"
+  mc cp /workspace/ready-made-envs.tar.gz gcs/drupalpod/"$CURRENT_BRANCH"/ready-made-envs.tar.gz
 else
   # File already exist, send a message to manually delete and then upload the file
   echo "*** File already exist, uploading a copy of the file with branch and date info"
-  TODAY=$(date +"%Y-%m-%d")
-  CURRENT_BRANCH=branch---"$(cd "$GITPOD_REPO_ROOT" && git branch --show-current)"
-  mc cp /workspace/ready-made-envs.tar.gz gcs/drupalpod/"$CURRENT_BRANCH"/"$TODAY"/ready-made-envs.tar.gz
+  CURRENT_BRANCH="$(cd "$GITPOD_REPO_ROOT" && git branch --show-current)"
+  DATE_TIME=$(date +"%Y-%m-%d___%H-%M-%p")
+  echo "drupalpod/$CURRENT_BRANCH/$DATE_TIME/ready-made-envs.tar.gz"
+  mc cp /workspace/ready-made-envs.tar.gz gcs/drupalpod/"$CURRENT_BRANCH"/"$DATE_TIME"/ready-made-envs.tar.gz
 fi

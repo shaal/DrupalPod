@@ -13,10 +13,10 @@ fi
 mc config host add gcs https://storage.googleapis.com "$DP_GOOGLE_ACCESS_KEY" "$DP_GOOGLE_SECRET"
 
 # Check if ready-made envs file exist
-if mc find gcs/drupalpod/ready-made-envs.tar.gz; then
+if mc find gcs/drupalpod/"$CURRENT_BRANCH"/ready-made-envs.tar.gz; then
     # Download the ready-made envs file
     echo "*** Downloading all the environments"
-    mc cp gcs/drupalpod/ready-made-envs.tar.gz /workspace/ready-made-envs.tar.gz
+    mc cp gcs/drupalpod/"$CURRENT_BRANCH"/ready-made-envs.tar.gz /workspace/ready-made-envs.tar.gz
 
     # Extact the file
     echo "*** Extracting the environments (less than 1 minute)"

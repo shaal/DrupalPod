@@ -26,6 +26,7 @@ fi
 if [ -n "$READY_MADE_ENV_SOURCE" ]; then
     # Download the ready-made envs file
     echo "*** Downloading all the environments"
+    echo "Restoring from $READY_MADE_ENV_SOURCE"
     mc cp "$READY_MADE_ENV_SOURCE" /workspace/ready-made-envs.tar.gz
 
     # Extact the file

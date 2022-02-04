@@ -12,6 +12,8 @@ fi
 # Establish connection with Google Cloud through Minio client
 mc config host add gcs https://storage.googleapis.com "$DP_GOOGLE_ACCESS_KEY" "$DP_GOOGLE_SECRET"
 
+CURRENT_BRANCH="$(cd "$GITPOD_REPO_ROOT" && git branch --show-current)"
+
 # Check if ready-made envs file exist
 if mc find gcs/drupalpod/"$CURRENT_BRANCH"/ready-made-envs.tar.gz; then
     # Download the ready-made envs file

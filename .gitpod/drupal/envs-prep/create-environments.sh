@@ -125,6 +125,9 @@ cd /workspace &&
 # Establish connection with Google Cloud through Minio client
 mc config host add gcs https://storage.googleapis.com "$DP_GOOGLE_ACCESS_KEY" "$DP_GOOGLE_SECRET"
 
+CURRENT_BRANCH="$(cd "$GITPOD_REPO_ROOT" && git branch --show-current)"
+DATE_TIME=$(date +"%Y-%m-%d___%H-%M-%p")
+
 if ! mc find gcs/drupalpod/"$CURRENT_BRANCH"/ready-made-envs.tar.gz; then
   # Upload files if it doesn't exist yet
   echo "*** Upload environments file to Google Cloud"
@@ -133,8 +136,6 @@ if ! mc find gcs/drupalpod/"$CURRENT_BRANCH"/ready-made-envs.tar.gz; then
 else
   # File already exist, send a message to manually delete and then upload the file
   echo "*** File already exist, uploading a copy of the file with branch and date info"
-  CURRENT_BRANCH="$(cd "$GITPOD_REPO_ROOT" && git branch --show-current)"
-  DATE_TIME=$(date +"%Y-%m-%d___%H-%M-%p")
   echo "drupalpod/$CURRENT_BRANCH/$DATE_TIME/ready-made-envs.tar.gz"
   mc cp /workspace/ready-made-envs.tar.gz gcs/drupalpod/"$CURRENT_BRANCH"/"$DATE_TIME"/ready-made-envs.tar.gz
 fi

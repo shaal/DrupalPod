@@ -5,6 +5,9 @@ SHELL ["/bin/bash", "-c"]
 RUN sudo apt-get -qq update
 # RUN sudo apt-get -qq install -y apt-utils
 
+# Install dialog (interactive script)
+RUN sudo apt-get -qq install -y dialog
+
 # code from https://github.com/gitpod-io/workspace-images/blob/master/chunks/tool-docker/Dockerfile
 USER root
 # https://docs.docker.com/engine/install/ubuntu/
@@ -75,10 +78,6 @@ RUN wget -P /tmp https://raw.githubusercontent.com/drud/ddev/master/scripts/inst
 RUN wget https://github.com/extrawurst/gitui/releases/download/v0.20.1/gitui-linux-musl.tar.gz -P /tmp
 RUN sudo tar xzf /tmp/gitui-linux-musl.tar.gz -C /usr/bin
 
-# Install dialog (interactive script)
-# RUN brew install dialog
-# RUN sudo apt-get -qq install -y dialog
-
 # Install Minio client
 # RUN brew install minio-mc
 RUN wget https://dl.min.io/client/mc/release/linux-amd64/mcli_20220202020324.0.0_amd64.deb
@@ -89,9 +88,9 @@ RUN sudo mv /usr/local/bin/mcli /usr/local/bin/mc
 # USER root
 # RUN add-apt-repository -y ppa:ondrej/php \
 #     && install-packages composer
-USER root
-RUN add-apt-repository -y ppa:ondrej/php \
-    && install-packages php8.0
+# USER root
+# RUN add-apt-repository -y ppa:ondrej/php \
+#     && install-packages php8.0
 # RUN brew install composer
 
 # Instal PHP
@@ -105,10 +104,10 @@ RUN add-apt-repository -y ppa:ondrej/php \
 
 # RUN ./latest-composer.sh
 # Dockerfile
-FROM php:7.4.27-fpm
+# FROM php:7.4.27-fpm
 # Install Composer
 # RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-COPY --from=composer /usr/bin/composer /usr/bin/composer
+# COPY --from=composer /usr/bin/composer /usr/bin/composer
 
 # End workspace-base
 

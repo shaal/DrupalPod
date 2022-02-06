@@ -3,10 +3,10 @@ image: drupalpod/drupalpod-gitpod-base:20220206-optimized
 # when starting a workspace all docker images are ready
 tasks:
   - init: |
-      .gitpod/utils/send-a-message-gcs.sh > /tmp/output.txt
+      .gitpod/utils/send-a-message-gcs.sh > /tmp/output1.txt
       ddev debug download-images
       .gitpod/utils/ddev-in-gitpod-setup.sh
-      .gitpod/drupal/envs-prep/prepare-environments-gcs.sh
+      .gitpod/drupal/envs-prep/prepare-environments-gcs.sh > /tmp/output2.txt
       .gitpod/drupal/envs-prep/set-default-environment.sh
     command: |
       .gitpod/utils/ddev-in-gitpod-setup.sh

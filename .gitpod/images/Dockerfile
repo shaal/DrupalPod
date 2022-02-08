@@ -71,7 +71,7 @@ ENV PATH=/home/gitpod/.nvm/versions/node/v${NODE_VERSION}/bin:$PATH
 
 # Install ddev
 # RUN brew install drud/ddev/ddev
-RUN wget -P /tmp https://raw.githubusercontent.com/drud/ddev/master/scripts/install_ddev.sh && bash /tmp/install_ddev.sh v1.19.0-alpha3
+RUN wget -P /tmp https://raw.githubusercontent.com/drud/ddev/master/scripts/install_ddev.sh && bash /tmp/install_ddev.sh v1.19.0-alpha4
 
 # Install GitUI (terminal-ui for git)
 # RUN brew install gitui
@@ -80,8 +80,8 @@ RUN sudo tar xzf /tmp/gitui-linux-musl.tar.gz -C /usr/bin
 
 # Install Minio client
 # RUN brew install minio-mc
-RUN wget https://dl.min.io/client/mc/release/linux-amd64/mcli_20220202020324.0.0_amd64.deb
-RUN sudo dpkg -i mcli_20220202020324.0.0_amd64.deb
+RUN wget https://dl.min.io/client/mc/release/linux-amd64/mcli_20220207092534.0.0_amd64.deb
+RUN sudo dpkg -i mcli_20220207092534.0.0_amd64.deb
 RUN sudo mv /usr/local/bin/mcli /usr/local/bin/mc
 
 # Install composer

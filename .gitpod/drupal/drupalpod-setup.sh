@@ -307,7 +307,7 @@ rm -rf web/$PROJECT_TYPE/contrib/$DP_PROJECT_NAME
 cd web/$PROJECT_TYPE/contrib && ln -s ../../../repos/$DP_PROJECT_NAME .
 PROJECTASYMLINK
 
-        chmod +x "${GITPOD_REPO_ROOT}"/repps/add-project-as-symlink.sh
+        chmod +x "${GITPOD_REPO_ROOT}"/repos/add-project-as-symlink.sh
 
         echo "$(cat composer.json | jq '.scripts."post-install-cmd" |= . + ["repos/add-project-as-symlink.sh"]')" > composer.json
         echo "$(cat composer.json | jq '.scripts."post-update-cmd" |= . + ["repos/add-project-as-symlink.sh"]')" > composer.json

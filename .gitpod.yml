@@ -1,13 +1,12 @@
-image: drupalpod/drupalpod-gitpod-base:20211116-ready-made-envs
-
+image: drupalpod/drupalpod-gitpod-base:20220208-optimized
 # ddev and composer are running as part of the prebuild
 # when starting a workspace all docker images are ready
 tasks:
   - init: |
-      .gitpod/utils/send-a-message-gcs.sh
+      .gitpod/utils/send-a-message-gcs.sh > /tmp/output1.txt
       ddev debug download-images
       .gitpod/utils/ddev-in-gitpod-setup.sh
-      .gitpod/drupal/envs-prep/prepare-environments-gcs.sh
+      .gitpod/drupal/envs-prep/prepare-environments-gcs.sh > /tmp/output2.txt
       .gitpod/drupal/envs-prep/set-default-environment.sh
     command: |
       .gitpod/utils/ddev-in-gitpod-setup.sh
@@ -35,17 +34,11 @@ vscode:
     - rogalmic.bash-debug
 
 ports:
-  # Used by ddev - direct-bind https port
-  - port: 2222
-    onOpen: ignore
   # Used by ddev - local db clients
   - port: 3306
     onOpen: ignore
-  # Used by projector
-  - port: 6942
-    onOpen: ignore
   # Used by MailHog
-  - port: 8025
+  - port: 8027
     onOpen: ignore
   # Used by phpMyAdmin
   - port: 8036
@@ -53,27 +46,28 @@ ports:
   # Direct-connect ddev-webserver port that is the main port
   - port: 8080
     onOpen: ignore
-  # xdebug port
-  - port: 9000
+  # Ignore host https port
+  - port: 8443
     onOpen: ignore
-  # projector port
-  - port: 9999
+  # xdebug port
+  - port: 9003
+    onOpen: ignore
 
 github:
   prebuilds:
     # enable for the master/default branch (defaults to true)
-    master: true
+    master: false
     # enable for all branches in this repo (defaults to false)
-    branches: true
+    branches: false
     # enable for pull requests coming from this repo (defaults to true)
-    pullRequests: true
+    pullRequests: false
     # enable for pull requests coming from forks (defaults to false)
-    pullRequestsFromForks: true
+    pullRequestsFromForks: false
     # add a check to pull requests (defaults to true)
-    addCheck: true
+    addCheck: false
     # add a "Review in Gitpod" button as a comment to pull requests (defaults to false)
     addComment: false
     # add a "Review in Gitpod" button to the pull request's description (defaults to false)
-    addBadge: true
+    addBadge: false
     # add a label once the prebuild is ready to pull requests (defaults to false)
-    addLabel: true
+    addLabel: false

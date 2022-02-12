@@ -5,6 +5,7 @@ services:
   chromedriver:
     image: drupalci/chromedriver:production
     container_name: ddev-${DDEV_SITENAME}-chromedriver
+    networks: [default, ddev_default]
     labels:
       com.ddev.site-name: ${DDEV_SITENAME}
       com.ddev.approot: $DDEV_APPROOT

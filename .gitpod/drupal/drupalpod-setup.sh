@@ -17,32 +17,19 @@ if [ -n "$GITPOD_HEADLESS" ]; then
     DP_PROJECT_TYPE='default_drupalpod'
 fi
 
-# TODO: once Drupalpod extension supports additional modules - remove these 2 lines
-DP_EXTRA_DEVEL=1
-DP_EXTRA_ADMIN_TOOLBAR=1
-
 # Check if additional modules should be installed
-if [ -n "$DP_EXTRA_DEVEL" ]; then
-    DEVEL_NAME="devel"
-    DEVEL_PACKAGE="drupal/devel"
-    EXTRA_MODULES=1
-fi
+DEVEL_NAME="devel"
+DEVEL_PACKAGE="drupal/devel"
 
-if [ -n "$DP_EXTRA_ADMIN_TOOLBAR" ]; then
-    ADMIN_TOOLBAR_NAME="admin_toolbar_tools"
-    ADMIN_TOOLBAR_PACKAGE="drupal/admin_toolbar"
-    EXTRA_MODULES=1
-fi
+ADMIN_TOOLBAR_NAME="admin_toolbar_tools"
+ADMIN_TOOLBAR_PACKAGE="drupal/admin_toolbar"
 
 # @todo: Temporary fix until DrupalPod browser extension gets updated with correct supported versions
-# Supported versions:
+# Ready-made-envs versions:
+# 10.0.x
 # 9.4.x
 # 9.3.x
-# 9.2.x
-# 9.2.0
-# 9.1.0
-# 8.9.x
-# 8.9.0
+# 9.3.0
 
 # Legacy DrupalPod browser extension versions:
 # 9.2.0
@@ -53,10 +40,21 @@ fi
 # 9.3.x
 
 if [ "$DP_CORE_VERSION" == '9.0.x' ]; then
-    DP_CORE_VERSION='9.2.x'
+    DP_CORE_VERSION='9.3.x'
 elif [ "$DP_CORE_VERSION" == '9.1.x' ]; then
-    DP_CORE_VERSION='9.2.x'
+    DP_CORE_VERSION='9.3.x'
 fi
+
+# For Drupal core issues, that use branch, always use issue page version
+if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
+    DP_CORE_VERSION="$DP_MODULE_VERSION"
+fi
+
+# TODO: once Drupalpod extension supports additional modules - remove these 2 lines
+if [ "$DP_CORE_VERSION" != '10.0.x' ]; then
+    DP_EXTRA_DEVEL=1
+fi
+DP_EXTRA_ADMIN_TOOLBAR=1
 
 # Skip setup if it already ran once and if no special setup is set by DrupalPod extension
 if [ ! -f /workspace/drupalpod_initiated.status ] && [ -n "$DP_PROJECT_TYPE" ]; then
@@ -149,6 +147,10 @@ GITMODULESEND
         rm -f "${GITPOD_REPO_ROOT}"/composer.lock
 
         if [ "$ready_made_env_exist" ]; then
+            # Extact the file
+            echo "*** Extracting the environments (less than 1 minute)"
+            cd /workspace && time tar zxf ready-made-envs.tar.gz --checkpoint=.10000
+
             # Copying the ready-made environment of requested Drupal core version
             cd "$GITPOD_REPO_ROOT" && cp -rT ../ready-made-envs/"$DP_CORE_VERSION"/. .
         else
@@ -165,17 +167,25 @@ GITMODULESEND
                 install_version=~"$d"
                 ;;
             esac
-            cd "$GITPOD_REPO_ROOT" && ddev composer create -y --no-install drupal/recommended-project:"$install_version"
+
+            # Create required composer.json and composer.lock files
+            cd "$GITPOD_REPO_ROOT" && ddev . composer create -n --no-install drupal/recommended-project:"$install_version" temp-composer-files
+            cp "$GITPOD_REPO_ROOT"/temp-composer-files/* "$GITPOD_REPO_ROOT"/.
+            rm -rf "$GITPOD_REPO_ROOT"/temp-composer-files
         fi
     fi
 
     # Check if snapshot can be used (when no full reinstall needed)
     # Run it before any other ddev command (to avoid ddev restart)
+
     if [ ! "$DP_REINSTALL" ] && [ "$DP_INSTALL_PROFILE" != "''" ]; then
         if [ "$ready_made_env_exist" ]; then
             # Retrieve pre-made snapshot
+            # @todo: remove `mmariadb_10.3.gz` when https://github.com/drud/ddev/issues/3570 is resolved.
+            # cd "$GITPOD_REPO_ROOT" && \
+            # time ddev snapshot restore "$DP_INSTALL_PROFILE"
             cd "$GITPOD_REPO_ROOT" && \
-            time ddev snapshot restore "$DP_INSTALL_PROFILE"
+            time ddev snapshot restore "$DP_INSTALL_PROFILE"-mariadb_10.3.gz
         fi
     fi
 
@@ -183,6 +193,15 @@ GITMODULESEND
         echo Applying selected patch "$DP_PATCH_FILE"
         cd "${WORK_DIR}" && curl "$DP_PATCH_FILE" | patch -p1
     fi
+
+    # Programmatically fix Composer 2.2 allow-plugins to avoid errors
+    ddev composer config --no-plugins allow-plugins.composer/installers true
+    ddev composer config --no-plugins allow-plugins.drupal/core-project-message true
+    ddev composer config --no-plugins allow-plugins.drupal/core-vendor-hardening true
+    ddev composer config --no-plugins allow-plugins.drupal/core-composer-scaffold true
+
+    ddev composer config --no-plugins allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
+    ddev composer config --no-plugins allow-plugins.phpstan/extension-installer true
 
     # Add project source code as symlink (to repos/name_of_project)
     # double quotes explained - https://stackoverflow.com/a/1250279/5754049
@@ -205,10 +224,32 @@ GITMODULESEND
         repositories.drupal-core2 \
         ' '"'"' {"type": "path", "url": "'"repos/drupal/core"'"} '"'"' '
 
-        # Patch Drush to fix `drush cr` when core is symlinked
-        # https://github.com/drush-ops/drush/pull/4713
-        cd "$GITPOD_REPO_ROOT" && \
-        patch -p1 < "$GITPOD_REPO_ROOT"/src/composer-drupal-core-setup/drush-cr-when-core-is-symlinked.patch
+        cd "${GITPOD_REPO_ROOT}" && \
+        ddev composer config \
+        repositories.drupal-core3 \
+        ' '"'"' {"type": "path", "url": "'"repos/drupal/composer/Metapackage/CoreRecommended"'"} '"'"' '
+
+        cd "${GITPOD_REPO_ROOT}" && \
+        ddev composer config \
+        repositories.drupal-core4 \
+        ' '"'"' {"type": "path", "url": "'"repos/drupal/composer/Metapackage/DevDependencies"'"} '"'"' '
+
+        cd "${GITPOD_REPO_ROOT}" && \
+        ddev composer config \
+        repositories.drupal-core5 \
+        ' '"'"' {"type": "path", "url": "'"repos/drupal/composer/Plugin/ProjectMessage"'"} '"'"' '
+
+        cd "${GITPOD_REPO_ROOT}" && \
+        ddev composer config \
+        repositories.drupal-core6 \
+        ' '"'"' {"type": "path", "url": "'"repos/drupal/composer/Plugin/VendorHardening"'"} '"'"' '
+
+        # Patch the scaffold index.php and update.php files + patch Drush to fix `drush cr
+        # See https://www.drupal.org/project/drupal/issues/3188703
+        # See https://www.drupal.org/project/drupal/issues/1792310
+        # See https://github.com/drush-ops/drush/pull/4713
+        echo "$(cat composer.json | jq '.scripts."post-install-cmd" |= . + ["src/composer-drupal-core-setup/patch-core-and-drush.sh"]')" > composer.json
+        echo "$(cat composer.json | jq '.scripts."post-update-cmd" |= . + ["src/composer-drupal-core-setup/patch-core-and-drush.sh"]')" > composer.json
 
         # Removing the conflict part of composer
         echo "$(cat composer.json | jq 'del(.conflict)' --indent 4)" > composer.json
@@ -229,18 +270,48 @@ GITMODULESEND
             cd "$GITPOD_REPO_ROOT"/repos/drupal/sites && \
             ln -s ../../../web/sites/simpletest .
         fi
-    fi
-
-    # Patch index.php for Drupal core development (must run after composer require)
-    if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
 
         # Update composer.lock to allow composer's symlink of repos/drupal/core
-        cd "${GITPOD_REPO_ROOT}" && time ddev composer require drupal/core drupal/drupal
+        if [ "$ready_made_env_exist" ]; then
+            cd "${GITPOD_REPO_ROOT}" && time ddev composer require drupal/core drupal/drupal
+        else
+            cd "${GITPOD_REPO_ROOT}" && time ddev composer config repositories.lenient composer https://packages.drupal.org/lenient
+            cd "${GITPOD_REPO_ROOT}" && time ddev composer require \
+                                        drush/drush \
+                                        drupal/coder
 
-        # Set special setup for composer for working on Drupal core
-        cd "$GITPOD_REPO_ROOT"/web && \
-        patch -p1 < "$GITPOD_REPO_ROOT"/src/composer-drupal-core-setup/scaffold-patch-index-and-update-php.patch
+            # Download extra modules
+            if [ -n "$DP_EXTRA_DEVEL" ]; then
+                cd "${GITPOD_REPO_ROOT}" && \
+                ddev composer require "$DEVEL_PACKAGE"
+            fi
+            if [ -n "$DP_EXTRA_ADMIN_TOOLBAR" ]; then
+                cd "${GITPOD_REPO_ROOT}" && \
+                ddev composer require "$ADMIN_TOOLBAR_PACKAGE"
+            fi
+        fi
     elif [ -n "$DP_PROJECT_NAME" ]; then
+        # Drupal projects with no composer.json, bypass the symlink config, symlink has to be done manually.
+
+        if [ "$DP_PROJECT_TYPE" == "project_module" ]; then
+            PROJECT_TYPE=modules
+        elif [ "$DP_PROJECT_TYPE" == "project_theme" ]; then
+            PROJECT_TYPE=themes
+        fi
+
+cat <<PROJECTASYMLINK > "${GITPOD_REPO_ROOT}"/repos/add-project-as-symlink.sh
+#!/usr/bin/env bash
+# This file was dynamically generated by a script
+echo "Replace project with a symlink"
+rm -rf web/$PROJECT_TYPE/contrib/$DP_PROJECT_NAME
+cd web/$PROJECT_TYPE/contrib && ln -s ../../../repos/$DP_PROJECT_NAME .
+PROJECTASYMLINK
+
+        chmod +x "${GITPOD_REPO_ROOT}"/repos/add-project-as-symlink.sh
+
+        echo "$(cat composer.json | jq '.scripts."post-install-cmd" |= . + ["repos/add-project-as-symlink.sh"]')" > composer.json
+        echo "$(cat composer.json | jq '.scripts."post-update-cmd" |= . + ["repos/add-project-as-symlink.sh"]')" > composer.json
+
         # Add the project to composer (it will get the version according to the branch under `/repo/name_of_project`)
         cd "${GITPOD_REPO_ROOT}" && time ddev composer require drupal/"$DP_PROJECT_NAME"
     fi
@@ -253,15 +324,23 @@ GITMODULESEND
 
         # Install from scratch, if a full site install is required or ready-made-env doesn't exist
         if [ -n "$DP_REINSTALL" ] || [ ! "$ready_made_env_exist" ]; then
+            # restart ddev - so settings.php gets updated to include settings.ddev.php
+            ddev restart
+
             # New site install
             ddev drush si -y --account-pass=admin --site-name="DrupalPod" "$DP_INSTALL_PROFILE"
 
-            # Enabale extra modules
-            if [ -n "$EXTRA_MODULES" ]; then
+            # Enable extra modules
+            if [ -n "$DP_EXTRA_ADMIN_TOOLBAR" ]; then
                 cd "${GITPOD_REPO_ROOT}" && \
                 ddev drush en -y \
-                "$DEVEL_NAME" \
                 "$ADMIN_TOOLBAR_NAME"
+            fi
+
+            if [ -n "$DP_EXTRA_DEVEL" ]; then
+                cd "${GITPOD_REPO_ROOT}" && \
+                ddev drush en -y \
+                "$DEVEL_NAME"
             fi
 
             # Enable Claro as default admin theme

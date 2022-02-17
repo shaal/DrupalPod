@@ -9,23 +9,31 @@ RUN sudo apt-get -qq update
 RUN sudo apt-get -qq install -y dialog
 
 # code from https://github.com/gitpod-io/workspace-images/blob/master/chunks/tool-docker/Dockerfile
-USER root
-# https://docs.docker.com/engine/install/ubuntu/
-RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg \
-    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
-    $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null \
-    && install-packages docker-ce docker-ce-cli containerd.io
+# USER root
 
-RUN curl -o /usr/bin/slirp4netns -fsSL https://github.com/rootless-containers/slirp4netns/releases/download/v1.1.12/slirp4netns-$(uname -m) \
-    && chmod +x /usr/bin/slirp4netns
+# # Dazzle does not rebuild a layer until one of its lines are changed. Increase this counter to rebuild this layer.
+# ENV TRIGGER_REBUILD=1
 
-RUN curl -o /usr/local/bin/docker-compose -fsSL https://github.com/docker/compose/releases/download/v2.2.2/docker-compose-linux-$(uname -m) \
-    && chmod +x /usr/local/bin/docker-compose
+# # https://docs.docker.com/engine/install/ubuntu/
+# RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg \
+#     && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
+#     $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null \
+#     && apt update \
+#     && install-packages docker-ce docker-ce-cli containerd.io
 
-# https://github.com/wagoodman/dive
-RUN curl -o /tmp/dive.deb -fsSL https://github.com/wagoodman/dive/releases/download/v0.10.0/dive_0.10.0_linux_amd64.deb \
-    && apt-get install /tmp/dive.deb \
-    && rm /tmp/dive.deb
+# RUN curl -o /usr/bin/slirp4netns -fsSL https://github.com/rootless-containers/slirp4netns/releases/download/v1.1.12/slirp4netns-$(uname -m) \
+#     && chmod +x /usr/bin/slirp4netns
+
+# RUN curl -o /usr/local/bin/docker-compose -fsSL https://github.com/docker/compose/releases/download/v2.2.2/docker-compose-linux-$(uname -m) \
+#     && chmod +x /usr/local/bin/docker-compose
+
+# # https://github.com/wagoodman/dive
+# RUN curl -o /tmp/dive.deb -fsSL https://github.com/wagoodman/dive/releases/download/v0.10.0/dive_0.10.0_linux_amd64.deb \
+#     && apt install /tmp/dive.deb \
+#     && rm /tmp/dive.deb
+# RUN curl -fsSL https://get.docker.com -o get-docker.sh
+# RUN sudo sh get-docker.sh
+USER gitpod
 
 # Install required libraries for Projector + PhpStorm
 # https://github.com/JetBrains/projector-installer
@@ -56,22 +64,23 @@ RUN curl -o /tmp/dive.deb -fsSL https://github.com/wagoodman/dive/releases/downl
 # ENV HOMEBREW_NO_AUTO_UPDATE=1
 
 ### Node.js ###
-USER gitpod
-ENV NODE_VERSION=16.13.2
-# from https://github.com/gitpod-io/workspace-images/blob/master/chunks/lang-node/Dockerfile
-RUN curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | PROFILE=/dev/null bash \
-    && bash -c ". .nvm/nvm.sh \
-    && nvm install v${NODE_VERSION} \
-    && nvm alias default v${NODE_VERSION} \
-    && npm install -g typescript yarn node-gyp" \
-    && echo ". ~/.nvm/nvm-lazy.sh"  >> /home/gitpod/.bashrc.d/50-node
-# above, we are adding the lazy nvm init to .bashrc, because one is executed on interactive shells, the other for non-interactive shells (e.g. plugin-host)
-COPY --chown=gitpod:gitpod nvm-lazy.sh /home/gitpod/.nvm/nvm-lazy.sh
-ENV PATH=/home/gitpod/.nvm/versions/node/v${NODE_VERSION}/bin:$PATH
+# USER gitpod
+# ENV NODE_VERSION=16.13.2
+# # from https://github.com/gitpod-io/workspace-images/blob/master/chunks/lang-node/Dockerfile
+# RUN curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | PROFILE=/dev/null bash \
+#     && bash -c ". .nvm/nvm.sh \
+#     && nvm install v${NODE_VERSION} \
+#     && nvm alias default v${NODE_VERSION} \
+#     && npm install -g typescript yarn node-gyp" \
+#     && echo ". ~/.nvm/nvm-lazy.sh"  >> /home/gitpod/.bashrc.d/50-node
+# # above, we are adding the lazy nvm init to .bashrc, because one is executed on interactive shells, the other for non-interactive shells (e.g. plugin-host)
+# COPY --chown=gitpod:gitpod nvm-lazy.sh /home/gitpod/.nvm/nvm-lazy.sh
+# ENV PATH=/home/gitpod/.nvm/versions/node/v${NODE_VERSION}/bin:$PATH
 
 # Install ddev
+USER gitpod
 # RUN brew install drud/ddev/ddev
-RUN wget -P /tmp https://raw.githubusercontent.com/drud/ddev/master/scripts/install_ddev.sh && bash /tmp/install_ddev.sh v1.19.0-alpha4
+RUN wget -P /tmp https://raw.githubusercontent.com/drud/ddev/master/scripts/install_ddev.sh && bash /tmp/install_ddev.sh v1.19.0-alpha5
 
 # Install GitUI (terminal-ui for git)
 # RUN brew install gitui
@@ -80,8 +89,8 @@ RUN sudo tar xzf /tmp/gitui-linux-musl.tar.gz -C /usr/bin
 
 # Install Minio client
 # RUN brew install minio-mc
-RUN wget https://dl.min.io/client/mc/release/linux-amd64/mcli_20220207092534.0.0_amd64.deb
-RUN sudo dpkg -i mcli_20220207092534.0.0_amd64.deb
+RUN wget https://dl.min.io/client/mc/release/linux-amd64/mcli_20220216055401.0.0_amd64.deb
+RUN sudo dpkg -i mcli_20220216055401.0.0_amd64.deb
 RUN sudo mv /usr/local/bin/mcli /usr/local/bin/mc
 
 # Install composer

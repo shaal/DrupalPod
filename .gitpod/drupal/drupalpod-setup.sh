@@ -273,7 +273,7 @@ GITMODULESEND
 
         # Update composer.lock to allow composer's symlink of repos/drupal/core
         if [ "$ready_made_env_exist" ]; then
-            cd "${GITPOD_REPO_ROOT}" && time ddev composer require drupal/core drupal/drupal
+            cd "${GITPOD_REPO_ROOT}" && time ddev composer update
         else
             cd "${GITPOD_REPO_ROOT}" && time ddev composer config repositories.lenient composer https://packages.drupal.org/lenient
             cd "${GITPOD_REPO_ROOT}" && time ddev composer require \

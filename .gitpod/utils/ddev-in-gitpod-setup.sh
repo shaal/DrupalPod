@@ -5,7 +5,7 @@ fi
 
 # Set the default PHP version to 8.0
 if [ -z "$DP_PHP_VERSION" ]; then
-  DP_PHP_VERSION="8.0"
+  DP_PHP_VERSION="8.1"
 fi
 
 DDEV_DIR="${GITPOD_REPO_ROOT}/.ddev"

@@ -67,6 +67,8 @@ for d in "${allDrupalSupportedVersions[@]}"; do
 
   # @todo: temporary fix until devel works with drupal 10.x
   # replace $COMPOSER_DEVEL with drupal/devel
+  rm "$WORK_DIR"/"$d"/composer.lock
+
   cd "$WORK_DIR"/"$d" && \
     ddev composer require \
     drupal/admin_toolbar \

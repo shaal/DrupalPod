@@ -5,8 +5,8 @@ SHELL ["/bin/bash", "-c"]
 RUN sudo apt-get -qq update
 # RUN sudo apt-get -qq install -y apt-utils
 
-# Install dialog (interactive script)
-RUN sudo apt-get -qq install -y dialog
+# Install dialog (interactive script) + PHP (for VSCode's PHP Intelephense)
+RUN sudo apt-get -qq install -y dialog php
 
 # code from https://github.com/gitpod-io/workspace-images/blob/master/chunks/tool-docker/Dockerfile
 # USER root

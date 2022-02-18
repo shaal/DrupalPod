@@ -11,3 +11,6 @@ sudo cp "${GITPOD_REPO_ROOT}"/.gitpod/utils/preview.template.sh /usr/local/bin/p
 
 # Create a protect-my-git command
 sudo cp "${GITPOD_REPO_ROOT}"/.gitpod/utils/protect-my-git.template.sh /usr/local/bin/protect-my-git
+
+# Create php command (run php inside ddev container)
+sudo cp "${GITPOD_REPO_ROOT}"/.gitpod/utils/ddev-php.template.sh /usr/local/bin/php

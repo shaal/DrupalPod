@@ -208,8 +208,9 @@ GITMODULESEND
     if [ -n "$DP_PROJECT_NAME" ]; then
         cd "${GITPOD_REPO_ROOT}" && \
         ddev composer config \
-        repositories.drupal-core1 \
-        ' '"'"' {"type": "path", "url": "'"repos/$DP_PROJECT_NAME"'", "options": {"symlink": true}} '"'"' '
+        repositories.core1 \
+        '{"type": "path", "url": "repos/'"$DP_PROJECT_NAME"'", "options": {"symlink": true}}'
+
 
         cd "$GITPOD_REPO_ROOT" && \
         ddev composer config minimum-stability dev
@@ -222,27 +223,27 @@ GITMODULESEND
         cd "${GITPOD_REPO_ROOT}" && \
         ddev composer config \
         repositories.drupal-core2 \
-        ' '"'"' {"type": "path", "url": "'"repos/drupal/core"'"} '"'"' '
+        '{"type": "path", "url": "repos/drupal/core"}'
 
         cd "${GITPOD_REPO_ROOT}" && \
         ddev composer config \
         repositories.drupal-core3 \
-        ' '"'"' {"type": "path", "url": "'"repos/drupal/composer/Metapackage/CoreRecommended"'"} '"'"' '
+        '{"type": "path", "url": "repos/drupal/composer/Metapackage/CoreRecommended"}'
 
         cd "${GITPOD_REPO_ROOT}" && \
         ddev composer config \
         repositories.drupal-core4 \
-        ' '"'"' {"type": "path", "url": "'"repos/drupal/composer/Metapackage/DevDependencies"'"} '"'"' '
+        '{"type": "path", "url": "repos/drupal/composer/Metapackage/DevDependencies"}'
 
         cd "${GITPOD_REPO_ROOT}" && \
         ddev composer config \
         repositories.drupal-core5 \
-        ' '"'"' {"type": "path", "url": "'"repos/drupal/composer/Plugin/ProjectMessage"'"} '"'"' '
+        '{"type": "path", "url": "repos/drupal/composer/Plugin/ProjectMessage"}'
 
         cd "${GITPOD_REPO_ROOT}" && \
         ddev composer config \
         repositories.drupal-core6 \
-        ' '"'"' {"type": "path", "url": "'"repos/drupal/composer/Plugin/VendorHardening"'"} '"'"' '
+        '{"type": "path", "url": "repos/drupal/composer/Plugin/VendorHardening"}'
 
         # Patch the scaffold index.php and update.php files + patch Drush to fix `drush cr
         # See https://www.drupal.org/project/drupal/issues/3188703

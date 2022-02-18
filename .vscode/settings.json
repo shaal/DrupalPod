@@ -36,7 +36,7 @@
   "redhat.telemetry.enabled": false,
 
   /* PHP Intelephense */
-  "php.executablePath": "ddev php",
+  "php.validate.executablePath": "ddev php",
   "php.suggest.basic": false,
 
   /* phpSniffer settings */

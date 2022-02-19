@@ -7,6 +7,7 @@ composer.lock
 .gitattributes
 
 # DrupalPod
+.drupalpod_initiated
 .gitmodules
 repos/
 src/**/node_modules/
@@ -14,4 +15,3 @@ src/**/package-lock.json
 src/**/out/
 src/**/*.vsix
 src/**/.vscode-test/
-

@@ -35,6 +35,10 @@
   "html.format.wrapLineLength": 80,
   "redhat.telemetry.enabled": false,
 
+  /* PHP Intelephense */
+  "php.validate.executablePath": "/usr/local/bin/php",
+  "php.suggest.basic": false,
+
   /* phpSniffer settings */
   "phpSniffer.executablesFolder": "vendor/bin",
   "phpSniffer.standard": "Drupal",

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-if [ -n "$DEBUG_DRUPALPOD" ] || [ -n "$GITPOD_HEADLESS" ]; then
+if [ -n "$DEBUG_SCRIPT" ] || [ -n "$GITPOD_HEADLESS" ]; then
     set -x
 fi
 
@@ -57,7 +57,7 @@ fi
 DP_EXTRA_ADMIN_TOOLBAR=1
 
 # Skip setup if it already ran once and if no special setup is set by DrupalPod extension
-if [ ! -f /workspace/drupalpod_initiated.status ] && [ -n "$DP_PROJECT_TYPE" ]; then
+if [ ! -f "${GITPOD_REPO_ROOT}"/.drupalpod_initiated ] && [ -n "$DP_PROJECT_TYPE" ]; then
 
     # Add git.drupal.org to known_hosts
     if [ -z "$GITPOD_HEADLESS" ]; then
@@ -208,8 +208,9 @@ GITMODULESEND
     if [ -n "$DP_PROJECT_NAME" ]; then
         cd "${GITPOD_REPO_ROOT}" && \
         ddev composer config \
-        repositories.drupal-core1 \
-        ' '"'"' {"type": "path", "url": "'"repos/$DP_PROJECT_NAME"'", "options": {"symlink": true}} '"'"' '
+        repositories.core1 \
+        '{"type": "path", "url": "repos/'"$DP_PROJECT_NAME"'", "options": {"symlink": true}}'
+
 
         cd "$GITPOD_REPO_ROOT" && \
         ddev composer config minimum-stability dev
@@ -222,27 +223,27 @@ GITMODULESEND
         cd "${GITPOD_REPO_ROOT}" && \
         ddev composer config \
         repositories.drupal-core2 \
-        ' '"'"' {"type": "path", "url": "'"repos/drupal/core"'"} '"'"' '
+        '{"type": "path", "url": "repos/drupal/core"}'
 
         cd "${GITPOD_REPO_ROOT}" && \
         ddev composer config \
         repositories.drupal-core3 \
-        ' '"'"' {"type": "path", "url": "'"repos/drupal/composer/Metapackage/CoreRecommended"'"} '"'"' '
+        '{"type": "path", "url": "repos/drupal/composer/Metapackage/CoreRecommended"}'
 
         cd "${GITPOD_REPO_ROOT}" && \
         ddev composer config \
         repositories.drupal-core4 \
-        ' '"'"' {"type": "path", "url": "'"repos/drupal/composer/Metapackage/DevDependencies"'"} '"'"' '
+        '{"type": "path", "url": "repos/drupal/composer/Metapackage/DevDependencies"}'
 
         cd "${GITPOD_REPO_ROOT}" && \
         ddev composer config \
         repositories.drupal-core5 \
-        ' '"'"' {"type": "path", "url": "'"repos/drupal/composer/Plugin/ProjectMessage"'"} '"'"' '
+        '{"type": "path", "url": "repos/drupal/composer/Plugin/ProjectMessage"}'
 
         cd "${GITPOD_REPO_ROOT}" && \
         ddev composer config \
         repositories.drupal-core6 \
-        ' '"'"' {"type": "path", "url": "'"repos/drupal/composer/Plugin/VendorHardening"'"} '"'"' '
+        '{"type": "path", "url": "repos/drupal/composer/Plugin/VendorHardening"}'
 
         # Patch the scaffold index.php and update.php files + patch Drush to fix `drush cr
         # See https://www.drupal.org/project/drupal/issues/3188703
@@ -382,7 +383,7 @@ PROJECTASYMLINK
     echo "ddev snapshot restore --latest"
 
     # Save a file to mark workspace already initiated
-    touch /workspace/drupalpod_initiated.status
+    touch "${GITPOD_REPO_ROOT}"/.drupalpod_initiated
 
     # Finish measuring script time
     script_end_time=$(date +%s)
@@ -396,6 +397,6 @@ fi
 preview
 
 # Get rid of ready-made-envs directory, to minimize storage of workspace
-if [ -z "$DEBUG_DRUPALPOD" ]; then
+if [ -z "$DEBUG_SCRIPT" ]; then
     rm -rf "$GITPOD_REPO_ROOT"/../ready-made-envs
 fi

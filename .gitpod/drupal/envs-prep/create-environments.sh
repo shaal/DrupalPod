@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-if [ -n "$DEBUG_DRUPALPOD" ] || [ -n "$GITPOD_HEADLESS" ]; then
+if [ -n "$DEBUG_SCRIPT" ] || [ -n "$GITPOD_HEADLESS" ]; then
     set -x
 fi
 
@@ -30,7 +30,7 @@ allProfiles=(minimal standard demo_umami)
 for d in "${allDrupalSupportedVersions[@]}"; do
   # Create ddev config
   mkdir -p "$WORK_DIR"/"$d"
-  cd "$WORK_DIR"/"$d" && ddev config --docroot=web --create-docroot --project-type=drupal9 --php-version=8.0 --project-name=drupalpod
+  cd "$WORK_DIR"/"$d" && ddev config --docroot=web --create-docroot --project-type=drupal9 --php-version=8.1 --project-name=drupalpod
 
   # For versions end with x - add `-dev` suffix (ie. 9.3.x-dev)
   # For versions without x - add `~` prefix (ie. ~9.2.0)
@@ -67,6 +67,8 @@ for d in "${allDrupalSupportedVersions[@]}"; do
 
   # @todo: temporary fix until devel works with drupal 10.x
   # replace $COMPOSER_DEVEL with drupal/devel
+  rm "$WORK_DIR"/"$d"/composer.lock
+
   cd "$WORK_DIR"/"$d" && \
     ddev composer require \
     drupal/admin_toolbar \

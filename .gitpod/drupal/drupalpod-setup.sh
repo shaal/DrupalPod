@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-if [ -n "$DEBUG_DRUPALPOD" ] || [ -n "$GITPOD_HEADLESS" ]; then
+if [ -n "$DEBUG_SCRIPT" ] || [ -n "$GITPOD_HEADLESS" ]; then
     set -x
 fi
 
@@ -397,6 +397,6 @@ fi
 preview
 
 # Get rid of ready-made-envs directory, to minimize storage of workspace
-if [ -z "$DEBUG_DRUPALPOD" ]; then
+if [ -z "$DEBUG_SCRIPT" ]; then
     rm -rf "$GITPOD_REPO_ROOT"/../ready-made-envs
 fi

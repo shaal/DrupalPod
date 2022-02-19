@@ -1,6 +1,6 @@
 #!/bin/bash
 set -eu -o pipefail
-# if [ -n "$DEBUG_DRUPALPOD" ]; then
+# if [ -n "$DEBUG_SCRIPT" ]; then
 #     set -x
 # fi
 

@@ -57,7 +57,7 @@ fi
 DP_EXTRA_ADMIN_TOOLBAR=1
 
 # Skip setup if it already ran once and if no special setup is set by DrupalPod extension
-if [ ! -f /workspace/drupalpod_initiated.status ] && [ -n "$DP_PROJECT_TYPE" ]; then
+if [ ! -f "${GITPOD_REPO_ROOT}"/.drupalpod_initiated ] && [ -n "$DP_PROJECT_TYPE" ]; then
 
     # Add git.drupal.org to known_hosts
     if [ -z "$GITPOD_HEADLESS" ]; then
@@ -383,7 +383,7 @@ PROJECTASYMLINK
     echo "ddev snapshot restore --latest"
 
     # Save a file to mark workspace already initiated
-    touch /workspace/drupalpod_initiated.status
+    touch "${GITPOD_REPO_ROOT}"/.drupalpod_initiated
 
     # Finish measuring script time
     script_end_time=$(date +%s)

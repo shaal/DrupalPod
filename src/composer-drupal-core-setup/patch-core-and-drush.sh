@@ -6,6 +6,6 @@ fi
 git apply --directory=web -v src/composer-drupal-core-setup/scaffold-patch-index-and-update-php.patch
 
 # Run patch for Drush only once
-if [ ! -f /workspace/drupalpod_initiated.status ]; then
+if [ ! -f "${GITPOD_REPO_ROOT}"/.drupalpod_initiated ]; then
     git apply -v src/composer-drupal-core-setup/drush-cr-when-core-is-symlinked.patch
 fi

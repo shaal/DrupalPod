@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
-set -eu -o pipefail
-
 if [ -n "$DEBUG_SCRIPT" ] || [ -n "$GITPOD_HEADLESS" ]; then
-    set -xeu -o pipefail
+    set -x
 fi
 
 # Install Drush + Coder

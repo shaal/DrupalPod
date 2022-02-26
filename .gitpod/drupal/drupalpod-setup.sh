@@ -20,10 +20,10 @@ fi
 
 # Check if additional modules should be installed
 export DEVEL_NAME="devel"
-export DEVEL_PACKAGE="drupal/devel"
+export DEVEL_PACKAGE="drupal/devel:^4.1"
 
 export ADMIN_TOOLBAR_NAME="admin_toolbar_tools"
-export ADMIN_TOOLBAR_PACKAGE="drupal/admin_toolbar"
+export ADMIN_TOOLBAR_PACKAGE="drupal/admin_toolbar:^3.1"
 
 # @todo: Temporary fix until DrupalPod browser extension gets updated with correct supported versions
 # Ready-made-envs versions:

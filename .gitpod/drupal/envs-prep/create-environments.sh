@@ -30,7 +30,7 @@ allProfiles=(minimal standard demo_umami)
 for d in "${allDrupalSupportedVersions[@]}"; do
   # Create ddev config
   mkdir -p "$WORK_DIR"/"$d"
-  cd "$WORK_DIR"/"$d" && ddev config --docroot=web --create-docroot --project-type=drupal9 --php-version=8.1 --project-name=drupalpod
+  cd "$WORK_DIR"/"$d" && ddev config --docroot=web --create-docroot --project-type=drupal9 --php-version=8.0 --project-name=drupalpod
 
   # For versions end with x - add `-dev` suffix (ie. 9.3.x-dev)
   # For versions without x - add `~` prefix (ie. ~9.2.0)

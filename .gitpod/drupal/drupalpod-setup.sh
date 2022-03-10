@@ -193,11 +193,8 @@ GITMODULESEND
     if [ ! "$DP_REINSTALL" ] && [ "$DP_INSTALL_PROFILE" != "''" ]; then
         if [ "$ready_made_env_exist" ]; then
             # Retrieve pre-made snapshot
-            # @todo: remove `mmariadb_10.3.gz` when https://github.com/drud/ddev/issues/3570 is resolved.
-            # cd "$GITPOD_REPO_ROOT" && \
-            # time ddev snapshot restore "$DP_INSTALL_PROFILE"
             cd "$GITPOD_REPO_ROOT" && \
-            time ddev snapshot restore "$DP_INSTALL_PROFILE"-mariadb_10.3.gz
+            time ddev snapshot restore "$DP_INSTALL_PROFILE"
         fi
     fi
 

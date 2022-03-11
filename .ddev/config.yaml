@@ -16,6 +16,7 @@ mutagen_enabled: false
 use_dns_when_possible: true
 composer_version: "2"
 web_environment: []
+nodejs_version: "16"
 
 # Key features of ddev's config.yaml:
 
@@ -61,12 +62,22 @@ web_environment: []
 # see https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 # For example Europe/Dublin or MST7MDT
 
+# composer_root: <relative_path>
+# Relative path to the composer root directory from the project root. This is
+# the directory which contains the composer.json and where all Composer related
+# commands are executed.
+
 # composer_version: "2"
 # if composer_version:"2" it will use the most recent composer v2
 # It can also be set to "1", to get most recent composer v1
 # or "" for the default v2 created at release time.
 # It can be set to any existing specific composer version.
 # After first project 'ddev start' this will not be updated until it changes
+
+# nodejs_version: "16"
+# change from the default system Node.js version to another supported version, like 12, 14, 17.
+# Note that you can use 'ddev nvm' or nvm inside the web container to provide nearly any
+# Node.js version, including v6, etc.
 
 # additional_hostnames:
 #  - somename

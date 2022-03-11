@@ -9,7 +9,7 @@ RUN sudo apt-get -qq install -y dialog
 # Install ddev
 USER gitpod
 # RUN brew install drud/ddev/ddev
-RUN wget -P /tmp https://raw.githubusercontent.com/drud/ddev/master/scripts/install_ddev.sh && bash /tmp/install_ddev.sh v1.19.0-rc3
+RUN wget -P /tmp https://raw.githubusercontent.com/drud/ddev/master/scripts/install_ddev.sh && bash /tmp/install_ddev.sh
 
 # Install GitUI (terminal-ui for git)
 RUN wget https://github.com/extrawurst/gitui/releases/download/v0.20.1/gitui-linux-musl.tar.gz -P /tmp

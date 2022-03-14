@@ -11,4 +11,5 @@ if [ "$DP_EXTRA_ADMIN_TOOLBAR" != '1' ]; then
     unset ADMIN_TOOLBAR_PACKAGE
 fi
 
+cd "${GITPOD_REPO_ROOT}" && time ddev composer require --dev phpspec/prophecy-phpunit:^2 --no-install
 cd "${GITPOD_REPO_ROOT}" && time ddev composer require drush/drush:^11.0 drupal/coder:^8.3 $DEVEL_PACKAGE $ADMIN_TOOLBAR_PACKAGE

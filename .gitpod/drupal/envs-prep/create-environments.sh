@@ -69,6 +69,8 @@ for d in "${allDrupalSupportedVersions[@]}"; do
   # replace $COMPOSER_DEVEL with drupal/devel
   rm "$WORK_DIR"/"$d"/composer.lock
 
+  cd "$WORK_DIR" && ddev composer require --dev phpspec/prophecy-phpunit:^2 --no-install
+
   cd "$WORK_DIR"/"$d" && \
     ddev composer require \
     drupal/admin_toolbar \

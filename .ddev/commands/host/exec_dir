@@ -1,0 +1,12 @@
+#!/bin/bash
+
+## Description: Run programs in container, based on current host directory
+## Usage: exec_d [args]
+## Example: "ddev exec_d yarn"
+
+if [ -z "$1" ]; then
+  echo "No argument supplied"
+  exit 1
+fi
+
+ddev exec -d /var/www/html/"$(echo "$PWD" | cut -d'/' -f4-)" "$@"

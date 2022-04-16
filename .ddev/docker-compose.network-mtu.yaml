@@ -1,10 +1,13 @@
-# docker-compose does not use the dockerd MTU value.
+# Since Gitpod removed slirp4netns as part of performance improvements,
+# MTU value should be aligned to the one in gitpod.io
 #
-# A permanent fix is being worked on -
-# https://github.com/gitpod-io/gitpod/pull/9356
-# https://github.com/gitpod-io/gitpod/pull/9360
+# Gitpod fixed it for docker - https://github.com/gitpod-io/gitpod/pull/9356
+# and for docker-compose - https://github.com/gitpod-io/template-docker-compose/pull/4
 #
-# Temporary solution - manually set the MTU value to 1440
+# ddev doesn't use Gitpod's custom docker-compose binary. Instead, ddev uses 
+# its own docker-compose binary at /home/gitpod/.ddev/bin/docker-compose
+# 
+# Align the MTU value to the one that is set in Gitpod (1440)
 
 networks:
   default:

@@ -1,0 +1,12 @@
+# docker-compose does not use the dockerd MTU value.
+#
+# A permanent fix is being worked on -
+# https://github.com/gitpod-io/gitpod/pull/9356
+# https://github.com/gitpod-io/gitpod/pull/9360
+#
+# Temporary solution - manually set the MTU value to 1440
+
+networks:
+  default:
+    driver_opts:
+      com.docker.network.driver.mtu: 1440

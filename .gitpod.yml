@@ -36,26 +36,32 @@ vscode:
 ports:
   # Used by ddev - local db clients
   - port: 3306
+    name: local db
     description: local db
     onOpen: ignore
   # Used by MailHog
   - port: 8027
+    name: MailHog
     description: MailHog
     onOpen: ignore
   # Used by phpMyAdmin
   - port: 8036
+    name: phpMyAdmin
     description: phpMyAdmin
     onOpen: ignore
   # Direct-connect ddev-webserver port that is the main port
   - port: 8080
+    name: website
     description: website
     onOpen: ignore
   # Ignore host https port
   - port: 8443
+    name: N/A
     description: host https port
     onOpen: ignore
   # xdebug port
   - port: 9003
+    name: xdebug
     description: xdebug
     onOpen: ignore
 

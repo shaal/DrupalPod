@@ -4,9 +4,9 @@
 # Gitpod fixed it for docker - https://github.com/gitpod-io/gitpod/pull/9356
 # and for docker-compose - https://github.com/gitpod-io/template-docker-compose/pull/4
 #
-# ddev doesn't use Gitpod's custom docker-compose binary. Instead, ddev uses 
+# ddev doesn't use Gitpod's custom docker-compose binary. Instead, ddev uses
 # its own docker-compose binary at /home/gitpod/.ddev/bin/docker-compose
-# 
+#
 # Align the MTU value to the one that is set in Gitpod (1440)
 
 networks:

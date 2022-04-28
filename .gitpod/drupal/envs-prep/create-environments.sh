@@ -72,8 +72,8 @@ for d in "${allDrupalSupportedVersions[@]}"; do
   # replace $COMPOSER_DEVEL with drupal/devel
   rm "$WORK_DIR"/"$d"/composer.lock
 
-  cd "${GITPOD_REPO_ROOT}" && ddev composer require --dev drupal/core-dev:* -W --no-install
-  cd "$WORK_DIR"/"$d" && ddev composer require --dev phpspec/prophecy-phpunit:^2 --no-install
+  # Install phpunit and its dependency - core-dev
+  cd "$WORK_DIR"/"$d" && ddev composer require --dev phpspec/prophecy-phpunit:^2 drupal/core-dev:* -W --no-install
 
   cd "$WORK_DIR"/"$d" && \
     ddev composer require \

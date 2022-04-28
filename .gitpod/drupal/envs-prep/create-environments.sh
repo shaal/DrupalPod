@@ -32,6 +32,9 @@ for d in "${allDrupalSupportedVersions[@]}"; do
   mkdir -p "$WORK_DIR"/"$d"
   cd "$WORK_DIR"/"$d" && ddev config --docroot=web --create-docroot --project-type=drupal9 --php-version=8.0 --project-name=drupalpod
 
+  # Add ddev MTU fix to each environment
+  cp "$GITPOD_REPO_ROOT"/.ddev/docker-compose.network-mtu.yaml "$WORK_DIR"/"$d"/.ddev/.
+
   # For versions end with x - add `-dev` suffix (ie. 9.3.x-dev)
   # For versions without x - add `~` prefix (ie. ~9.2.0)
   case $d in

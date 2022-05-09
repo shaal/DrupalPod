@@ -7,6 +7,11 @@ fi
 # Measure the time it takes to go through the script
 script_start_time=$(date +%s)
 
+# Fix wrong value of GITPOD_REPO_ROOT when openning a Gitpod snapshot
+if [ "$GITPOD_REPO_ROOT" == '/workspace' ]; then
+    export GITPOD_REPO_ROOT=/workspace/DrupalPod
+fi
+
 # Load default envs
 export "$(grep -v '^#' "$GITPOD_REPO_ROOT"/.env | xargs -d '\n')"
 

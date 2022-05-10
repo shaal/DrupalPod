@@ -10,7 +10,8 @@ tasks:
       .gitpod/drupal/envs-prep/prepare-environments-gcs.sh > /tmp/output2.txt
       .gitpod/drupal/envs-prep/set-default-environment.sh
     command: |
-      # Fix wrong value of GITPOD_REPO_ROOT when openning a Gitpod snapshot
+      # Temporary fix for wrong value of GITPOD_REPO_ROOT when opening a Gitpod snapshot
+      # Todo: remove this when this issue is resolved - https://github.com/gitpod-io/gitpod/issues/9804
       if [ "$GITPOD_REPO_ROOT" == '/workspace' ]; then
         export GITPOD_REPO_ROOT="$THEIA_WORKSPACE_ROOT"
       fi

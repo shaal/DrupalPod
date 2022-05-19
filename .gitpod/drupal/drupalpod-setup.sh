@@ -258,12 +258,11 @@ GITMODULESEND
         repositories.drupal-core6 \
         '{"type": "path", "url": "repos/drupal/composer/Plugin/VendorHardening"}'
 
-        # Patch the scaffold index.php and update.php files + patch Drush to fix `drush cr
+        # Patch the scaffold index.php and update.php files
         # See https://www.drupal.org/project/drupal/issues/3188703
         # See https://www.drupal.org/project/drupal/issues/1792310
-        # See https://github.com/drush-ops/drush/pull/4713
-        echo "$(cat composer.json | jq '.scripts."post-install-cmd" |= . + ["src/composer-drupal-core-setup/patch-core-and-drush.sh"]')" > composer.json
-        echo "$(cat composer.json | jq '.scripts."post-update-cmd" |= . + ["src/composer-drupal-core-setup/patch-core-and-drush.sh"]')" > composer.json
+        echo "$(cat composer.json | jq '.scripts."post-install-cmd" |= . + ["src/composer-drupal-core-setup/patch-core-index-and-update.sh"]')" > composer.json
+        echo "$(cat composer.json | jq '.scripts."post-update-cmd" |= . + ["src/composer-drupal-core-setup/patch-core-index-and-update.sh"]')" > composer.json
 
         # Removing the conflict part of composer
         echo "$(cat composer.json | jq 'del(.conflict)' --indent 4)" > composer.json

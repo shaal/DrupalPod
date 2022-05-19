@@ -27,11 +27,11 @@ Once the installation is complete, you can install Drupal as normal, either with
 
 ## Limitations
 
-Most Drush commands work, but `drush cr` does *not*. To rebuild the Drupal
-container and clear caches, install Devel module and use its menu items instead.
+During some Composer commands you may see multiple copies of this error message:
 
-A fix is being worked on: see
-https://www.drupal.org/project/drupal/issues/1792310.
+> Could not scan for classes inside [Drupal class filename].
+
+These are harmless and can be ignored.
 
 ## Developing Drupal core
 
@@ -48,7 +48,8 @@ you need to be in the root directory of the project.
 
 Changes to the git clone's composer.json will be taken into account by Composer.
 So for example, if pulling from the main branch of Drupal core changes Composer
-dependencies, you should run Composer on the project to install these.
+dependencies, and in particular if you change to a different core major or minor
+branch, you should run `composer update` on the project to install these.
 
 ### Running tests
 
@@ -78,9 +79,19 @@ you're working on this project template or debugging it.
 
 ### How it works
 
-The composer.json at the project root uses a Composer path repository so that when the drupal/drupal package is installed, it's symlinked in from the Drupal core git clone, at the branch that the clone has checked out.
+The composer.json at the project root uses a Composer path repository so that
+when the drupal/drupal package is installed, it's symlinked in from the Drupal
+core git clone, at the branch that the clone has checked out.
 
-Drupal core itself defines path repositories in its top-level composer.json. These need to be overridden in the project root composer.json so they point to inside the Drupal core git clone.
+Drupal core itself defines path repositories in its top-level composer.json.
+These need to be overridden in the project root composer.json so they point to
+inside the Drupal core git clone.
+
+Additionally, the paths to the drupal/core-recommended and drupal/core-dev
+packages are defined as path repositories, so that the package versions which
+are fixed in those metapackages are respected in the project. This means the
+same versions are installed as if installing Composer packages on a plain git
+clone of Drupal core.
 
 ### Manual Installation
 
@@ -121,16 +132,22 @@ clone of the template repository.
 In a separate location, do:
 
 ```
-$ composer create-project joachim-n/drupal-core-development-project NEW_PROJECT_DIRECTORY --stability=dev --repository='{"url": "/path/to/git/clone/of/project/template/", "type": "vcs"}'
+$ composer create-project joachim-n/drupal-core-development-project NEW_PROJECT_DIRECTORY --stability=dev --repository='{"url":"/path/to/git/clone/of/project/template/","type":"vcs"}'
 ```
 
 ### Workarounds
 
-Several workarounds are necessary to make Drupal core work correctly when symlinked into the project. These are all taken care of by Composer scripts during installation. Details are below.
+Several workarounds are necessary to make Drupal core work correctly when
+symlinked into the project. These are all taken care of by Composer scripts
+during installation. Details are below.
+
+Most if not all of these will no longer be needed once
+https://www.drupal.org/project/drupal/issues/1792310 is fixed.
 
 #### Vendor folder
 
-The vendor folder has to be symlinked into the Drupal core repository, because otherwise code in core that expects to find a Composer autoloader fails.
+The vendor folder has to be symlinked into the Drupal core repository, because
+otherwise code in core that expects to find a Composer autoloader fails.
 
 This is done by a Composer script after initial installation. The manual command
 is:
@@ -139,26 +156,45 @@ is:
 ln -s ../../vendor ./repos/drupal/vendor
 ```
 
-#### App root index.php patch
+#### App root files patches
 
-The index.php scaffold file has to be patched after it has been copied to web/index.php, because otherwise DrupalKernel guesses the Drupal app root as incorrectly being inside the Drupal core git clone, which means it can't find the settings.php file.
+The index.php and update.php scaffold files have to be patched after they have
+been copied to web/index.php, because otherwise DrupalKernel guesses the Drupal
+app root as incorrectly being inside the Drupal core git clone, which means it
+can't find the settings.php file.
 
-This is done by a Composer script after initial installation. The manual command
-is:
+This is done by a Composer script after initial installation. The manual
+commands are:
 
 ```
 cd web && patch -p1 <../scaffold/scaffold-patch-index-php.patch
+cd web && patch -p1 <../scaffold/scaffold-patch-update-php.patch
 ```
 
 See https://www.drupal.org/project/drupal/issues/3188703 for more detail.
 
+#### Drush rebuild command
+
+The Drush cache:rebuild command does not work correctly if contrib modules are
+present, because it calls drupal_rebuild() which lets DrupalKernel guess the
+app root incorrectly.
+
+This project template contains a /drush folder which has a command class which
+replaces that command with custom code to correctly handle the app root.
+
 #### Simpletest folder
 
-When running browser tests, the initial setup of Drupal in FunctionalTestSetupTrait::prepareEnvironment() creates a site folder using the real file locations with symlinks resolved, thus `repos/drupal/sites/simpletest`, but during the request to the test site, Drupal looks in `/web/sites/simpletest`.
+When running browser tests, the initial setup of Drupal in
+FunctionalTestSetupTrait::prepareEnvironment() creates a site folder using the
+real file locations with symlinks resolved, thus
+`repos/drupal/sites/simpletest`, but during the request to the test site, Drupal
+looks in `/web/sites/simpletest`.
 
-Additionally, the HTML files output from Browser tests are written into the Drupal core git clone, and so the URLs shown in PHPUnit output are incorrect.
+Additionally, the HTML files output from Browser tests are written into the
+Drupal core git clone, and so the URLs shown in PHPUnit output are incorrect.
 
-The fix for both of these is to create the simpletest site folder in the web root and symlink it into the Drupal core git clone.
+The fix for both of these is to create the simpletest site folder in the web
+root and symlink it into the Drupal core git clone.
 
 This is done by a Composer script after initial installation. The manual command
 is:
@@ -167,3 +203,9 @@ is:
 mkdir -p web/sites/simpletest
 ln -s ../../../web/sites/simpletest repos/drupal/sites
 ```
+
+#### Autoload of Drupal composer testing classes
+
+Drupal's /composer folder is not symlinked and therefore isn't visible to
+Composer. It's needed for some tests, and so is declared as an autoload
+location.

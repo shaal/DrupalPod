@@ -1,7 +1,7 @@
 name: drupalpod
 type: drupal9
 docroot: web
-php_version: "8.0"
+php_version: "8.1"
 webserver_type: nginx-fpm
 router_http_port: "80"
 router_https_port: "443"
@@ -169,7 +169,7 @@ nodejs_version: "16"
 # If you prefer you can change this to "ddev.local" to preserve
 # pre-v1.9 behavior.
 
-# ngrok_args: --subdomain mysite --auth username:pass
+# ngrok_args: --basic-auth username:pass1234
 # Provide extra flags to the "ngrok http" command, see
 # https://ngrok.com/docs#http or run "ngrok http -h"
 

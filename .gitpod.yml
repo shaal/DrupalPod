@@ -56,7 +56,7 @@ ports:
     onOpen: ignore
   # Ignore host https port
   - port: 8443
-    name: N/A
+    name: (not used)
     description: host https port
     onOpen: ignore
   # xdebug port

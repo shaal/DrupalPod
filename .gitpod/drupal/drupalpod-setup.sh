@@ -28,9 +28,9 @@ export ADMIN_TOOLBAR_PACKAGE="drupal/admin_toolbar:^3.1"
 # @todo: Temporary fix until DrupalPod browser extension gets updated with correct supported versions
 # Ready-made-envs versions:
 # 10.0.x
+# 9.5.x
 # 9.4.x
-# 9.3.x
-# 9.3.0
+# 9.4.0
 
 # Legacy DrupalPod browser extension versions:
 # 9.2.0
@@ -41,9 +41,11 @@ export ADMIN_TOOLBAR_PACKAGE="drupal/admin_toolbar:^3.1"
 # 9.3.x
 
 if [ "$DP_CORE_VERSION" == '9.0.x' ]; then
-    export DP_CORE_VERSION='9.3.x'
+    export DP_CORE_VERSION='9.4.x'
 elif [ "$DP_CORE_VERSION" == '9.1.x' ]; then
-    export DP_CORE_VERSION='9.3.x'
+    export DP_CORE_VERSION='9.4.x'
+elif [ "$DP_CORE_VERSION" == '9.2.x' ]; then
+    export DP_CORE_VERSION='9.4.x'
 fi
 
 # TODO: once Drupalpod extension supports additional modules - remove these 2 lines

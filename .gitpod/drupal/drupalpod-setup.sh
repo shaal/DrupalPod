@@ -58,7 +58,7 @@ if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
 
     # @todo Disable devel module until it's compatible with Drupal 10
     if [ "$DP_MODULE_VERSION" == '10.0.x' ]; then
-        export DP_EXTRA_DEVEL=0
+        export DP_EXTRA_DEVEL="drupal/devel:^5.0@beta"
     fi
 fi
 

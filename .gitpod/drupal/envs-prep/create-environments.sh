@@ -60,7 +60,7 @@ for d in "${allDrupalSupportedVersions[@]}"; do
   # @todo: temporary fix until devel works with drupal 10.x
   # devel
   if [ "$d" == '10.0.x' ]; then
-    COMPOSER_DEVEL=''
+    COMPOSER_DEVEL='drupal/devel:^5.0@beta'
   else
     COMPOSER_DEVEL='drupal/devel'
   fi
@@ -89,20 +89,10 @@ for d in "${allDrupalSupportedVersions[@]}"; do
 
     echo "*** Adding extra modules"
 
-    # @todo: temporary fix until devel works with drupal 10.x
-    # devel
-    if [ "$d" == '10.0.x' ]; then
-      ENABLE_DEVEL=''
-    else
-      ENABLE_DEVEL='devel'
-    fi
-
-    # @todo: temporary fix until devel works with drupal 10.x
-    # replace $ENABLE_DEVEL with devel
     cd "$WORK_DIR"/"$d"  && \
       ddev drush en -y \
       admin_toolbar \
-      $ENABLE_DEVEL
+      devel
 
     # Enable Claro as default admin theme
     echo "*** Enable Claro theme"

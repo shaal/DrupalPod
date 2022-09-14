@@ -57,17 +57,12 @@ for d in "${allDrupalSupportedVersions[@]}"; do
 
   # Install additional packages
 
-  # @todo: temporary fix until devel works with drupal 10.x
   # devel
   if [ "$d" == '10.0.x' ]; then
     COMPOSER_DEVEL='drupal/devel:^5.0@beta'
   else
     COMPOSER_DEVEL='drupal/devel'
   fi
-
-  # @todo: temporary fix until devel works with drupal 10.x
-  # replace $COMPOSER_DEVEL with drupal/devel
-  rm "$WORK_DIR"/"$d"/composer.lock
 
   # Install phpunit and its dependency - core-dev
   cd "$WORK_DIR"/"$d" && ddev composer require --dev phpspec/prophecy-phpunit:^2 drupal/core-dev:* -W --no-install

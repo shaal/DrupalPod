@@ -20,7 +20,12 @@ fi
 
 # Check if additional modules should be installed
 export DEVEL_NAME="devel"
-export DEVEL_PACKAGE="drupal/devel:^4.1"
+# Install devel compatible with drupal core version
+if [ "$DP_CORE_VERSION" == '10.0.x' ]; then
+    export DEVEL_PACKAGE="drupal/devel:^5.0@beta"
+else
+    export DEVEL_PACKAGE="drupal/devel:^4.1"
+fi
 
 export ADMIN_TOOLBAR_NAME="admin_toolbar_tools"
 export ADMIN_TOOLBAR_PACKAGE="drupal/admin_toolbar:^3.1"
@@ -56,7 +61,7 @@ export DP_EXTRA_ADMIN_TOOLBAR=1
 if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
     export DP_CORE_VERSION="$DP_MODULE_VERSION"
 
-    # @todo Disable devel module until it's compatible with Drupal 10
+    # Install devel compatible with drupal 10.x
     if [ "$DP_MODULE_VERSION" == '10.0.x' ]; then
         export DP_EXTRA_DEVEL="drupal/devel:^5.0@beta"
     fi

@@ -60,11 +60,6 @@ export DP_EXTRA_ADMIN_TOOLBAR=1
 # For Drupal core issues, that use branch, always use issue page core version
 if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
     export DP_CORE_VERSION="$DP_MODULE_VERSION"
-
-    # Install devel compatible with drupal 10.x
-    if [ "$DP_MODULE_VERSION" == '10.0.x' ]; then
-        export DP_EXTRA_DEVEL="drupal/devel:^5.0@beta"
-    fi
 fi
 
 # Use PHP 8.1 for Drupal 10.0.x

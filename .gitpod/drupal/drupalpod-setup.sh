@@ -20,47 +20,14 @@ fi
 
 # Check if additional modules should be installed
 export DEVEL_NAME="devel"
-export DEVEL_PACKAGE="drupal/devel:^4.1"
+export DEVEL_PACKAGE="drupal/devel"
 
 export ADMIN_TOOLBAR_NAME="admin_toolbar_tools"
-export ADMIN_TOOLBAR_PACKAGE="drupal/admin_toolbar:^3.1"
-
-# @todo: Temporary fix until DrupalPod browser extension gets updated with correct supported versions
-# Ready-made-envs versions:
-# 10.0.x
-# 9.5.x
-# 9.4.x
-# 9.4.0
-
-# Legacy DrupalPod browser extension versions:
-# 9.2.0
-# 8.9.x
-# 9.0.x
-# 9.1.x
-# 9.2.x
-# 9.3.x
-
-if [ "$DP_CORE_VERSION" == '9.0.x' ]; then
-    export DP_CORE_VERSION='9.4.x'
-elif [ "$DP_CORE_VERSION" == '9.1.x' ]; then
-    export DP_CORE_VERSION='9.4.x'
-elif [ "$DP_CORE_VERSION" == '9.2.x' ]; then
-    export DP_CORE_VERSION='9.4.x'
-fi
+export ADMIN_TOO
 
 # TODO: once Drupalpod extension supports additional modules - remove these 2 lines
 export DP_EXTRA_DEVEL=1
 export DP_EXTRA_ADMIN_TOOLBAR=1
-
-# For Drupal core issues, that use branch, always use issue page core version
-if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
-    export DP_CORE_VERSION="$DP_MODULE_VERSION"
-
-    # @todo Disable devel module until it's compatible with Drupal 10
-    if [ "$DP_MODULE_VERSION" == '10.0.x' ]; then
-        export DP_EXTRA_DEVEL=0
-    fi
-fi
 
 # Use PHP 8.1 for Drupal 10.0.x
 if [ -n "$DP_PHP" ] && [ "$DP_PHP" != '8.1' ]; then

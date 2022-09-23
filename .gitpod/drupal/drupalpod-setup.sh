@@ -20,7 +20,7 @@ fi
 
 # Check if additional modules should be installed
 export DEVEL_NAME="devel"
-export DEVEL_PACKAGE="drupal/devel:^4.1"
+export DEVEL_PACKAGE="drupal/devel:^5"
 
 export ADMIN_TOOLBAR_NAME="admin_toolbar_tools"
 export ADMIN_TOOLBAR_PACKAGE="drupal/admin_toolbar:^3.1"
@@ -55,11 +55,6 @@ export DP_EXTRA_ADMIN_TOOLBAR=1
 # For Drupal core issues, that use branch, always use issue page core version
 if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
     export DP_CORE_VERSION="$DP_MODULE_VERSION"
-
-    # @todo Disable devel module until it's compatible with Drupal 10
-    if [ "$DP_MODULE_VERSION" == '10.0.x' ]; then
-        export DP_EXTRA_DEVEL=0
-    fi
 fi
 
 # Use PHP 8.1 for Drupal 10.0.x

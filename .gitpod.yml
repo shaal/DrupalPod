@@ -28,6 +28,7 @@ vscode:
     - wongjn.php-sniffer
     - neilbrayfield.php-docblocker
     - bmewburn.vscode-intelephense-client
+    - andrewdavidblum.drupal-smart-snippets
 
     # Twig extensions.
     - mblode.twig-language-2

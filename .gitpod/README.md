@@ -23,6 +23,8 @@
     1. Run `.gitpod/drupal/envs-prep/create-environments.sh` to create ready-made environments.
     1. Confirm ready-made environments zip file was uploaded to Google Cloud.
 
+1. Run manual prebuild (to load latest ready-made environments)
+
 1. Confirm latest setup
     1. Open new workspace (it will load ready-made environments with same name as current branch).
     1. Check if there are any updates (ie. ddev's default settings files).

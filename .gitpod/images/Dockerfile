@@ -17,8 +17,8 @@ RUN sudo tar xzf /tmp/gitui-linux-musl.tar.gz -C /usr/bin
 
 # (get latest Minio version from https://dl.min.io/client/mc/release/linux-amd64/)
 # Install Minio client
-RUN wget https://dl.min.io/client/mc/release/linux-amd64/mcli_20220916091647.0.0_amd64.deb
-RUN sudo dpkg -i mcli_20220916091647.0.0_amd64.deb
+RUN wget https://dl.min.io/client/mc/release/linux-amd64/mcli_20221012181250.0.0_amd64.deb
+RUN sudo dpkg -i mcli_20221012181250.0.0_amd64.deb
 RUN sudo mv /usr/local/bin/mcli /usr/local/bin/mc
 
 # End workspace-base

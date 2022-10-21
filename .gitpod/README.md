@@ -34,6 +34,9 @@
     1. Confirm core issues work as expected.
     1. Confirm contrib issue work as expected.
 
+1. Prepare ready-made environments in 'main' directory
+    1. Copy ready-made environments in Google Cloud from branch directory to 'main' directory, so when prebuild runs on 'main', it will pick up the right file <https://console.cloud.google.com/storage/browser/drupalpod>
+
 1. Merge PR into `main` branch
 
 1. Confirm `main` branch work as expected 🎉

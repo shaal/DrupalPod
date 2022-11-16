@@ -45,9 +45,12 @@ for d in "${allDrupalSupportedVersions[@]}"; do
 
   # Adding support for composer-drupal-lenient - https://packagist.org/packages/mglaman/composer-drupal-lenient
   if [[ "$d" == 10* ]]; then
-      export COMPOSER_DRUPAL_LENIENT=mglaman/composer-drupal-lenient
+      export COMPOSER_DRUPAL_LENIENT_PACKAGE="mglaman/composer-drupal-lenient"
+      export ADMIN_TOOLBAR_PACKAGE=''
   else
       export COMPOSER_DRUPAL_LENIENT=''
+      export ADMIN_TOOLBAR_NAME="admin_toolbar_tools"
+      export ADMIN_TOOLBAR_PACKAGE="drupal/admin_toolbar"
   fi
 
   echo "*** composer install"
@@ -73,11 +76,11 @@ for d in "${allDrupalSupportedVersions[@]}"; do
 
   cd "$WORK_DIR"/"$d" && \
     ddev composer require \
-    drupal/admin_toolbar \
+    "$ADMIN_TOOLBAR_PACKAGE" \
     drush/drush \
     drupal/coder \
     drupal/devel \
-    "$COMPOSER_DRUPAL_LENIENT"
+    "$COMPOSER_DRUPAL_LENIENT_PACKAGE"
 
   for p in "${allProfiles[@]}"; do
     echo Building drupal-"$d"-"$p"
@@ -89,10 +92,18 @@ for d in "${allDrupalSupportedVersions[@]}"; do
 
     echo "*** Adding extra modules"
 
-    cd "$WORK_DIR"/"$d"  && \
-      ddev drush en -y \
-      admin_toolbar \
-      devel
+    # Enable extra modules
+    if [ -n "$DP_EXTRA_ADMIN_TOOLBAR" ]; then
+        cd "$WORK_DIR"/"$d"  && \
+        ddev drush en -y \
+        "$ADMIN_TOOLBAR_NAME"
+    fi
+
+    if [ -n "$DP_EXTRA_DEVEL" ]; then
+        cd "$WORK_DIR"/"$d"  && \
+        ddev drush en -y \
+        "$DEVEL_NAME"
+    fi
 
     # Enable Claro as default admin theme
     echo "*** Enable Claro theme"

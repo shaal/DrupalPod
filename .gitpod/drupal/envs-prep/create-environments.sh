@@ -43,6 +43,13 @@ for d in "${allDrupalSupportedVersions[@]}"; do
     ;;
   esac
 
+  # Adding support for composer-drupal-lenient - https://packagist.org/packages/mglaman/composer-drupal-lenient
+  if [ "$d" == '10*' ]; then
+      export COMPOSER_DRUPAL_LENIENT=mglaman/composer-drupal-lenient
+  else
+      export COMPOSER_DRUPAL_LENIENT=''
+  fi
+
   echo "*** composer install"
   cd "$WORK_DIR"/"$d" && ddev composer create -y --no-install drupal/recommended-project:"$install_version"
 
@@ -54,6 +61,8 @@ for d in "${allDrupalSupportedVersions[@]}"; do
 
   ddev composer config --no-plugins allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
   ddev composer config --no-plugins allow-plugins.phpstan/extension-installer true
+
+  ddev composer config --no-plugins allow-plugins.mglaman/composer-drupal-lenient true
 
   # Install additional packages
 
@@ -67,7 +76,8 @@ for d in "${allDrupalSupportedVersions[@]}"; do
     drupal/admin_toolbar \
     drush/drush \
     drupal/coder \
-    drupal/devel
+    drupal/devel \
+    "$COMPOSER_DRUPAL_LENIENT"
 
   for p in "${allProfiles[@]}"; do
     echo Building drupal-"$d"-"$p"

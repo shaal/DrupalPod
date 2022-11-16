@@ -29,6 +29,13 @@ export ADMIN_TOOLBAR_PACKAGE="drupal/admin_toolbar:^3.1"
 export DP_EXTRA_DEVEL=1
 export DP_EXTRA_ADMIN_TOOLBAR=1
 
+# Adding support for composer-drupal-lenient - https://packagist.org/packages/mglaman/composer-drupal-lenient
+if [ "$DP_CORE_VERSION" == '10*' ] && [ "$DP_PROJECT_TYPE" == "project_core" ]; then
+    export COMPOSER_DRUPAL_LENIENT=mglaman/composer-drupal-lenient
+else
+    export COMPOSER_DRUPAL_LENIENT=''
+fi
+
 # Use PHP 8.1 for Drupal 10.0.x
 if [ -n "$DP_PHP" ] && [ "$DP_PHP" != '8.1' ]; then
     # Dynamically generate .ddev/config.gitpod.yaml file
@@ -139,7 +146,7 @@ GITMODULESEND
             # Copying the ready-made environment of requested Drupal core version
             cd "$GITPOD_REPO_ROOT" && cp -rT ../ready-made-envs/"$DP_CORE_VERSION"/. .
         else
-            # If not, run composer create-proejct with the requested version
+            # If not, run composer create-project with the requested version
 
             # For versions end with x - add `-dev` suffix (ie. 9.3.x-dev)
             # For versions without x - add `~` prefix (ie. ~9.2.0)
@@ -184,6 +191,8 @@ GITMODULESEND
 
     ddev composer config --no-plugins allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
     ddev composer config --no-plugins allow-plugins.phpstan/extension-installer true
+
+    ddev composer config --no-plugins allow-plugins.mglaman/composer-drupal-lenient true
 
     # Add project source code as symlink (to repos/name_of_project)
     # double quotes explained - https://stackoverflow.com/a/1250279/5754049
@@ -257,7 +266,6 @@ GITMODULESEND
         if [ "$ready_made_env_exist" ]; then
             cd "${GITPOD_REPO_ROOT}" && time ddev composer update
         else
-            cd "${GITPOD_REPO_ROOT}" && time ddev composer config repositories.lenient composer https://packages.drupal.org/lenient
             "${GITPOD_REPO_ROOT}"/.gitpod/drupal/install-essential-packages.sh
         fi
     elif [ -n "$DP_PROJECT_NAME" ]; then

@@ -43,12 +43,10 @@ for d in "${allDrupalSupportedVersions[@]}"; do
     ;;
   esac
 
-  # Adding support for composer-drupal-lenient - https://packagist.org/packages/mglaman/composer-drupal-lenient
+  # @todo: update when admin_toolbar becomes compatible with Drupal 10
   if [[ "$d" == 10* ]]; then
-      export COMPOSER_DRUPAL_LENIENT_PACKAGE="mglaman/composer-drupal-lenient"
-      export ADMIN_TOOLBAR_PACKAGE=''
+      unset ADMIN_TOOLBAR_PACKAGE
   else
-      export COMPOSER_DRUPAL_LENIENT=''
       export ADMIN_TOOLBAR_NAME="admin_toolbar_tools"
       export ADMIN_TOOLBAR_PACKAGE="drupal/admin_toolbar"
   fi
@@ -75,12 +73,7 @@ for d in "${allDrupalSupportedVersions[@]}"; do
   cd "$WORK_DIR"/"$d" && ddev composer require --dev phpspec/prophecy-phpunit:^2 drupal/core-dev:* -W --no-install
 
   cd "$WORK_DIR"/"$d" && \
-    ddev composer require \
-    "$ADMIN_TOOLBAR_PACKAGE" \
-    drush/drush \
-    drupal/coder \
-    drupal/devel \
-    "$COMPOSER_DRUPAL_LENIENT_PACKAGE"
+    time ddev . composer require drush/drush drupal/coder drupal/devel "$ADMIN_TOOLBAR_PACKAGE"
 
   for p in "${allProfiles[@]}"; do
     echo Building drupal-"$d"-"$p"
@@ -93,17 +86,13 @@ for d in "${allDrupalSupportedVersions[@]}"; do
     echo "*** Adding extra modules"
 
     # Enable extra modules
-    if [ -n "$DP_EXTRA_ADMIN_TOOLBAR" ]; then
+    if [ -n "$ADMIN_TOOLBAR_NAME" ]; then
         cd "$WORK_DIR"/"$d"  && \
         ddev drush en -y \
         "$ADMIN_TOOLBAR_NAME"
     fi
 
-    if [ -n "$DP_EXTRA_DEVEL" ]; then
-        cd "$WORK_DIR"/"$d"  && \
-        ddev drush en -y \
-        "$DEVEL_NAME"
-    fi
+    cd "$WORK_DIR"/"$d"  && ddev drush en -y devel
 
     # Enable Claro as default admin theme
     echo "*** Enable Claro theme"

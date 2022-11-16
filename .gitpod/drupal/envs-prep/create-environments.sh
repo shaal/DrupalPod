@@ -44,7 +44,7 @@ for d in "${allDrupalSupportedVersions[@]}"; do
   esac
 
   # Adding support for composer-drupal-lenient - https://packagist.org/packages/mglaman/composer-drupal-lenient
-  if [ "$d" == '10*' ]; then
+  if [[ "$d" == 10* ]]; then
       export COMPOSER_DRUPAL_LENIENT=mglaman/composer-drupal-lenient
   else
       export COMPOSER_DRUPAL_LENIENT=''

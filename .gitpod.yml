@@ -1,6 +1,6 @@
 image: drupalpod/drupalpod-gitpod-base:20221021
 
-# ddev and composer are running as part of the prebuild
+# DDEV and composer are running as part of the prebuild
 # when starting a workspace all docker images are ready
 tasks:
   - init: |
@@ -44,7 +44,7 @@ ports:
   # Used by JS projects
   - port: 3000
     onOpen: ignore
-  # Used by ddev - local db clients
+  # Used by DDEV - local db clients
   - port: 3306
     name: Database
     description: Access for local database clients
@@ -62,7 +62,7 @@ ports:
     name: phpMyAdmin
     description: phpMyAdmin
     onOpen: ignore
-  # Direct-connect ddev-webserver port that is the main port
+  # Direct-connect DDEV-webserver port that is the main port
   - port: 8080
     name: website
     description: website

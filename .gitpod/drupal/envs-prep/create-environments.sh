@@ -8,7 +8,7 @@ fi
 #   https://console.cloud.google.com/storage/browser
 echo "*** Rebuilding ready-made environments from scratch, this will take 8 minutes... (2 minutes per drupal version)"
 
-# Stop and unlist current ddev project
+# Stop and unlist current DDEV project
 ddev stop --unlist drupalpod
 
 # Empty existing ready-made-envs directory
@@ -25,10 +25,10 @@ allProfiles=(minimal standard demo_umami)
 
 # Run through each Drupal Supported Versions - a
 # Install minimal, standard and umami profiles
-# Create a ddev snapshot
+# Create a DDEV snapshot
 
 for d in "${allDrupalSupportedVersions[@]}"; do
-  # Create ddev config
+  # Create DDEV config
   mkdir -p "$WORK_DIR"/"$d"
   cd "$WORK_DIR"/"$d" && ddev config --docroot=web --create-docroot --project-type=drupal9 --php-version=8.1 --project-name=drupalpod --database=mariadb:10.3
 
@@ -43,6 +43,14 @@ for d in "${allDrupalSupportedVersions[@]}"; do
     ;;
   esac
 
+  # @todo: update when admin_toolbar becomes compatible with Drupal 10
+  if [[ "$d" == 10* ]]; then
+      unset ADMIN_TOOLBAR_PACKAGE
+  else
+      export ADMIN_TOOLBAR_NAME="admin_toolbar_tools"
+      export ADMIN_TOOLBAR_PACKAGE="drupal/admin_toolbar"
+  fi
+
   echo "*** composer install"
   cd "$WORK_DIR"/"$d" && ddev composer create -y --no-install drupal/recommended-project:"$install_version"
 
@@ -55,6 +63,8 @@ for d in "${allDrupalSupportedVersions[@]}"; do
   ddev composer config --no-plugins allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
   ddev composer config --no-plugins allow-plugins.phpstan/extension-installer true
 
+  ddev composer config --no-plugins allow-plugins.mglaman/composer-drupal-lenient true
+
   # Install additional packages
 
   rm "$WORK_DIR"/"$d"/composer.lock
@@ -63,11 +73,7 @@ for d in "${allDrupalSupportedVersions[@]}"; do
   cd "$WORK_DIR"/"$d" && ddev composer require --dev phpspec/prophecy-phpunit:^2 drupal/core-dev:* -W --no-install
 
   cd "$WORK_DIR"/"$d" && \
-    ddev composer require \
-    drupal/admin_toolbar \
-    drush/drush \
-    drupal/coder \
-    drupal/devel
+    time ddev . composer require drush/drush drupal/coder drupal/devel "$ADMIN_TOOLBAR_PACKAGE"
 
   for p in "${allProfiles[@]}"; do
     echo Building drupal-"$d"-"$p"
@@ -79,10 +85,14 @@ for d in "${allDrupalSupportedVersions[@]}"; do
 
     echo "*** Adding extra modules"
 
-    cd "$WORK_DIR"/"$d"  && \
-      ddev drush en -y \
-      admin_toolbar \
-      devel
+    # Enable extra modules
+    if [ -n "$ADMIN_TOOLBAR_NAME" ]; then
+        cd "$WORK_DIR"/"$d"  && \
+        ddev drush en -y \
+        "$ADMIN_TOOLBAR_NAME"
+    fi
+
+    cd "$WORK_DIR"/"$d"  && ddev drush en -y devel
 
     # Enable Claro as default admin theme
     echo "*** Enable Claro theme"
@@ -90,11 +100,11 @@ for d in "${allDrupalSupportedVersions[@]}"; do
       ddev drush then claro && \
       ddev drush config-set -y system.theme admin claro
 
-    echo "*** Save a ddev snapshot"
+    echo "*** Save a DDEV snapshot"
     cd "$WORK_DIR"/"$d" && ddev snapshot -n "$p"
   done
 
-  #  Stop any existing 'drupalpod' ddev project
+  #  Stop any existing 'drupalpod' DDEV project
   cd "$WORK_DIR"/"$d" && ddev stop --unlist drupalpod
 
 done

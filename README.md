@@ -35,7 +35,7 @@ No computer is needed because it is all running in the cloud.
 ## The secret sauce
 
 * [Gitpod](https://www.gitpod.io) - development environment in the cloud
-* [Ddev](https://ddev.readthedocs.io/en/stable) - easy setup for PHP projects using Docker
+* [DDEV](https://ddev.readthedocs.io/en/stable) - easy setup for PHP projects using Docker
 * [DrupalPod](https://chrome.google.com/webstore/detail/drupalpod-helper-extensio/pjfjhkcfkhbemnbpkakjhmboacefmjjl?hl=en
 ) Browser Extension
 * [Drupal Core Development Project](https://github.com/joachim-n/drupal-core-development-project)
@@ -63,7 +63,7 @@ If SSH keys are valid, it stores your private SSH key as an environment variable
   [WIP - making a friendlier interactive dialog](https://github.com/shaal/DrupalPod/issues/4).
 
 * If you prefer working locally - you can clone this repo to your computer.\
- The only 2 requirements are [Docker](https://ddev.readthedocs.io/en/stable/users/docker_installation/) and [Ddev](https://ddev.readthedocs.io/en/stable/#installation).
+ The only 2 requirements are [Docker](https://ddev.readthedocs.io/en/stable/users/docker_installation/) and [DDEV](https://ddev.readthedocs.io/en/stable/#installation).
 
 <br>
 

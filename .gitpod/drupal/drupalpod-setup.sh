@@ -20,14 +20,25 @@ fi
 
 # Check if additional modules should be installed
 export DEVEL_NAME="devel"
-export DEVEL_PACKAGE="drupal/devel"
+export DEVEL_PACKAGE="drupal/devel:^5"
 
 export ADMIN_TOOLBAR_NAME="admin_toolbar_tools"
-export ADMIN_TOO
+export ADMIN_TOOLBAR_PACKAGE="drupal/admin_toolbar:^3.1"
 
 # TODO: once Drupalpod extension supports additional modules - remove these 2 lines
 export DP_EXTRA_DEVEL=1
 export DP_EXTRA_ADMIN_TOOLBAR=1
+
+# Adding support for composer-drupal-lenient - https://packagist.org/packages/mglaman/composer-drupal-lenient
+if [[ "$DP_CORE_VERSION" == 10* ]]; then
+    # admin_toolbar not compatible yet with Drupal 10
+    unset DP_EXTRA_ADMIN_TOOLBAR
+    if [ "$DP_PROJECT_TYPE" != "project_core" ]; then
+        export COMPOSER_DRUPAL_LENIENT=mglaman/composer-drupal-lenient
+    else
+        export COMPOSER_DRUPAL_LENIENT=''
+fi
+fi
 
 # Use PHP 8.1 for Drupal 10.0.x
 if [ -n "$DP_PHP" ] && [ "$DP_PHP" != '8.1' ]; then
@@ -117,7 +128,7 @@ GITMODULESEND
         fi
     done
 
-    # Make sure ddev is running
+    # Make sure DDEV is running
     ddev start
 
     # Restoring requested environment + profile installation
@@ -139,7 +150,7 @@ GITMODULESEND
             # Copying the ready-made environment of requested Drupal core version
             cd "$GITPOD_REPO_ROOT" && cp -rT ../ready-made-envs/"$DP_CORE_VERSION"/. .
         else
-            # If not, run composer create-proejct with the requested version
+            # If not, run composer create-project with the requested version
 
             # For versions end with x - add `-dev` suffix (ie. 9.3.x-dev)
             # For versions without x - add `~` prefix (ie. ~9.2.0)
@@ -161,7 +172,7 @@ GITMODULESEND
     fi
 
     # Check if snapshot can be used (when no full reinstall needed)
-    # Run it before any other ddev command (to avoid ddev restart)
+    # Run it before any other DDEV command (to avoid ddev restart)
 
     if [ ! "$DP_REINSTALL" ] && [ "$DP_INSTALL_PROFILE" != "''" ]; then
         if [ "$ready_made_env_exist" ]; then
@@ -184,6 +195,8 @@ GITMODULESEND
 
     ddev composer config --no-plugins allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
     ddev composer config --no-plugins allow-plugins.phpstan/extension-installer true
+
+    ddev composer config --no-plugins allow-plugins.mglaman/composer-drupal-lenient true
 
     # Add project source code as symlink (to repos/name_of_project)
     # double quotes explained - https://stackoverflow.com/a/1250279/5754049
@@ -257,7 +270,6 @@ GITMODULESEND
         if [ "$ready_made_env_exist" ]; then
             cd "${GITPOD_REPO_ROOT}" && time ddev composer update
         else
-            cd "${GITPOD_REPO_ROOT}" && time ddev composer config repositories.lenient composer https://packages.drupal.org/lenient
             "${GITPOD_REPO_ROOT}"/.gitpod/drupal/install-essential-packages.sh
         fi
     elif [ -n "$DP_PROJECT_NAME" ]; then
@@ -282,8 +294,13 @@ PROJECTASYMLINK
         echo "$(cat composer.json | jq '.scripts."post-install-cmd" |= . + ["repos/add-project-as-symlink.sh"]')" > composer.json
         echo "$(cat composer.json | jq '.scripts."post-update-cmd" |= . + ["repos/add-project-as-symlink.sh"]')" > composer.json
 
+        if [ -n "$COMPOSER_DRUPAL_LENIENT" ]; then
+            # Add composer_drupal_lenient for modules on Drupal 10
+            cd "${GITPOD_REPO_ROOT}" && ddev composer config --merge --json extra.drupal-lenient.allowed-list '["drupal/'"$DP_PROJECT_NAME"'"]'
+            cd "${GITPOD_REPO_ROOT}" && time ddev . composer require "$COMPOSER_DRUPAL_LENIENT"
+        fi
         # Add the project to composer (it will get the version according to the branch under `/repo/name_of_project`)
-        cd "${GITPOD_REPO_ROOT}" && time ddev composer require drupal/"$DP_PROJECT_NAME"
+        cd "${GITPOD_REPO_ROOT}" && time ddev . composer require drupal/"$DP_PROJECT_NAME"
     fi
 
     "${GITPOD_REPO_ROOT}"/.gitpod/drupal/install-essential-packages.sh

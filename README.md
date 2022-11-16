@@ -63,7 +63,7 @@ If SSH keys are valid, it stores your private SSH key as an environment variable
   [WIP - making a friendlier interactive dialog](https://github.com/shaal/DrupalPod/issues/4).
 
 * If you prefer working locally - you can clone this repo to your computer.\
- The only 2 requirements are [Docker](https://ddev.readthedocs.io/en/stable/users/docker_installation/) and [Ddev](https://ddev.readthedocs.io/en/stable/#installation).
+ The only 2 requirements are [Docker](https://ddev.readthedocs.io/en/stable/users/docker_installation/) and [DDEV](https://ddev.readthedocs.io/en/stable/#installation).
 
 <br>
 

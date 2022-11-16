@@ -117,7 +117,7 @@ GITMODULESEND
         fi
     done
 
-    # Make sure ddev is running
+    # Make sure DDEV is running
     ddev start
 
     # Restoring requested environment + profile installation
@@ -161,7 +161,7 @@ GITMODULESEND
     fi
 
     # Check if snapshot can be used (when no full reinstall needed)
-    # Run it before any other ddev command (to avoid ddev restart)
+    # Run it before any other DDEV command (to avoid ddev restart)
 
     if [ ! "$DP_REINSTALL" ] && [ "$DP_INSTALL_PROFILE" != "''" ]; then
         if [ "$ready_made_env_exist" ]; then

@@ -27,7 +27,7 @@
 
 1. Confirm latest setup
     1. Open new workspace (it will load ready-made environments with same name as current branch).
-    1. Check if there are any updates (ie. ddev's default settings files).
+    1. Check if there are any updates (ie. DDEV's default settings files).
     1. Recreate ready-made environments if needed.
 
 1. Test various scenarios with DrupalPod browser extension

@@ -8,7 +8,7 @@ fi
 #   https://console.cloud.google.com/storage/browser
 echo "*** Rebuilding ready-made environments from scratch, this will take 8 minutes... (2 minutes per drupal version)"
 
-# Stop and unlist current ddev project
+# Stop and unlist current DDEV project
 ddev stop --unlist drupalpod
 
 # Empty existing ready-made-envs directory
@@ -25,10 +25,10 @@ allProfiles=(minimal standard demo_umami)
 
 # Run through each Drupal Supported Versions - a
 # Install minimal, standard and umami profiles
-# Create a ddev snapshot
+# Create a DDEV snapshot
 
 for d in "${allDrupalSupportedVersions[@]}"; do
-  # Create ddev config
+  # Create DDEV config
   mkdir -p "$WORK_DIR"/"$d"
   cd "$WORK_DIR"/"$d" && ddev config --docroot=web --create-docroot --project-type=drupal9 --php-version=8.1 --project-name=drupalpod --database=mariadb:10.3
 
@@ -90,11 +90,11 @@ for d in "${allDrupalSupportedVersions[@]}"; do
       ddev drush then claro && \
       ddev drush config-set -y system.theme admin claro
 
-    echo "*** Save a ddev snapshot"
+    echo "*** Save a DDEV snapshot"
     cd "$WORK_DIR"/"$d" && ddev snapshot -n "$p"
   done
 
-  #  Stop any existing 'drupalpod' ddev project
+  #  Stop any existing 'drupalpod' DDEV project
   cd "$WORK_DIR"/"$d" && ddev stop --unlist drupalpod
 
 done

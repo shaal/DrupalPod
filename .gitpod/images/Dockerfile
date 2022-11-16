@@ -6,7 +6,7 @@ RUN sudo apt-get -qq update
 # Install dialog (interactive script)
 RUN sudo apt-get -qq install -y dialog
 
-# Install ddev
+# Install DDEV
 USER gitpod
 # RUN brew install drud/ddev/ddev
 RUN wget -P /tmp https://raw.githubusercontent.com/drud/ddev/master/scripts/install_ddev.sh && bash /tmp/install_ddev.sh

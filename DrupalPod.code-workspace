@@ -2,15 +2,15 @@
   "folders": [
     {
       "name": "DrupalPod",
-      "path": "${workspaceFolder}",
+      "path": ".",
     },
     {
       "name": "Repos",
-      "path": "${workspaceFolder}/repos",
+      "path": "./repos",
     },
     {
       "name": "Web Root",
-      "path": "${workspaceFolder}/web",
+      "path": "./web",
     }
   ],
   "settings": {

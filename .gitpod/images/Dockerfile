@@ -13,7 +13,7 @@ RUN echo "deb [signed-by=/etc/apt/trusted.gpg.d/ddev.gpg] https://apt.fury.io/dr
 RUN sudo apt update && sudo apt install -y ddev
 
 # Install GitUI (terminal-ui for git)
-RUN wget https://github.com/extrawurst/gitui/releases/download/v0.21.0/gitui-linux-musl.tar.gz -P /tmp
+RUN wget https://github.com/extrawurst/gitui/releases/download/v0.22.1/gitui-linux-musl.tar.gz -P /tmp
 RUN sudo tar xzf /tmp/gitui-linux-musl.tar.gz -C /usr/bin
 
 # (get latest Minio version from https://dl.min.io/client/mc/release/linux-amd64/)

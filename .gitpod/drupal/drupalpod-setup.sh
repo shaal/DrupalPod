@@ -120,13 +120,13 @@ GITMODULESEND
 
     # Check if DP_CORE_VERSION is in the array of ready-made-versions
     # Read all Drupal supported versions from a file into an array
-    readarray -t allDrupalSupportedVersions < "${GITPOD_REPO_ROOT}"/.gitpod/drupal/envs-prep/all-drupal-supported-versions.txt
+    # readarray -t allDrupalSupportedVersions < "${GITPOD_REPO_ROOT}"/.gitpod/drupal/envs-prep/all-drupal-supported-versions.txt
 
-    for d in "${allDrupalSupportedVersions[@]}"; do
-        if [ "$d" == "$DP_CORE_VERSION" ]; then
-            ready_made_env_exist=1
-        fi
-    done
+    # for d in "${allDrupalSupportedVersions[@]}"; do
+    #     if [ "$d" == "$DP_CORE_VERSION" ]; then
+    #         ready_made_env_exist=1
+    #     fi
+    # done
 
     # Make sure DDEV is running
     ddev start
@@ -135,52 +135,52 @@ GITMODULESEND
     # $DP_DEFAULT_CORE version was already copied during prebuild,
     # so it can be skipeped if it's the same as requested Drupal core version.
 
-    if [ "$DP_CORE_VERSION" != "$DP_DEFAULT_CORE" ]; then
-        # Remove default site that was installed during prebuild
-        rm -rf "${GITPOD_REPO_ROOT}"/web
-        rm -rf "${GITPOD_REPO_ROOT}"/vendor
-        rm -f "${GITPOD_REPO_ROOT}"/composer.json
-        rm -f "${GITPOD_REPO_ROOT}"/composer.lock
+    # if [ "$DP_CORE_VERSION" != "$DP_DEFAULT_CORE" ]; then
+    #     # Remove default site that was installed during prebuild
+    #     rm -rf "${GITPOD_REPO_ROOT}"/web
+    #     rm -rf "${GITPOD_REPO_ROOT}"/vendor
+    #     rm -f "${GITPOD_REPO_ROOT}"/composer.json
+    #     rm -f "${GITPOD_REPO_ROOT}"/composer.lock
 
-        if [ "$ready_made_env_exist" ]; then
-            # Extact the file
-            echo "*** Extracting the environments (less than 1 minute)"
-            cd /workspace && time tar zxf ready-made-envs.tar.gz --checkpoint=.10000
+    #     if [ "$ready_made_env_exist" ]; then
+    #         # Extact the file
+    #         echo "*** Extracting the environments (less than 1 minute)"
+    #         cd /workspace && time tar zxf ready-made-envs.tar.gz --checkpoint=.10000
 
-            # Copying the ready-made environment of requested Drupal core version
-            cd "$GITPOD_REPO_ROOT" && cp -rT ../ready-made-envs/"$DP_CORE_VERSION"/. .
-        else
-            # If not, run composer create-project with the requested version
+    #         # Copying the ready-made environment of requested Drupal core version
+    #         cd "$GITPOD_REPO_ROOT" && cp -rT ../ready-made-envs/"$DP_CORE_VERSION"/. .
+    #     else
+    #         # If not, run composer create-project with the requested version
 
-            # For versions end with x - add `-dev` suffix (ie. 9.3.x-dev)
-            # For versions without x - add `~` prefix (ie. ~9.2.0)
-            d="$DP_CORE_VERSION"
-            case $d in
-                *.x)
-                install_version="$d"-dev
-                ;;
-                *)
-                install_version=~"$d"
-                ;;
-            esac
+    #         # For versions end with x - add `-dev` suffix (ie. 9.3.x-dev)
+    #         # For versions without x - add `~` prefix (ie. ~9.2.0)
+    #         d="$DP_CORE_VERSION"
+    #         case $d in
+    #             *.x)
+    #             install_version="$d"-dev
+    #             ;;
+    #             *)
+    #             install_version=~"$d"
+    #             ;;
+    #         esac
 
             # Create required composer.json and composer.lock files
             cd "$GITPOD_REPO_ROOT" && ddev . composer create -n --no-install drupal/recommended-project:"$install_version" temp-composer-files
             cp "$GITPOD_REPO_ROOT"/temp-composer-files/* "$GITPOD_REPO_ROOT"/.
             rm -rf "$GITPOD_REPO_ROOT"/temp-composer-files
-        fi
-    fi
+    #     fi
+    # fi
 
     # Check if snapshot can be used (when no full reinstall needed)
     # Run it before any other DDEV command (to avoid ddev restart)
 
-    if [ ! "$DP_REINSTALL" ] && [ "$DP_INSTALL_PROFILE" != "''" ]; then
-        if [ "$ready_made_env_exist" ]; then
-            # Retrieve pre-made snapshot
-            cd "$GITPOD_REPO_ROOT" && \
-            time ddev snapshot restore "$DP_INSTALL_PROFILE"
-        fi
-    fi
+    # if [ ! "$DP_REINSTALL" ] && [ "$DP_INSTALL_PROFILE" != "''" ]; then
+    #     if [ "$ready_made_env_exist" ]; then
+    #         # Retrieve pre-made snapshot
+    #         cd "$GITPOD_REPO_ROOT" && \
+    #         time ddev snapshot restore "$DP_INSTALL_PROFILE"
+    #     fi
+    # fi
 
     if [ -n "$DP_PATCH_FILE" ]; then
         echo Applying selected patch "$DP_PATCH_FILE"
@@ -267,11 +267,11 @@ GITMODULESEND
         fi
 
         # Update composer.lock to allow composer's symlink of repos/drupal/core
-        if [ "$ready_made_env_exist" ]; then
-            cd "${GITPOD_REPO_ROOT}" && time ddev composer update
-        else
+        # if [ "$ready_made_env_exist" ]; then
+        #     cd "${GITPOD_REPO_ROOT}" && time ddev composer update
+        # else
             "${GITPOD_REPO_ROOT}"/.gitpod/drupal/install-essential-packages.sh
-        fi
+        # fi
     elif [ -n "$DP_PROJECT_NAME" ]; then
         # Drupal projects with no composer.json, bypass the symlink config, symlink has to be done manually.
 
@@ -312,7 +312,7 @@ PROJECTASYMLINK
     if [ "$DP_INSTALL_PROFILE" != "''" ]; then
 
         # Install from scratch, if a full site install is required or ready-made-env doesn't exist
-        if [ -n "$DP_REINSTALL" ] || [ ! "$ready_made_env_exist" ]; then
+        # if [ -n "$DP_REINSTALL" ] || [ ! "$ready_made_env_exist" ]; then
             # restart ddev - so settings.php gets updated to include settings.ddev.php
             ddev restart
 
@@ -335,7 +335,7 @@ PROJECTASYMLINK
             # Enable Claro as default admin theme
             cd "${GITPOD_REPO_ROOT}" && ddev drush then claro
             cd "${GITPOD_REPO_ROOT}" && ddev drush config-set -y system.theme admin claro
-        fi
+        # fi
 
         # Enable the requested module
         if [ "$DP_PROJECT_TYPE" == "project_module" ]; then
@@ -385,6 +385,6 @@ fi
 preview
 
 # Get rid of ready-made-envs directory, to minimize storage of workspace
-if [ -z "$DEBUG_SCRIPT" ]; then
-    rm -rf "$GITPOD_REPO_ROOT"/../ready-made-envs
-fi
+# if [ -z "$DEBUG_SCRIPT" ]; then
+#     rm -rf "$GITPOD_REPO_ROOT"/../ready-made-envs
+# fi

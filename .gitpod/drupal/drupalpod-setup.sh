@@ -89,6 +89,7 @@ if [ ! -f "${GITPOD_REPO_ROOT}"/.drupalpod_initiated ] && [ -n "$DP_PROJECT_TYPE
     else
         # If not core - clone selected project into /repos and remove drupal core
         rm -rf "${GITPOD_REPO_ROOT}"/repos/drupal
+        mkdir -p "${GITPOD_REPO_ROOT}"/repos
         cd "${GITPOD_REPO_ROOT}"/repos && time git clone https://git.drupalcode.org/project/"$DP_PROJECT_NAME"
     fi
 

@@ -1,0 +1,26 @@
+diff --git a/index.php b/index.php
+index 750dc282dc..bda22cee8d 100644
+--- a/index.php
++++ b/index.php
+@@ -13,7 +13,7 @@
+ 
+ $autoloader = require_once 'autoload.php';
+ 
+-$kernel = new DrupalKernel('prod', $autoloader);
++$kernel = new DrupalKernel('prod', $autoloader, TRUE, __DIR__);
+ 
+ $request = Request::createFromGlobals();
+ $response = $kernel->handle($request);
+diff --git a/update.php b/update.php
+index b65649cb87..02ffa2245d 100644
+--- a/update.php
++++ b/update.php
+@@ -21,7 +21,7 @@
+   gc_disable();
+ }
+ 
+-$kernel = new UpdateKernel('prod', $autoloader, FALSE);
++$kernel = new UpdateKernel('prod', $autoloader, FALSE, __DIR__);
+ $request = Request::createFromGlobals();
+ 
+ $response = $kernel->handle($request);

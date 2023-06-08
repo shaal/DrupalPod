@@ -30,14 +30,17 @@ export DP_EXTRA_DEVEL=1
 export DP_EXTRA_ADMIN_TOOLBAR=1
 
 # Adding support for composer-drupal-lenient - https://packagist.org/packages/mglaman/composer-drupal-lenient
-if [[ "$DP_CORE_VERSION" == 10* ]]; then
-    # admin_toolbar not compatible yet with Drupal 10
-    unset DP_EXTRA_ADMIN_TOOLBAR
+if [[ "$DP_CORE_VERSION" == 10* ]] || [[ "$DP_CORE_VERSION" == 11* ]]; then
     if [ "$DP_PROJECT_TYPE" != "project_core" ]; then
         export COMPOSER_DRUPAL_LENIENT=mglaman/composer-drupal-lenient
     else
         export COMPOSER_DRUPAL_LENIENT=''
+    fi
 fi
+
+if [[ "$DP_CORE_VERSION" == 11* ]]; then
+    # admin_toolbar not compatible yet with Drupal 10
+    unset DP_EXTRA_ADMIN_TOOLBAR
 fi
 
 # Use PHP 8.1 for Drupal 10.0.x
@@ -128,6 +131,9 @@ GITMODULESEND
         fi
     done
 
+    # TODO: check time for installing from scratch
+    unset ready_made_env_exist
+
     # Make sure DDEV is running
     ddev start
 
@@ -152,6 +158,16 @@ GITMODULESEND
         else
             # If not, run composer create-project with the requested version
 
+
+            # TODO: remove this
+            export DP_CORE_VERSION="automatic"
+
+            # Automatically recognize Drupal core version from issue fork
+            if [[ "$DP_CORE_VERSION" == 'automatic' && "$DP_PROJECT_TYPE" == "project_core" ]]; then
+                DP_CORE_VERSION=$(git describe --tags --abbrev=0 "$DP_ISSUE_BRANCH" )
+                export DP_CORE_VERSION
+            fi
+
             # For versions end with x - add `-dev` suffix (ie. 9.3.x-dev)
             # For versions without x - add `~` prefix (ie. ~9.2.0)
             d="$DP_CORE_VERSION"
@@ -165,8 +181,8 @@ GITMODULESEND
             esac
 
             # Create required composer.json and composer.lock files
-            cd "$GITPOD_REPO_ROOT" && ddev . composer create -n --no-install drupal/recommended-project:"$install_version" temp-composer-files
-            cp "$GITPOD_REPO_ROOT"/temp-composer-files/* "$GITPOD_REPO_ROOT"/.
+            cd "$GITPOD_REPO_ROOT" && ddev . composer create -n drupal/recommended-project:"$install_version" temp-composer-files
+            mv "$GITPOD_REPO_ROOT"/temp-composer-files/* "$GITPOD_REPO_ROOT"/.
             rm -rf "$GITPOD_REPO_ROOT"/temp-composer-files
         fi
     fi

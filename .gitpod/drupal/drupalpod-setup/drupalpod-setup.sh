@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Assuming .sh files are in the same directory as this script
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+
 if [ -n "$DEBUG_SCRIPT" ] || [ -n "$GITPOD_HEADLESS" ]; then
     set -x
 fi
@@ -7,48 +10,9 @@ fi
 # Measure the time it takes to go through the script
 script_start_time=$(date +%s)
 
-# Load default envs
-export "$(grep -v '^#' "$GITPOD_REPO_ROOT"/.env | xargs -d '\n')"
-
-# Set the default setup during prebuild process
-if [ -n "$GITPOD_HEADLESS" ]; then
-    export DP_INSTALL_PROFILE='demo_umami'
-    export DP_EXTRA_DEVEL=1
-    export DP_EXTRA_ADMIN_TOOLBAR=1
-    export DP_PROJECT_TYPE='default_drupalpod'
-fi
-
-# Check if additional modules should be installed
-export DEVEL_NAME="devel"
-export DEVEL_PACKAGE="drupal/devel:^5"
-
-export ADMIN_TOOLBAR_NAME="admin_toolbar_tools"
-export ADMIN_TOOLBAR_PACKAGE="drupal/admin_toolbar:^3.1"
-
-# TODO: once Drupalpod extension supports additional modules - remove these 2 lines
-export DP_EXTRA_DEVEL=1
-export DP_EXTRA_ADMIN_TOOLBAR=1
-
-# Adding support for composer-drupal-lenient - https://packagist.org/packages/mglaman/composer-drupal-lenient
-if [[ "$DP_CORE_VERSION" == 10* ]]; then
-    if [ "$DP_PROJECT_TYPE" != "project_core" ]; then
-        export COMPOSER_DRUPAL_LENIENT=mglaman/composer-drupal-lenient
-    else
-        export COMPOSER_DRUPAL_LENIENT=''
-    fi
-fi
-
-# Adding support for composer-drupal-lenient - https://packagist.org/packages/mglaman/composer-drupal-lenient
-if [[ "$DP_CORE_VERSION" == 11* ]]; then
-    # admin_toolbar and devel are not compatible yet with Drupal 11
-    unset DP_EXTRA_ADMIN_TOOLBAR
-    unset DP_EXTRA_DEVEL
-    if [ "$DP_PROJECT_TYPE" != "project_core" ]; then
-        export COMPOSER_DRUPAL_LENIENT=mglaman/composer-drupal-lenient
-    else
-        export COMPOSER_DRUPAL_LENIENT=''
-    fi
-fi
+source "$DIR/setup_env.sh"
+source "$DIR/install_modules.sh"
+source "$DIR/drupal_version_specifics.sh"
 
 # Use PHP 8.1 for Drupal 10.0.x
 if [ -n "$DP_PHP" ] && [ "$DP_PHP" != '8.1' ]; then

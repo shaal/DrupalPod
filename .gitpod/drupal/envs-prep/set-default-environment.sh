@@ -17,4 +17,4 @@ cd "$GITPOD_REPO_ROOT" && rm -rf ../ready-made-envs
 
 # Clone Drupal core repo
 mkdir -p "${GITPOD_REPO_ROOT}"/repos
-cd "${GITPOD_REPO_ROOT}"/repos && time git clone https://git.drupalcode.org/project/drupal
+cd "${GITPOD_REPO_ROOT}"/repos && time git clone https://git.drupalcode.org/project/drupal.git/

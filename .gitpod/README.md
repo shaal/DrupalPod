@@ -20,6 +20,7 @@
 
     1. Update list of drupal versions that will be in ready-made environments.
 `.gitpod/drupal/envs-prep/all-drupal-supported-versions.txt`
+    1. Update `.env` with the desired default core version.
     1. Run `.gitpod/drupal/envs-prep/create-environments.sh` to create ready-made environments.
     1. Confirm ready-made environments zip file was uploaded to Google Cloud.
 

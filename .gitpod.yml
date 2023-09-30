@@ -7,8 +7,7 @@ tasks:
       .gitpod/utils/send-a-message-gcs.sh > /tmp/output1.txt
       .gitpod/utils/download-ddev-images.sh
       .gitpod/utils/ddev-in-gitpod-setup.sh
-      .gitpod/drupal/envs-prep/prepare-environments-gcs.sh > /tmp/output2.txt
-      .gitpod/drupal/envs-prep/set-default-environment.sh
+      .gitpod/utils/set-base-environment.sh
     command: |
       # Temporary fix for wrong value of GITPOD_REPO_ROOT when opening a Gitpod snapshot
       # Todo: remove this when this issue is resolved - https://github.com/gitpod-io/gitpod/issues/9804

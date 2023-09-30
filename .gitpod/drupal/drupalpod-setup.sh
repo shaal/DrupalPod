@@ -20,10 +20,10 @@ fi
 
 # Check if additional modules should be installed
 export DEVEL_NAME="devel"
-export DEVEL_PACKAGE="drupal/devel:^5"
+export DEVEL_PACKAGE="drupal/devel"
 
 export ADMIN_TOOLBAR_NAME="admin_toolbar_tools"
-export ADMIN_TOOLBAR_PACKAGE="drupal/admin_toolbar:^3.1"
+export ADMIN_TOOLBAR_PACKAGE="drupal/admin_toolbar"
 
 # TODO: once Drupalpod extension supports additional modules - remove these 2 lines
 export DP_EXTRA_DEVEL=1
@@ -89,7 +89,7 @@ if [ ! -f "${GITPOD_REPO_ROOT}"/.drupalpod_initiated ] && [ -n "$DP_PROJECT_TYPE
     else
         # If not core - clone selected project into /repos and remove drupal core
         rm -rf "${GITPOD_REPO_ROOT}"/repos/drupal
-        cd "${GITPOD_REPO_ROOT}"/repos && time git clone https://git.drupalcode.org/project/"$DP_PROJECT_NAME"
+        cd "${GITPOD_REPO_ROOT}"/repos && time git clone https://git.drupalcode.org/project/"$DP_PROJECT_NAME".git
     fi
 
     # Set WORK_DIR

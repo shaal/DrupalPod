@@ -1,6 +1,5 @@
 ---
 # Adds Chromedriver and Drupal PHPUnit test environment variables for running tests.
-version: '3.6'
 services:
   chromedriver:
     image: drupalci/chromedriver:production

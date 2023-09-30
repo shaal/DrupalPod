@@ -1,5 +1,5 @@
-name: DrupalPod
-type: drupal10
+name: drupalpod
+type: drupal9
 docroot: web
 php_version: "8.1"
 webserver_type: nginx-fpm
@@ -8,7 +8,7 @@ additional_hostnames: []
 additional_fqdns: []
 database:
     type: mariadb
-    version: "10.4"
+    version: "10.3"
 use_dns_when_possible: true
 composer_version: "2"
 web_environment: []

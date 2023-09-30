@@ -4,6 +4,10 @@ image: drupalpod/drupalpod-gitpod-base:20230922
 # when starting a workspace all docker images are ready
 tasks:
   - init: |
+      echo hello!!!!!!!!!!!!!!!!!!!!!!!!
+      printenv
+      echo hello!!!!!!!!!!!!!!!!!!!!!!!!
+      # .gitpod/utils/upterm.sh
       .gitpod/utils/send-a-message-gcs.sh > /tmp/output1.txt
       ddev debug download-images
       .gitpod/utils/ddev-in-gitpod-setup.sh

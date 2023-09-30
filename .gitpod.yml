@@ -4,11 +4,10 @@ image: drupalpod/drupalpod-gitpod-base:20230922
 # when starting a workspace all docker images are ready
 tasks:
   - init: |
-      bash -x .gitpod/utils/send-a-message-gcs.sh > /tmp/output1.txt
+      .gitpod/utils/send-a-message-gcs.sh > /tmp/output1.txt
       ddev debug download-images
       .gitpod/utils/ddev-in-gitpod-setup.sh
-      echo check this!!!!!!!!!!!!!!
-      bash -x .gitpod/drupal/envs-prep/prepare-environments-gcs.sh > /tmp/output2.txt
+      .gitpod/drupal/envs-prep/prepare-environments-gcs.sh > /tmp/output2.txt
       .gitpod/drupal/envs-prep/set-default-environment.sh
     command: |
       # Temporary fix for wrong value of GITPOD_REPO_ROOT when opening a Gitpod snapshot

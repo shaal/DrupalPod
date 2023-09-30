@@ -8,6 +8,7 @@ tasks:
       .gitpod/utils/download-ddev-images.sh
       .gitpod/utils/ddev-in-gitpod-setup.sh
       .gitpod/utils/set-base-environment.sh
+      time ddev start
     command: |
       # Temporary fix for wrong value of GITPOD_REPO_ROOT when opening a Gitpod snapshot
       # Todo: remove this when this issue is resolved - https://github.com/gitpod-io/gitpod/issues/9804

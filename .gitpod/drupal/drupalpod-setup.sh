@@ -12,7 +12,7 @@ ddev_start=$!
 script_start_time=$(date +%s)
 
 # Load default envs
-export "$(grep -v '^#' "$GITPOD_REPO_ROOT"/.env | xargs -d '\n')"
+export "$(grep -vr '^#' "$GITPOD_REPO_ROOT"/.env | xargs -d '\n')"
 
 # Set the default setup during prebuild process
 if [ -n "$GITPOD_HEADLESS" ]; then
@@ -155,6 +155,8 @@ GITMODULESEND
     ddev composer config --no-plugins allow-plugins.phpstan/extension-installer true
 
     ddev composer config --no-plugins allow-plugins.mglaman/composer-drupal-lenient true
+
+    ddev composer config --no-plugins allow-plugins.php-http/discovery true
 
     # Add project source code as symlink (to repos/name_of_project)
     # double quotes explained - https://stackoverflow.com/a/1250279/5754049

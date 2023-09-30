@@ -3,18 +3,8 @@
 # Record the start time
 start_time=$(date +%s)
 
-# Get the list of images using 'docker images' and filter out the header
-images=$(docker images | awk 'NR>1 {print $1":"$2}')
-
-echo "List of required docker images for DDEV:"
-echo "$images"
-echo "Downloading the above docker images"
-
-# Loop through each image and pull it
-for image in $images
-do
-    docker pull "$image"
-done
+ddev debug download-images
+docker pull drupalci/chromedriver:production
 
 # Record the end time
 end_time=$(date +%s)

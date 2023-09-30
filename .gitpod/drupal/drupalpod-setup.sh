@@ -317,7 +317,7 @@ PROJECTASYMLINK
             ddev restart
 
             # New site install
-            ddev drush si -y --account-pass=admin --site-name="DrupalPod" "$DP_INSTALL_PROFILE"
+            ddev drush si -y --account-pass=admin --site-name="DrupalPod" "$DP_INSTALL_PROFILE" --locale="${DP_INSTALL_LOCALE:-en}"
 
             # Enable extra modules
             if [ -n "$DP_EXTRA_ADMIN_TOOLBAR" ]; then

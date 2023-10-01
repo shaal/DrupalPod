@@ -1,37 +1,35 @@
 #!/usr/bin/env bash
+set -eu -o pipefail
 
-if [ "$DEBUG_SCRIPT" = '' ] || [ "$GITPOD_HEADLESS" = '' ]; then
+# Initialize all variables with '' if they do not exist
+: "${DEBUG_SCRIPT:=}"
+: "${GITPOD_HEADLESS:=}"
+: "${DP_INSTALL_PROFILE:=}"
+: "${DP_EXTRA_DEVEL:=}"
+: "${DP_EXTRA_ADMIN_TOOLBAR:=}"
+: "${DP_PROJECT_TYPE:=}"
+: "${DEVEL_NAME:=}"
+: "${DEVEL_PACKAGE:=}"
+: "${ADMIN_TOOLBAR_NAME:=}"
+: "${ADMIN_TOOLBAR_PACKAGE:=}"
+: "${COMPOSER_DRUPAL_LENIENT:=}"
+: "${DP_CORE_VERSION:=}"
+: "${DP_ISSUE_BRANCH:=}"
+: "${DP_ISSUE_FORK:=}"
+: "${DP_MODULE_VERSION:=}"
+: "${DP_PATCH_FILE:=}"
+
+if [ -n "$DEBUG_SCRIPT" ] || [ -n "$GITPOD_HEADLESS" ]; then
     set -x
 fi
 
-set -eu -o pipefail
-
-# Run 'ddev start' in the background and capture its PID
-ddev start &
-ddev_start=$!
+time ddev start
 
 # Measure the time it takes to go through the script
 script_start_time=$(date +%s)
 
-# Initialize all variables with '' if they do not exist
-: "${GITPOD_HEADLESS:=''}"
-: "${DP_INSTALL_PROFILE:=''}"
-: "${DP_EXTRA_DEVEL:=''}"
-: "${DP_EXTRA_ADMIN_TOOLBAR:=''}"
-: "${DP_PROJECT_TYPE:=''}"
-: "${DEVEL_NAME:=''}"
-: "${DEVEL_PACKAGE:=''}"
-: "${ADMIN_TOOLBAR_NAME:=''}"
-: "${ADMIN_TOOLBAR_PACKAGE:=''}"
-: "${COMPOSER_DRUPAL_LENIENT:=''}"
-: "${DP_CORE_VERSION:=''}"
-: "${DP_ISSUE_BRANCH:=''}"
-: "${DP_ISSUE_FORK:=''}"
-: "${DP_MODULE_VERSION:=''}"
-: "${DP_PATCH_FILE:=''}"
-
 # Set the default setup during prebuild process
-if [ "$GITPOD_HEADLESS" = '' ]; then
+if [ -n "$GITPOD_HEADLESS" ]; then
     export DP_INSTALL_PROFILE='demo_umami'
     export DP_EXTRA_DEVEL=1
     export DP_EXTRA_ADMIN_TOOLBAR=1
@@ -61,7 +59,7 @@ if [[ "$DP_CORE_VERSION" = 10* ]]; then
 fi
 
 # Skip setup if it already ran once and if no special setup is set by DrupalPod extension
-if [ ! -f "${GITPOD_REPO_ROOT}"/.drupalpod_initiated ] && [ "$DP_PROJECT_TYPE" = '' ]; then
+if [ ! -f "${GITPOD_REPO_ROOT}"/.drupalpod_initiated ] && [ -n "$DP_PROJECT_TYPE" ]; then
 
     # Add git.drupal.org to known_hosts
     if [ -z "$GITPOD_HEADLESS" ]; then
@@ -116,7 +114,7 @@ if [ ! -f "${GITPOD_REPO_ROOT}"/.drupalpod_initiated ] && [ "$DP_PROJECT_TYPE" =
 GITMODULESEND
 
     # Checkout specific branch only if there's issue_branch
-    if [ "$DP_ISSUE_BRANCH" = '' ]; then
+    if [ -n "$DP_ISSUE_BRANCH" ]; then
         # If branch already exist only run checkout,
         if cd "${WORK_DIR}" && git show-ref -q --heads "$DP_ISSUE_BRANCH"; then
             cd "${WORK_DIR}" && git checkout "$DP_ISSUE_BRANCH"
@@ -125,7 +123,7 @@ GITMODULESEND
             cd "${WORK_DIR}" && git fetch "$DP_ISSUE_FORK"
             cd "${WORK_DIR}" && git checkout -b "$DP_ISSUE_BRANCH" --track "$DP_ISSUE_FORK"/"$DP_ISSUE_BRANCH"
         fi
-    elif [ "$DP_MODULE_VERSION" = '' ] && [ "$DP_PROJECT_TYPE" != "project_core" ]; then
+    elif [ -n "$DP_MODULE_VERSION" ] && [ "$DP_PROJECT_TYPE" != "project_core" ]; then
         cd "${WORK_DIR}" && git checkout "$DP_MODULE_VERSION"
     fi
 
@@ -147,18 +145,17 @@ GITMODULESEND
         ;;
     esac
 
-    # Wait for 'ddev start' to complete
-    wait $ddev_start
-    echo "'ddev start' finished"
-
     # Create required composer.json and composer.lock files
     cd "$GITPOD_REPO_ROOT" && time ddev . composer create -n --no-install drupal/recommended-project:"$install_version" temp-composer-files
     cp "$GITPOD_REPO_ROOT"/temp-composer-files/* "$GITPOD_REPO_ROOT"/.
     rm -rf "$GITPOD_REPO_ROOT"/temp-composer-files
 
     if [ -n "$DP_PATCH_FILE" ]; then
+    echo found patch file
         echo Applying selected patch "$DP_PATCH_FILE"
         cd "${WORK_DIR}" && curl "$DP_PATCH_FILE" | patch -p1
+    else
+        echo did not find
     fi
 
     # Programmatically fix Composer 2.2 allow-plugins to avoid errors
@@ -176,7 +173,7 @@ GITMODULESEND
 
     # Add project source code as symlink (to repos/name_of_project)
     # double quotes explained - https://stackoverflow.com/a/1250279/5754049
-    if [ "$DP_PROJECT_NAME" = '' ]; then
+    if [ -n "$DP_PROJECT_NAME" ]; then
         cd "${GITPOD_REPO_ROOT}" &&
             ddev composer config \
                 repositories.core1 \
@@ -234,7 +231,7 @@ GITMODULESEND
             cd "$GITPOD_REPO_ROOT"/repos/drupal/sites &&
                 ln -s ../../../web/sites/simpletest .
         fi
-    elif [ "$DP_PROJECT_NAME" = '' ]; then
+    elif [ -n "$DP_PROJECT_NAME" ]; then
         # Drupal projects with no composer.json, bypass the symlink config, symlink has to be created manually.
 
         if [ "$DP_PROJECT_TYPE" = "project_module" ]; then
@@ -256,7 +253,7 @@ PROJECTASYMLINK
         echo "$(cat composer.json | jq '.scripts."post-install-cmd" |= . + ["repos/add-project-as-symlink.sh"]')" >composer.json
         echo "$(cat composer.json | jq '.scripts."post-update-cmd" |= . + ["repos/add-project-as-symlink.sh"]')" >composer.json
 
-        if [ "$COMPOSER_DRUPAL_LENIENT" = '' ]; then
+        if [ -n "$COMPOSER_DRUPAL_LENIENT" ]; then
             # Add composer_drupal_lenient for modules on Drupal 10
             cd "${GITPOD_REPO_ROOT}" && ddev composer config --merge --json extra.drupal-lenient.allowed-list '["drupal/'"$DP_PROJECT_NAME"'"]'
             cd "${GITPOD_REPO_ROOT}" && time ddev . composer require "$COMPOSER_DRUPAL_LENIENT" --no-install
@@ -328,4 +325,3 @@ fi
 
 # Open internal preview browser with current website
 preview
-

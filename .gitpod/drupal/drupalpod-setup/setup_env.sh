@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-# Load default envs
-export "$(grep -v '^#' "$GITPOD_REPO_ROOT"/.env | xargs -d '\n')"
-
 # Set the default setup during prebuild process
 if [ -n "$GITPOD_HEADLESS" ]; then
     export DP_INSTALL_PROFILE='demo_umami'

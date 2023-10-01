@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -eu -o pipefail
 
-# Initialize all variables with '' if they do not exist
+# Initialize all variables with null if they do not exist
 : "${DEBUG_SCRIPT:=}"
 : "${GITPOD_HEADLESS:=}"
 : "${DP_INSTALL_PROFILE:=}"
@@ -19,6 +19,9 @@ set -eu -o pipefail
 : "${DP_MODULE_VERSION:=}"
 : "${DP_PATCH_FILE:=}"
 
+# Assuming .sh files are in the same directory as this script
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+
 if [ -n "$DEBUG_SCRIPT" ] || [ -n "$GITPOD_HEADLESS" ]; then
     set -x
 fi
@@ -28,35 +31,9 @@ time ddev start
 # Measure the time it takes to go through the script
 script_start_time=$(date +%s)
 
-# Set the default setup during prebuild process
-if [ -n "$GITPOD_HEADLESS" ]; then
-    export DP_INSTALL_PROFILE='demo_umami'
-    export DP_EXTRA_DEVEL=1
-    export DP_EXTRA_ADMIN_TOOLBAR=1
-    export DP_PROJECT_TYPE='default_drupalpod'
-fi
-
-# Check if additional modules should be installed
-export DEVEL_NAME="devel"
-export DEVEL_PACKAGE="drupal/devel"
-
-export ADMIN_TOOLBAR_NAME="admin_toolbar_tools"
-export ADMIN_TOOLBAR_PACKAGE="drupal/admin_toolbar"
-
-# TODO: once Drupalpod extension supports additional modules - remove these 2 lines
-export DP_EXTRA_DEVEL=1
-export DP_EXTRA_ADMIN_TOOLBAR=1
-
-# Adding support for composer-drupal-lenient - https://packagist.org/packages/mglaman/composer-drupal-lenient
-if [[ "$DP_CORE_VERSION" == 10* ]]; then
-    # admin_toolbar not compatible yet with Drupal 10
-    # unset DP_EXTRA_ADMIN_TOOLBAR
-    if [ "$DP_PROJECT_TYPE" != "project_core" ]; then
-        export COMPOSER_DRUPAL_LENIENT=mglaman/composer-drupal-lenient
-    else
-        export COMPOSER_DRUPAL_LENIENT=''
-    fi
-fi
+source "$DIR/setup_env.sh"
+source "$DIR/install_modules.sh"
+source "$DIR/drupal_version_specifics.sh"
 
 # Skip setup if it already ran once and if no special setup is set by DrupalPod extension
 if [ ! -f "${GITPOD_REPO_ROOT}"/.drupalpod_initiated ] && [ -n "$DP_PROJECT_TYPE" ]; then
@@ -271,10 +248,10 @@ PROJECTASYMLINK
 
     # Install devel and admin_toolbar modules
     if [ "$DP_EXTRA_DEVEL" != '1' ]; then
-        unset DEVEL_NAME
+        DEVEL_NAME=
     fi
     if [ "$DP_EXTRA_ADMIN_TOOLBAR" != '1' ]; then
-        unset ADMIN_TOOLBAR_NAME
+        ADMIN_TOOLBAR_NAME=
     fi
 
     # Enable extra modules

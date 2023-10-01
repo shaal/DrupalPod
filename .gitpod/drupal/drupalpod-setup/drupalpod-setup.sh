@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -eu -o pipefail
 
-# Initialize all variables with '' if they do not exist
+# Initialize all variables with null if they do not exist
 : "${DEBUG_SCRIPT:=}"
 : "${GITPOD_HEADLESS:=}"
 : "${DP_INSTALL_PROFILE:=}"
@@ -248,10 +248,10 @@ PROJECTASYMLINK
 
     # Install devel and admin_toolbar modules
     if [ "$DP_EXTRA_DEVEL" != '1' ]; then
-        unset DEVEL_NAME
+        DEVEL_NAME=
     fi
     if [ "$DP_EXTRA_ADMIN_TOOLBAR" != '1' ]; then
-        unset ADMIN_TOOLBAR_NAME
+        ADMIN_TOOLBAR_NAME=
     fi
 
     # Enable extra modules

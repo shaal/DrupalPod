@@ -2,6 +2,7 @@
 if [ -n "$DEBUG_SCRIPT" ] || [ -n "$GITPOD_HEADLESS" ]; then
     set -x
 fi
+set -eu -o pipefail
 
 # Install devel and admin_toolbar modules
 if [ "$DP_EXTRA_DEVEL" != '1' ]; then

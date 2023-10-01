@@ -4,7 +4,7 @@ if [ -n "$DEBUG_SCRIPT" ]; then
 fi
 
 # Load default envs
-export "$(grep -v '^#' "$GITPOD_REPO_ROOT"/.env | xargs -d '\n')"
+# export "$(grep -v '^#' "$GITPOD_REPO_ROOT"/.env | xargs -d '\n')"
 
 # Clone Drupal core repo
 mkdir -p "${GITPOD_REPO_ROOT}"/repos

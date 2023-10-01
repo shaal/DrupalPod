@@ -151,11 +151,8 @@ GITMODULESEND
     rm -rf "$GITPOD_REPO_ROOT"/temp-composer-files
 
     if [ -n "$DP_PATCH_FILE" ]; then
-    echo found patch file
         echo Applying selected patch "$DP_PATCH_FILE"
         cd "${WORK_DIR}" && curl "$DP_PATCH_FILE" | patch -p1
-    else
-        echo did not find
     fi
 
     # Programmatically fix Composer 2.2 allow-plugins to avoid errors
@@ -267,8 +264,10 @@ PROJECTASYMLINK
     cd "$GITPOD_REPO_ROOT" &&
         vendor/bin/phpcs --config-set installed_paths vendor/drupal/coder/coder_sniffer
 
+    # ddev config auto updates settings.php and generates settings.ddev.php
+    ddev config auto
     # New site install
-    ddev drush si -y --account-pass=admin --site-name="DrupalPod" "$DP_INSTALL_PROFILE"
+    time ddev drush si -y --account-pass=admin --site-name="DrupalPod" "$DP_INSTALL_PROFILE"
 
     # Install devel and admin_toolbar modules
     if [ "$DP_EXTRA_DEVEL" != '1' ]; then

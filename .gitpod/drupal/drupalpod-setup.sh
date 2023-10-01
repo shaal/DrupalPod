@@ -1,18 +1,32 @@
 #!/usr/bin/env bash
+set -eu -o pipefail
+
+# Initialize all variables with '' if they do not exist
+: "${DEBUG_SCRIPT:=}"
+: "${GITPOD_HEADLESS:=}"
+: "${DP_INSTALL_PROFILE:=}"
+: "${DP_EXTRA_DEVEL:=}"
+: "${DP_EXTRA_ADMIN_TOOLBAR:=}"
+: "${DP_PROJECT_TYPE:=}"
+: "${DEVEL_NAME:=}"
+: "${DEVEL_PACKAGE:=}"
+: "${ADMIN_TOOLBAR_NAME:=}"
+: "${ADMIN_TOOLBAR_PACKAGE:=}"
+: "${COMPOSER_DRUPAL_LENIENT:=}"
+: "${DP_CORE_VERSION:=}"
+: "${DP_ISSUE_BRANCH:=}"
+: "${DP_ISSUE_FORK:=}"
+: "${DP_MODULE_VERSION:=}"
+: "${DP_PATCH_FILE:=}"
 
 if [ -n "$DEBUG_SCRIPT" ] || [ -n "$GITPOD_HEADLESS" ]; then
     set -x
 fi
 
-# Run 'ddev start' in the background and capture its PID
-ddev start &
-ddev_start=$!
+time ddev start
 
 # Measure the time it takes to go through the script
 script_start_time=$(date +%s)
-
-# Load default envs
-export "$(grep -v '^#' "$GITPOD_REPO_ROOT"/.env | xargs -d '\n')"
 
 # Set the default setup during prebuild process
 if [ -n "$GITPOD_HEADLESS" ]; then
@@ -131,10 +145,6 @@ GITMODULESEND
         ;;
     esac
 
-    # Wait for 'ddev start' to complete
-    wait $ddev_start
-    echo "'ddev start' finished"
-
     # Create required composer.json and composer.lock files
     cd "$GITPOD_REPO_ROOT" && time ddev . composer create -n --no-install drupal/recommended-project:"$install_version" temp-composer-files
     cp "$GITPOD_REPO_ROOT"/temp-composer-files/* "$GITPOD_REPO_ROOT"/.
@@ -155,6 +165,8 @@ GITMODULESEND
     ddev composer config --no-plugins allow-plugins.phpstan/extension-installer true
 
     ddev composer config --no-plugins allow-plugins.mglaman/composer-drupal-lenient true
+
+    ddev composer config --no-plugins allow-plugins.php-http/discovery true
 
     # Add project source code as symlink (to repos/name_of_project)
     # double quotes explained - https://stackoverflow.com/a/1250279/5754049
@@ -241,10 +253,10 @@ PROJECTASYMLINK
         if [ -n "$COMPOSER_DRUPAL_LENIENT" ]; then
             # Add composer_drupal_lenient for modules on Drupal 10
             cd "${GITPOD_REPO_ROOT}" && ddev composer config --merge --json extra.drupal-lenient.allowed-list '["drupal/'"$DP_PROJECT_NAME"'"]'
-            cd "${GITPOD_REPO_ROOT}" && time ddev . composer require "$COMPOSER_DRUPAL_LENIENT"
+            cd "${GITPOD_REPO_ROOT}" && time ddev . composer require "$COMPOSER_DRUPAL_LENIENT" --no-install
         fi
         # Add the project to composer (it will get the version according to the branch under `/repo/name_of_project`)
-        cd "${GITPOD_REPO_ROOT}" && time ddev . composer require drupal/"$DP_PROJECT_NAME"
+        cd "${GITPOD_REPO_ROOT}" && time ddev . composer require drupal/"$DP_PROJECT_NAME" --no-install
     fi
 
     time "${GITPOD_REPO_ROOT}"/.gitpod/drupal/install-essential-packages.sh
@@ -252,8 +264,10 @@ PROJECTASYMLINK
     cd "$GITPOD_REPO_ROOT" &&
         vendor/bin/phpcs --config-set installed_paths vendor/drupal/coder/coder_sniffer
 
+    # ddev config auto updates settings.php and generates settings.ddev.php
+    ddev config --auto
     # New site install
-    ddev drush si -y --account-pass=admin --site-name="DrupalPod" "$DP_INSTALL_PROFILE"
+    time ddev drush si -y --account-pass=admin --site-name="DrupalPod" "$DP_INSTALL_PROFILE"
 
     # Install devel and admin_toolbar modules
     if [ "$DP_EXTRA_DEVEL" != '1' ]; then

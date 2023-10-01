@@ -5,7 +5,7 @@ image: drupalpod/drupalpod-gitpod-base:20230922
 tasks:
   - init: |
       .gitpod/utils/send-a-message-gcs.sh > /tmp/output1.txt
-      .gitpod/utils/download-ddev-images.sh
+      # .gitpod/utils/download-ddev-images.sh
       .gitpod/utils/ddev-in-gitpod-setup.sh
       .gitpod/utils/set-base-environment.sh
       time ddev start

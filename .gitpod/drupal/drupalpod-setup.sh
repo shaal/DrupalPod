@@ -265,7 +265,7 @@ PROJECTASYMLINK
         vendor/bin/phpcs --config-set installed_paths vendor/drupal/coder/coder_sniffer
 
     # ddev config auto updates settings.php and generates settings.ddev.php
-    ddev config auto
+    ddev config --auto
     # New site install
     time ddev drush si -y --account-pass=admin --site-name="DrupalPod" "$DP_INSTALL_PROFILE"
 

@@ -48,7 +48,7 @@ export DP_EXTRA_DEVEL=1
 export DP_EXTRA_ADMIN_TOOLBAR=1
 
 # Adding support for composer-drupal-lenient - https://packagist.org/packages/mglaman/composer-drupal-lenient
-if [[ "$DP_CORE_VERSION" = 10* ]]; then
+if [[ "$DP_CORE_VERSION" == 10* ]]; then
     # admin_toolbar not compatible yet with Drupal 10
     # unset DP_EXTRA_ADMIN_TOOLBAR
     if [ "$DP_PROJECT_TYPE" != "project_core" ]; then
@@ -73,7 +73,7 @@ if [ ! -f "${GITPOD_REPO_ROOT}"/.drupalpod_initiated ] && [ -n "$DP_PROJECT_TYPE
     cp "${GITPOD_REPO_ROOT}"/.gitpod/drupal/templates/git-exclude.template "${GITPOD_REPO_ROOT}"/.git/info/exclude
 
     # Get the required repo ready
-    if [ "$DP_PROJECT_TYPE" = "project_core" ]; then
+    if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
         # Find if requested core version is dev or stable
         d="$DP_CORE_VERSION"
         case $d in
@@ -184,7 +184,7 @@ GITMODULESEND
     fi
 
     # Prepare special setup to work with Drupal core
-    if [ "$DP_PROJECT_TYPE" = "project_core" ]; then
+    if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
         # Add a special path when working on core contributions
         # (Without it, /web/modules/contrib is not found by website)
         cd "${GITPOD_REPO_ROOT}" &&
@@ -234,9 +234,9 @@ GITMODULESEND
     elif [ -n "$DP_PROJECT_NAME" ]; then
         # Drupal projects with no composer.json, bypass the symlink config, symlink has to be created manually.
 
-        if [ "$DP_PROJECT_TYPE" = "project_module" ]; then
+        if [ "$DP_PROJECT_TYPE" == "project_module" ]; then
             PROJECT_TYPE=modules
-        elif [ "$DP_PROJECT_TYPE" = "project_theme" ]; then
+        elif [ "$DP_PROJECT_TYPE" == "project_theme" ]; then
             PROJECT_TYPE=themes
         fi
 
@@ -285,12 +285,12 @@ PROJECTASYMLINK
             "$DEVEL_NAME"
 
     # Enable the requested module
-    if [ "$DP_PROJECT_TYPE" = "project_module" ]; then
+    if [ "$DP_PROJECT_TYPE" == "project_module" ]; then
         cd "${GITPOD_REPO_ROOT}" && ddev drush en -y "$DP_PROJECT_NAME"
     fi
 
     # Enable the requested theme
-    if [ "$DP_PROJECT_TYPE" = "project_theme" ]; then
+    if [ "$DP_PROJECT_TYPE" == "project_theme" ]; then
         cd "${GITPOD_REPO_ROOT}" && ddev drush then -y "$DP_PROJECT_NAME"
         cd "${GITPOD_REPO_ROOT}" && ddev drush config-set -y system.theme default "$DP_PROJECT_NAME"
     fi
@@ -301,7 +301,7 @@ PROJECTASYMLINK
     echo "ddev snapshot restore --latest"
 
     # Only for Drupal core - apply special patch
-    if [ "$DP_PROJECT_TYPE" = "project_core" ]; then
+    if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
         # Patch the scaffold index.php and update.php files
         # See https://www.drupal.org/project/drupal/issues/3188703
         # See https://www.drupal.org/project/drupal/issues/1792310

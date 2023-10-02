@@ -19,9 +19,6 @@ PROJECTASYMLINK
 
 chmod +x "${GITPOD_REPO_ROOT}"/repos/add-project-as-symlink.sh
 
-# echo "$(cat composer.json | jq '.scripts."post-install-cmd" |= . + ["repos/add-project-as-symlink.sh"]')" >composer.json
-# echo "$(cat composer.json | jq '.scripts."post-update-cmd" |= . + ["repos/add-project-as-symlink.sh"]')" >composer.json
-
 if [ -n "$COMPOSER_DRUPAL_LENIENT" ]; then
     # Add composer_drupal_lenient for modules on Drupal 10
     cd "${GITPOD_REPO_ROOT}" && ddev composer config --merge --json extra.drupal-lenient.allowed-list '["drupal/'"$DP_PROJECT_NAME"'"]'

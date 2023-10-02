@@ -76,6 +76,7 @@ if [ ! -f "${GITPOD_REPO_ROOT}"/.drupalpod_initiated ] && [ -n "$DP_PROJECT_TYPE
         # If not core - clone selected project into /repos and remove drupal core
         rm -rf "${GITPOD_REPO_ROOT}"/repos/drupal
         if [ ! -d repos/"${DP_PROJECT_NAME}" ]; then
+            mkdir -p repos
             cd "${GITPOD_REPO_ROOT}"/repos && time git clone https://git.drupalcode.org/project/"$DP_PROJECT_NAME".git
         fi
     fi
@@ -166,22 +167,6 @@ GITMODULESEND
     cd "${GITPOD_REPO_ROOT}" && ddev snapshot
     echo "Your database state was locally saved, you can revert to it by typing:"
     echo "ddev snapshot restore --latest"
-
-    # Only for Drupal core - apply special patch
-    if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
-        # Patch the scaffold index.php and update.php files
-        # See https://www.drupal.org/project/drupal/issues/3188703
-        # See https://www.drupal.org/project/drupal/issues/1792310
-        echo "$(cat composer.json | jq '.scripts."post-install-cmd" |= . + ["src/composer-drupal-core-setup/patch-core-index-and-update.sh"]')" >composer.json
-        echo "$(cat composer.json | jq '.scripts."post-update-cmd" |= . + ["src/composer-drupal-core-setup/patch-core-index-and-update.sh"]')" >composer.json
-
-        # Run the patch once
-        time src/composer-drupal-core-setup/patch-core-index-and-update.sh
-    else
-        echo "$(cat composer.json | jq '.scripts."post-install-cmd" |= . + ["repos/add-project-as-symlink.sh"]')" >composer.json
-        echo "$(cat composer.json | jq '.scripts."post-update-cmd" |= . + ["repos/add-project-as-symlink.sh"]')" >composer.json
-        time repos/add-project-as-symlink.sh
-    fi
 
     # Save a file to mark workspace already initiated
     touch "${GITPOD_REPO_ROOT}"/.drupalpod_initiated

@@ -23,3 +23,21 @@ fi
 
 cd "${GITPOD_REPO_ROOT}" && time ddev . composer require --dev "drupal/core-dev":* "phpspec/prophecy-phpunit":^2 -W --no-install
 cd "${GITPOD_REPO_ROOT}" && time ddev . composer require "drush/drush":^11 "drupal/coder" "$DEVEL_PACKAGE" "$ADMIN_TOOLBAR_PACKAGE"
+
+# Only for Drupal core - apply special patch
+if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
+    # Patch the scaffold index.php and update.php files
+    # See https://www.drupal.org/project/drupal/issues/3188703
+    # See https://www.drupal.org/project/drupal/issues/1792310
+    echo "$(cat composer.json | jq '.scripts."post-install-cmd" |= . + ["src/composer-drupal-core-setup/patch-core-index-and-update.sh"]')" >composer.json
+    echo "$(cat composer.json | jq '.scripts."post-update-cmd" |= . + ["src/composer-drupal-core-setup/patch-core-index-and-update.sh"]')" >composer.json
+
+    # Run the patch once
+    time src/composer-drupal-core-setup/patch-core-index-and-update.sh
+else
+    # Only for contrib - add project as symlink
+
+    echo "$(cat composer.json | jq '.scripts."post-install-cmd" |= . + ["repos/add-project-as-symlink.sh"]')" >composer.json
+    echo "$(cat composer.json | jq '.scripts."post-update-cmd" |= . + ["repos/add-project-as-symlink.sh"]')" >composer.json
+    time repos/add-project-as-symlink.sh
+fi

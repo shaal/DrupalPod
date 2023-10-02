@@ -75,7 +75,10 @@ if [ ! -f "${GITPOD_REPO_ROOT}"/.drupalpod_initiated ] && [ -n "$DP_PROJECT_TYPE
     else
         # If not core - clone selected project into /repos and remove drupal core
         rm -rf "${GITPOD_REPO_ROOT}"/repos/drupal
-        cd "${GITPOD_REPO_ROOT}"/repos && time git clone https://git.drupalcode.org/project/"$DP_PROJECT_NAME".git
+        if [ ! -d repos/"${DP_PROJECT_NAME}" ]; then
+            mkdir -p repos
+            cd "${GITPOD_REPO_ROOT}"/repos && time git clone https://git.drupalcode.org/project/"$DP_PROJECT_NAME".git
+        fi
     fi
 
     # Set WORK_DIR
@@ -110,130 +113,19 @@ GITMODULESEND
     rm -f "${GITPOD_REPO_ROOT}"/composer.json
     rm -f "${GITPOD_REPO_ROOT}"/composer.lock
 
-    # For versions end with x - add `-dev` suffix (ie. 9.3.x-dev)
-    # For versions without x - add `~` prefix (ie. ~9.2.0)
-    d="$DP_CORE_VERSION"
-    case $d in
-    *.x)
-        install_version="$d"-dev
-        ;;
-    *)
-        install_version=~"$d"
-        ;;
-    esac
-
-    # Create required composer.json and composer.lock files
-    cd "$GITPOD_REPO_ROOT" && time ddev . composer create -n --no-install drupal/recommended-project:"$install_version" temp-composer-files
-    cp "$GITPOD_REPO_ROOT"/temp-composer-files/* "$GITPOD_REPO_ROOT"/.
-    rm -rf "$GITPOD_REPO_ROOT"/temp-composer-files
+    source "$DIR/composer_setup.sh"
 
     if [ -n "$DP_PATCH_FILE" ]; then
         echo Applying selected patch "$DP_PATCH_FILE"
         cd "${WORK_DIR}" && curl "$DP_PATCH_FILE" | patch -p1
     fi
 
-    # Programmatically fix Composer 2.2 allow-plugins to avoid errors
-    ddev composer config --no-plugins allow-plugins.composer/installers true
-    ddev composer config --no-plugins allow-plugins.drupal/core-project-message true
-    ddev composer config --no-plugins allow-plugins.drupal/core-vendor-hardening true
-    ddev composer config --no-plugins allow-plugins.drupal/core-composer-scaffold true
-
-    ddev composer config --no-plugins allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
-    ddev composer config --no-plugins allow-plugins.phpstan/extension-installer true
-
-    ddev composer config --no-plugins allow-plugins.mglaman/composer-drupal-lenient true
-
-    ddev composer config --no-plugins allow-plugins.php-http/discovery true
-
-    # Add project source code as symlink (to repos/name_of_project)
-    # double quotes explained - https://stackoverflow.com/a/1250279/5754049
-    if [ -n "$DP_PROJECT_NAME" ]; then
-        cd "${GITPOD_REPO_ROOT}" &&
-            ddev composer config \
-                repositories.core1 \
-                '{"type": "path", "url": "repos/'"$DP_PROJECT_NAME"'", "options": {"symlink": true}}'
-
-        cd "$GITPOD_REPO_ROOT" &&
-            ddev composer config minimum-stability dev
-    fi
-
     # Prepare special setup to work with Drupal core
     if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
-        # Add a special path when working on core contributions
-        # (Without it, /web/modules/contrib is not found by website)
-        cd "${GITPOD_REPO_ROOT}" &&
-            ddev composer config \
-                repositories.drupal-core2 \
-                '{"type": "path", "url": "repos/drupal/core"}'
-
-        cd "${GITPOD_REPO_ROOT}" &&
-            ddev composer config \
-                repositories.drupal-core3 \
-                '{"type": "path", "url": "repos/drupal/composer/Metapackage/CoreRecommended"}'
-
-        cd "${GITPOD_REPO_ROOT}" &&
-            ddev composer config \
-                repositories.drupal-core4 \
-                '{"type": "path", "url": "repos/drupal/composer/Metapackage/DevDependencies"}'
-
-        cd "${GITPOD_REPO_ROOT}" &&
-            ddev composer config \
-                repositories.drupal-core5 \
-                '{"type": "path", "url": "repos/drupal/composer/Plugin/ProjectMessage"}'
-
-        cd "${GITPOD_REPO_ROOT}" &&
-            ddev composer config \
-                repositories.drupal-core6 \
-                '{"type": "path", "url": "repos/drupal/composer/Plugin/VendorHardening"}'
-
-        # Removing the conflict part of composer
-        echo "$(cat composer.json | jq 'del(.conflict)' --indent 4)" >composer.json
-
-        # repos/drupal/vendor -> ../../vendor
-        if [ ! -L "$GITPOD_REPO_ROOT"/repos/drupal/vendor ]; then
-            cd "$GITPOD_REPO_ROOT"/repos/drupal &&
-                ln -s ../../vendor .
-        fi
-
-        # Create folders for running tests
-        mkdir -p "$GITPOD_REPO_ROOT"/web/sites/simpletest
-        mkdir -p "$GITPOD_REPO_ROOT"/web/sites/simpletest/browser_output
-
-        # Symlink the simpletest folder into the Drupal core git repo.
-        # repos/drupal/sites/simpletest -> ../../../web/sites/simpletest
-        if [ ! -L "$GITPOD_REPO_ROOT"/repos/drupal/sites/simpletest ]; then
-            cd "$GITPOD_REPO_ROOT"/repos/drupal/sites &&
-                ln -s ../../../web/sites/simpletest .
-        fi
+        source "$DIR/drupal_setup_core.sh"
+    # Prepare special setup to work with Drupal contrib
     elif [ -n "$DP_PROJECT_NAME" ]; then
-        # Drupal projects with no composer.json, bypass the symlink config, symlink has to be created manually.
-
-        if [ "$DP_PROJECT_TYPE" == "project_module" ]; then
-            PROJECT_TYPE=modules
-        elif [ "$DP_PROJECT_TYPE" == "project_theme" ]; then
-            PROJECT_TYPE=themes
-        fi
-
-        cat <<PROJECTASYMLINK >"${GITPOD_REPO_ROOT}"/repos/add-project-as-symlink.sh
-#!/usr/bin/env bash
-# This file was dynamically generated by a script
-echo "Replace project with a symlink"
-rm -rf web/$PROJECT_TYPE/contrib/$DP_PROJECT_NAME
-cd web/$PROJECT_TYPE/contrib && ln -s ../../../repos/$DP_PROJECT_NAME .
-PROJECTASYMLINK
-
-        chmod +x "${GITPOD_REPO_ROOT}"/repos/add-project-as-symlink.sh
-
-        echo "$(cat composer.json | jq '.scripts."post-install-cmd" |= . + ["repos/add-project-as-symlink.sh"]')" >composer.json
-        echo "$(cat composer.json | jq '.scripts."post-update-cmd" |= . + ["repos/add-project-as-symlink.sh"]')" >composer.json
-
-        if [ -n "$COMPOSER_DRUPAL_LENIENT" ]; then
-            # Add composer_drupal_lenient for modules on Drupal 10
-            cd "${GITPOD_REPO_ROOT}" && ddev composer config --merge --json extra.drupal-lenient.allowed-list '["drupal/'"$DP_PROJECT_NAME"'"]'
-            cd "${GITPOD_REPO_ROOT}" && time ddev . composer require "$COMPOSER_DRUPAL_LENIENT" --no-install
-        fi
-        # Add the project to composer (it will get the version according to the branch under `/repo/name_of_project`)
-        cd "${GITPOD_REPO_ROOT}" && time ddev . composer require drupal/"$DP_PROJECT_NAME" --no-install
+        source "$DIR/drupal_setup_contrib.sh"
     fi
 
     time "${GITPOD_REPO_ROOT}"/.gitpod/drupal/install-essential-packages.sh
@@ -275,18 +167,6 @@ PROJECTASYMLINK
     cd "${GITPOD_REPO_ROOT}" && ddev snapshot
     echo "Your database state was locally saved, you can revert to it by typing:"
     echo "ddev snapshot restore --latest"
-
-    # Only for Drupal core - apply special patch
-    if [ "$DP_PROJECT_TYPE" == "project_core" ]; then
-        # Patch the scaffold index.php and update.php files
-        # See https://www.drupal.org/project/drupal/issues/3188703
-        # See https://www.drupal.org/project/drupal/issues/1792310
-        echo "$(cat composer.json | jq '.scripts."post-install-cmd" |= . + ["src/composer-drupal-core-setup/patch-core-index-and-update.sh"]')" >composer.json
-        echo "$(cat composer.json | jq '.scripts."post-update-cmd" |= . + ["src/composer-drupal-core-setup/patch-core-index-and-update.sh"]')" >composer.json
-
-        # Run the patch once
-        time src/composer-drupal-core-setup/patch-core-index-and-update.sh
-    fi
 
     # Save a file to mark workspace already initiated
     touch "${GITPOD_REPO_ROOT}"/.drupalpod_initiated

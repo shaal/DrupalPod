@@ -31,7 +31,11 @@ cd "${GITPOD_REPO_ROOT}" &&
 # Removing the conflict part of composer
 echo "$(cat composer.json | jq 'del(.conflict)' --indent 4)" >composer.json
 
-# repos/drupal/vendor -> ../../vendor
+# Only after composer update, /web/core get symlinked to /repos/drupal/core
+# repos/drupal/core -> web/core
+time composer update --lock
+
+# vendor -> repos/drupal/vendor
 if [ ! -L "$GITPOD_REPO_ROOT"/repos/drupal/vendor ]; then
     cd "$GITPOD_REPO_ROOT"/repos/drupal &&
         ln -s ../../vendor .

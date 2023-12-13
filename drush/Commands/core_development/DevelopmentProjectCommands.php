@@ -2,14 +2,13 @@
 
 namespace Drush\Commands\core_development;
 
-use Consolidation\AnnotatedCommand\AnnotationData;
+use Composer\Autoload\ClassLoader;
 use Drupal\Core\DrupalKernel;
 use Drupal\Core\Site\Settings;
-use Drush\Commands\core\CacheCommands;
+use Drush\Commands\DrushCommands;
 use Drush\Drush;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\ArgvInput;
-use Symfony\Component\Console\Input\InputInterface;
+use Psr\Container\ContainerInterface as DrushContainer;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -18,9 +17,24 @@ use Symfony\Component\HttpFoundation\Request;
  * This prevents contrib modules from vanishing when the cache:rebuild command
  * is run.
  *
- * For maintainability, changes from the original are marked 'CHANGE'.
+ * For maintainability, changes from the original command method in
+ * Drush\Commands\core\CacheCommands are marked 'CHANGE'.
  */
-class DevelopmentProjectCommands extends CacheCommands {
+class DevelopmentProjectCommands extends DrushCommands {
+
+  public function __construct(
+    private ClassLoader $autoloader
+  ) {
+    parent::__construct();
+  }
+
+  public static function createEarly(DrushContainer $drush_container): self {
+    $commandHandler = new static(
+        $drush_container->get('loader')
+    );
+
+    return $commandHandler;
+  }
 
   /**
    * @hook replace-command cache:rebuild
@@ -38,7 +52,6 @@ class DevelopmentProjectCommands extends CacheCommands {
     // We no longer clear APC and similar caches as they are useless on CLI.
     // See https://github.com/drush-ops/drush/pull/2450
 
-    $autoloader = $this->loadDrupalAutoloader(DRUPAL_ROOT);
     require_once DRUSH_DRUPAL_CORE . '/includes/utility.inc';
 
     $request = Drush::bootstrap()->getRequest();
@@ -48,11 +61,11 @@ class DevelopmentProjectCommands extends CacheCommands {
     // CHANGE: Don't use DRUPAL_ROOT.
     $root = $app_root;
     $site_path = DrupalKernel::findSitePath($request);
-    Settings::initialize($root, $site_path, $autoloader);
+    Settings::initialize($root, $site_path, $this->autoloader);
 
     // drupal_rebuild() calls drupal_flush_all_caches() itself, so we don't do it manually.
     // CHANGE: call our own version of drupal_rebuild().
-    $this->drupal_rebuild($autoloader, $request);
+    $this->drupal_rebuild($this->autoloader, $request);
     $this->logger()->success(dt('Cache rebuild complete.'));
   }
 

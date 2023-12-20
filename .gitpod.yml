@@ -1,4 +1,4 @@
-image: drupalpod/drupalpod-gitpod-base:20230922
+image: drupalpod/drupalpod-gitpod-base:latest
 
 # DDEV and composer are running as part of the prebuild
 # when starting a workspace all docker images are ready

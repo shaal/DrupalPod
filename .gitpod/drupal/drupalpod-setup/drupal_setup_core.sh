@@ -53,7 +53,7 @@ if [ ! -L "$GITPOD_REPO_ROOT"/repos/drupal/sites/simpletest ]; then
 fi
 
 # Get the major version of 'drush/drush'
-drush_major_version=$(composer show drush/drush --no-ansi | awk '/versions/ {print $NF}') | cut -d '.' -f1
+drush_major_version=$(composer show drush/drush --no-ansi | awk '/versions/ {print $NF}' | cut -d '.' -f1)
 
 drush_command_dir="$GITPOD_REPO_ROOT/drush/Commands/core_development"
 mkdir -p "$drush_command_dir"

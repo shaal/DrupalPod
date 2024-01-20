@@ -1,0 +1,99 @@
+{
+  "folders": [
+    {
+      "name": "DrupalPod",
+      "path": ".",
+    },
+    {
+      "name": "Repos",
+      "path": "./repos",
+    },
+    {
+      "name": "Web Root",
+      "path": "./web",
+    }
+  ],
+  "settings": {
+    "breadcrumbs.enabled": true,
+    "css.validate": true,
+    "diffEditor.ignoreTrimWhitespace": false,
+    "editor.tabSize": 2,
+    "editor.autoIndent": "full",
+    "editor.insertSpaces": true,
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": false,
+    "editor.renderWhitespace": "boundary",
+    "editor.wordWrapColumn": 80,
+    "editor.wordWrap": "off",
+    "editor.detectIndentation": true,
+    "editor.rulers": [
+      80
+    ],
+    "files.associations": {
+      "*.inc": "php",
+      "*.module": "php",
+      "*.install": "php",
+      "*.theme": "php",
+      "*.profile": "php",
+      "*.tpl.php": "php",
+      "*.test": "php",
+      "*.php": "php",
+      "*.info": "ini",
+      "*.html": "twig",
+    },
+    "emmet.includeLanguages": {
+      "twig": "html"
+    },
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "html.format.enable": true,
+    "html.format.wrapLineLength": 80,
+    "redhat.telemetry.enabled": false,
+
+    /* PHP Intelephense */
+    "php.validate.executablePath": "/usr/local/bin/php",
+    "php.suggest.basic": false,
+
+    /* phpSniffer settings */
+    "phpSniffer.executablesFolder": "vendor/bin",
+    "phpSniffer.standard": "Drupal",
+
+    /* php-docblocker settings */
+    "php-docblocker.gap": true,
+    "php-docblocker.useShortNames": true,
+
+    // Allow searching files that are in .gitignore
+    "search.useIgnoreFiles": false,
+
+    // Configure glob patterns for excluding files and folders in fulltext searches and quick open. Inherits all glob patterns from the `files.exclude` setting.
+    "search.exclude": {
+      "**/vendor": true,
+    },
+    "workbench.startupEditor": "none",
+  },
+  "launch": {
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Listen for XDebug",
+            "type": "php",
+            "request": "launch",
+            "hostname": "0.0.0.0",
+            "port": 9003,
+            "pathMappings": {
+                "/var/www/html": "${workspaceRoot}"
+            }
+        },
+        {
+            "type": "bashdb",
+            "request": "launch",
+            "name": "Bash-Debug (simplest configuration)",
+            "program": "${file}"
+        }
+    ]
+  },
+  "extensions": {},
+}

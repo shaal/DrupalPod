@@ -18,6 +18,7 @@ set -eu -o pipefail
 : "${DP_ISSUE_FORK:=}"
 : "${DP_MODULE_VERSION:=}"
 : "${DP_PATCH_FILE:=}"
+: "${DP_INSTALL_LOCALE:=}"
 
 # Assuming .sh files are in the same directory as this script
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
@@ -136,8 +137,7 @@ GITMODULESEND
     # ddev config auto updates settings.php and generates settings.ddev.php
     ddev config --auto
     # New site install
-    time ddev drush si -y --account-pass=admin --site-name="DrupalPod" "$DP_INSTALL_PROFILE"
-
+    time ddev drush si -y --account-pass=admin --site-name="DrupalPod" "$DP_INSTALL_PROFILE" --locale="${DP_INSTALL_LOCALE:-en}"
     # Install devel and admin_toolbar modules
     if [ "$DP_EXTRA_DEVEL" != '1' ]; then
         DEVEL_NAME=

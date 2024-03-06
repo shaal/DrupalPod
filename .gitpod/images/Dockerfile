@@ -15,13 +15,13 @@ RUN echo "deb [signed-by=/etc/apt/keyrings/ddev.gpg] https://pkg.ddev.com/apt/ *
 RUN sudo apt update && sudo apt install -y ddev
 
 # Install GitUI (terminal-ui for git)
-RUN wget https://github.com/extrawurst/gitui/releases/download/v0.24.3/gitui-linux-musl.tar.gz -P /tmp
+RUN wget https://github.com/extrawurst/gitui/releases/download/v0.25.1/gitui-linux-musl.tar.gz -P /tmp
 RUN sudo tar xzf /tmp/gitui-linux-musl.tar.gz -C /usr/bin
 
 # (get latest Minio version from https://dl.min.io/client/mc/release/linux-amd64/)
 # Install Minio client
-RUN wget https://dl.min.io/client/mc/release/linux-amd64/mcli_20231220071422.0.0_amd64.deb
-RUN sudo dpkg -i mcli_20231220071422.0.0_amd64.deb
+RUN wget https://dl.min.io/client/mc/release/linux-amd64/mcli_20240303001308.0.0_amd64.deb
+RUN sudo dpkg -i mcli_20240303001308.0.0_amd64.deb
 RUN sudo mv /usr/local/bin/mcli /usr/local/bin/mc
 
 # End workspace-base

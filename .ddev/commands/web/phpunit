@@ -11,5 +11,5 @@ cd web
 BROWSERTEST_OUTPUT_DIRECTORY=/var/www/html/web/sites/simpletest/browser_output \
 BROWSERTEST_OUTPUT_BASE_URL=http://localhost:8080 \
 SIMPLETEST_DB="mysql://db:db@db/db" \
-SIMPLETEST_BASE_URL="http://localhost" \
+SIMPLETEST_BASE_URL="http://web" \
 php ../vendor/bin/phpunit -c core/phpunit.xml.dist $@

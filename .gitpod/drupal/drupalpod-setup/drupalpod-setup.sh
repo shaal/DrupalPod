@@ -26,6 +26,29 @@ if [ -n "$DEBUG_SCRIPT" ] || [ -n "$GITPOD_HEADLESS" ]; then
     set -x
 fi
 
+convert_version() {
+    local version=$1
+    if [[ $version =~ "-" ]]; then
+        # Remove the part after the dash and replace the last numeric segment with 'x'
+        local base_version=${version%-*}
+        echo "${base_version%.*}.x"
+    else
+        echo "$version"
+    fi
+}
+
+# Test cases
+# echo $(convert_version "9.2.5-dev1")    # Output: 9.2.x
+# echo $(convert_version "9.2.5")         # Output: 9.2.5
+# echo $(convert_version "10.1.0-beta1")  # Output: 10.1.x
+# echo $(convert_version "11.0-dev")      # Output: 11.x
+
+# If this is an issue fork of Drupal core - set the drupal core version based on that issue fork
+if [ "$DP_PROJECT_TYPE" == "project_core" ] && [ -n "$DP_ISSUE_FORK" ]; then
+    export VERSION_FROM_GIT=$(grep 'const VERSION' repos/drupal/core/lib/Drupal.php | awk -F "'" '{print $2}')
+    export DP_CORE_VERSION=$(convert_version $VERSION_FROM_GIT)
+fi
+
 time ddev start
 
 # Measure the time it takes to go through the script

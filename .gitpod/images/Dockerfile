@@ -28,8 +28,8 @@ RUN wget https://github.com/extrawurst/gitui/releases/download/${GITUI_VERSION}/
 RUN sudo tar xzf /tmp/gitui-linux-x86_64.tar.gz -C /usr/bin
 
 # Install LazyGit (terminal-ui for git)
-RUN wget https://github.com/jesseduffield/lazygit/releases/download/v0.41.0/lazygit_0.41.0_Darwin_x86_64.tar.gz -P /tmp
-RUN tar -C /tmp -xf /tmp/lazygit_0.41.0_Darwin_x86_64.tar.gz
+RUN wget https://github.com/jesseduffield/lazygit/releases/download/v0.41.0/lazygit_0.41.0_Linux_x86_64.tar.gz -P /tmp
+RUN tar -C /tmp -xf /tmp/lazygit_0.41.0_Linux_x86_64.tar.gz
 RUN sudo install /tmp/lazygit /usr/local/bin
 
 # (get latest Minio version from https://dl.min.io/client/mc/release/linux-amd64/)

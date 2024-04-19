@@ -45,8 +45,9 @@ convert_version() {
 
 # If this is an issue fork of Drupal core - set the drupal core version based on that issue fork
 if [ "$DP_PROJECT_TYPE" == "project_core" ] && [ -n "$DP_ISSUE_FORK" ]; then
-    export VERSION_FROM_GIT=$(grep 'const VERSION' repos/drupal/core/lib/Drupal.php | awk -F "'" '{print $2}')
-    export DP_CORE_VERSION=$(convert_version $VERSION_FROM_GIT)
+    VERSION_FROM_GIT=$(grep 'const VERSION' repos/drupal/core/lib/Drupal.php | awk -F "'" '{print $2}')
+    DP_CORE_VERSION=$(convert_version "$VERSION_FROM_GIT")
+    export DP_CORE_VERSION
 fi
 
 time ddev start

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -eu -o pipefail
+set -eu -o -x pipefail
 
 # Initialize all variables with null if they do not exist
 : "${DEBUG_SCRIPT:=}"
@@ -18,6 +18,9 @@ set -eu -o pipefail
 : "${DP_ISSUE_FORK:=}"
 : "${DP_MODULE_VERSION:=}"
 : "${DP_PATCH_FILE:=}"
+
+echo after!!!
+printenv | grep DP
 
 # Assuming .sh files are in the same directory as this script
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"

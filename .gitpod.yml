@@ -4,6 +4,8 @@ image: drupalpod/drupalpod-gitpod-base:20240419
 # when starting a workspace all docker images are ready
 tasks:
   - init: |
+      printenv | grep DP_
+      echo gitpod-yml !!!
       .gitpod/utils/send-a-message-gcs.sh > /tmp/output1.txt
       .gitpod/utils/ddev-in-gitpod-setup.sh
       .gitpod/utils/set-base-environment.sh

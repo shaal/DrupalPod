@@ -44,9 +44,14 @@ convert_version() {
 # echo $(convert_version "11.0-dev")      # Output: 11.x
 
 # Skip setup if it already ran once and if no special setup is set by DrupalPod extension
-if [ ! -f "${GITPOD_REPO_ROOT}"/.drupalpod_initiated ] && [ -n "$DP_PROJECT_TYPE" ]; then
-    source "$DIR/git_setup.sh"
+if [ ! -f "${GITPOD_REPO_ROOT}"/.drupalpod_initiated ]; then
 
+    # Set a default setup if project type wasn't specified
+    if [ -z "$DP_PROJECT_TYPE" ]; then
+        source "$DIR/fallback_setup.sh"
+    fi
+
+    source "$DIR/git_setup.sh"
 
     # If this is an issue fork of Drupal core - set the drupal core version based on that issue fork
     if [ "$DP_PROJECT_TYPE" == "project_core" ] && [ -n "$DP_ISSUE_FORK" ]; then
@@ -60,8 +65,7 @@ if [ ! -f "${GITPOD_REPO_ROOT}"/.drupalpod_initiated ] && [ -n "$DP_PROJECT_TYPE
     # Measure the time it takes to go through the script
     script_start_time=$(date +%s)
 
-    source "$DIR/fallback_setup.sh"
-    source "$DIR/install_modules.sh"
+    source "$DIR/contrib_modules_setup.sh"
     source "$DIR/cleanup.sh"
     source "$DIR/composer_setup.sh"
 

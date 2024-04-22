@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -eu -o pipefail
 
 # Check if additional modules should be installed
 export DEVEL_NAME="devel"

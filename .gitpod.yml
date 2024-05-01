@@ -1,4 +1,4 @@
-image: drupalpod/drupalpod-gitpod-base:20230922
+image: drupalpod/drupalpod-gitpod-base:20240419
 
 # DDEV and composer are running as part of the prebuild
 # when starting a workspace all docker images are ready
@@ -7,7 +7,6 @@ tasks:
       .gitpod/utils/send-a-message-gcs.sh > /tmp/output1.txt
       .gitpod/utils/ddev-in-gitpod-setup.sh
       .gitpod/utils/set-base-environment.sh
-      time ddev start
     command: |
       # Temporary fix for wrong value of GITPOD_REPO_ROOT when opening a Gitpod snapshot
       # Todo: remove this when this issue is resolved - https://github.com/gitpod-io/gitpod/issues/9804

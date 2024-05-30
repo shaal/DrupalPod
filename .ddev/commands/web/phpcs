@@ -1,0 +1,13 @@
+#!/bin/bash
+
+## Description: Run PHP_CodeSniffer's codesniffer
+## Usage: phpcs [flags] [args]
+## Example: "ddev phpcs --standard=core/phpcs.xml.dist index.php" or "ddev phpcs index.php"
+## HostWorkingDir: true
+## ExecRaw: true
+
+if ! command -v phpcs >/dev/null; then
+  echo "phpcs is not available. You may need to 'ddev composer require squizlabs/php_codesniffer'"
+  exit 1
+fi
+phpcs "$@"

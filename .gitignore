@@ -16,3 +16,4 @@ src/**/out/
 src/**/*.vsix
 src/**/.vscode-test/
 drush/
+.ddev/config.gitpod.yaml

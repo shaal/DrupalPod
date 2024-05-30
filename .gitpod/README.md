@@ -4,8 +4,10 @@
 
 1. Update `.gitpod/images/Dockerfile`:
 
+    1. Update `ddev` latest version.
     1. Update `minio` latest version.
     1. Update `gitui` latest version.
+    1. Update `lazygit` latest version.
 
 1. Generate new custom docker image:
 

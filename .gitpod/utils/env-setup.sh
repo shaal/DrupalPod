@@ -17,6 +17,15 @@ sudo cp protect-my-git.template.sh /usr/local/bin/protect-my-git
 # Create php command (run php inside ddev container)
 sudo cp ddev-php.template.sh /usr/local/bin/php
 
+# Create phpunit command (run phpunit inside ddev container)
+sudo cp ddev-phpunit.template.sh /usr/local/bin/phpunit
+
+# Create phpcs command (run phpcs inside ddev container)
+sudo cp ddev-phpcs.template.sh /usr/local/bin/phpcs
+
+# Create phpcbf command (run phpcbf inside ddev container)
+sudo cp ddev-phpcbf.template.sh /usr/local/bin/phpcbf
+
 # Create drush command (run drush inside ddev container)
 sudo cp ddev-drush.template.sh /usr/local/bin/drush
 

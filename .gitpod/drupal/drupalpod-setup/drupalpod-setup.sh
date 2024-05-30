@@ -83,9 +83,12 @@ if [ ! -f "${GITPOD_REPO_ROOT}"/.drupalpod_initiated ]; then
     fi
 
     time "${GITPOD_REPO_ROOT}"/.gitpod/drupal/install-essential-packages.sh
-    # Configure phpcs for drupal.
-    cd "$GITPOD_REPO_ROOT" &&
-        vendor/bin/phpcs --config-set installed_paths vendor/drupal/coder/coder_sniffer
+
+    # Configure phpcs for drupal if it's not already set up by the
+    # dealerdirect/phpcodesniffer-composer-installer composer plugin.
+    if ! ddev phpcs --config-show | \grep -q 'installed_paths:'; then
+        ddev phpcs --config-set installed_paths vendor/drupal/coder/coder_sniffer
+    fi
 
     # ddev config auto updates settings.php and generates settings.ddev.php
     ddev config --auto

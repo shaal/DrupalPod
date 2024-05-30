@@ -9,4 +9,16 @@ if [ -z "$1" ]; then
   exit 1
 fi
 
-ddev exec -d /var/www/html/"$(echo "$PWD" | cut -d'/' -f4-)" "$@"
+if [ "${GITPOD_NORMALIZE_EXEC_ARGUMENTS:-1}" = 1 ] && [ -n "${GITPOD_REPO_ROOT}" ]; then
+  # Replace all references to the absolute path to the repo root.
+  # This will ensure IDEs like PHPStorm can pass files into it without issue.
+  arguments=()
+  for arg in "$@"; do
+    new_arg="${arg//${GITPOD_REPO_ROOT}//var/www/html}"
+    arguments+=("$new_arg")
+  done
+else
+  arguments=("$@")
+fi
+
+ddev exec -d /var/www/html/"$(echo "$PWD" | cut -d'/' -f4-)" "${arguments[@]}"

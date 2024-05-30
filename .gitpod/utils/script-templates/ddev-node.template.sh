@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
-echo "Notice: running 'node $*' in ddev"
+>&2 echo "Notice: running 'node $*' in ddev"
 ddev exec_d node "$@"

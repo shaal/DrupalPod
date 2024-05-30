@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
-echo "Notice: running 'yarn $*' in ddev"
+>&2 echo "Notice: running 'yarn $*' in ddev"
 ddev exec_d yarn "$@"

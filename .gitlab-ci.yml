@@ -16,8 +16,9 @@ vscode-extension-build:
     - cd src/vscode-extension/drupalpod-ext
   script:
     - yarn install
-    # Note that "vscode-test" will not run in GitPod.
-    - yarn test
+    # @todo run tests when "vscode-test" package works in GitPod, GitLab CI or
+    # GitHub Actions.
+    # - yarn test
     - yarn package
 
 vscode-extension-release:

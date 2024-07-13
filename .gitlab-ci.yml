@@ -4,7 +4,7 @@ stages:
 
 cache:
   paths:
-    - src/vscode-extension/node_modules/
+    - src/vscode-extension/drupalpod-ext/node_modules/
 
 vscode-extension-build:
   image: node:lts-slim

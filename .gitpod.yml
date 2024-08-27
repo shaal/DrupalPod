@@ -1,4 +1,4 @@
-image: drupalpod/drupalpod-gitpod-base:latest
+image: drupalpod/drupalpod-gitpod-base:20240419
 
 # DDEV and composer are running as part of the prebuild
 # when starting a workspace all docker images are ready
@@ -7,7 +7,6 @@ tasks:
       .gitpod/utils/send-a-message-gcs.sh > /tmp/output1.txt
       .gitpod/utils/ddev-in-gitpod-setup.sh
       .gitpod/utils/set-base-environment.sh
-      time ddev start
     command: |
       # Temporary fix for wrong value of GITPOD_REPO_ROOT when opening a Gitpod snapshot
       # Todo: remove this when this issue is resolved - https://github.com/gitpod-io/gitpod/issues/9804
@@ -76,22 +75,3 @@ ports:
     name: xdebug
     description: xdebug
     onOpen: ignore
-
-github:
-  prebuilds:
-    # enable for the master/default branch (defaults to true)
-    master: true
-    # enable for all branches in this repo (defaults to false)
-    branches: true
-    # enable for pull requests coming from this repo (defaults to true)
-    pullRequests: true
-    # enable for pull requests coming from forks (defaults to false)
-    pullRequestsFromForks: false
-    # add a check to pull requests (defaults to true)
-    addCheck: true
-    # add a "Review in Gitpod" button as a comment to pull requests (defaults to false)
-    addComment: false
-    # add a "Review in Gitpod" button to the pull request's description (defaults to false)
-    addBadge: true
-    # add a label once the prebuild is ready to pull requests (defaults to false)
-    addLabel: true

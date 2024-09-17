@@ -1,0 +1,64 @@
+# This mirrors daily from an upstream repository.
+# These two things must be set:
+# UPSTREAM_REPO should be set to something like
+# https://git.drupalcode.org/issue/drupalpod-3474581.git
+# WORKFLOW_TOKEN is a secret in the "normal" environment containing
+# a fine-grained PAT with permissions to read/write content and read/write workflows
+
+name: Mirror from Upstream
+defaults:
+  run:
+    shell: bash
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Runs daily at midnight UTC
+  workflow_dispatch:     # Allows manual triggering of the workflow
+
+permissions:
+  contents: write
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    env:
+      CLONEDIR: "/tmp/clonedir"
+    # The environment variables will be in the environment "normal"
+    environment: "normal"
+
+    steps:
+      - name: Set up Git environment
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+
+      - name: Clone upstream repository
+        run: |
+          set -x
+          set -eu -o pipefail
+          mkdir -p ${CLONEDIR}
+          # The variable UPSTREAM_REPO must be set in the repository's
+          # "normal" environment
+          git clone --mirror "${{ vars.UPSTREAM_REPO }}" "${{ env.CLONEDIR }}"
+
+      - name: Remove existing Git credentials
+        run: |
+          git config --global --unset-all http.https://github.com/.extraheader || true
+
+      - name: Push to GitHub
+        env:
+          # The WORKFLOW_TOKEN is a fine-grained PAT with
+          # contents: read-write and
+          # workflow:read/write perm for this repo
+          WORKFLOW_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
+          REPO: ${{ github.repository }}
+
+        run: |
+          set -x
+          cd ${{ env.CLONEDIR }}
+          git remote set-url origin "https://github.com/${REPO}.git"
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git remote set-url origin "https://x-access-token:${WORKFLOW_TOKEN}@github.com/${REPO}.git"
+          git push --mirror
+
+          

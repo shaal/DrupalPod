@@ -2,16 +2,25 @@ name: DrupalPod
 type: drupal
 docroot: web
 php_version: "8.3"
-webserver_type: nginx-fpm
+webserver_type: apache-fpm
 xdebug_enabled: false
 additional_hostnames: []
 additional_fqdns: []
 database:
     type: mariadb
-    version: "10.6"
+    version: "10.11"
 use_dns_when_possible: true
 composer_version: "2"
-web_environment: []
+web_environment:
+    - APP_ROOT=$DDEV_COMPOSER_ROOT
+    - WEB_ROOT=$DDEV_COMPOSER_ROOT/$DDEV_DOCROOT
+    - DB_HOST=db
+    - DB_PORT=3306
+    - DB_USER=db
+    - DB_PASSWORD=db
+    - DB_NAME=db
+    - DP_APP_ID=drupalpod
+    - DB_DRIVER=mysql
 corepack_enable: false
 
 # Key features of DDEV's config.yaml:

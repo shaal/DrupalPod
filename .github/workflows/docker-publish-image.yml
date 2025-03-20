@@ -2,6 +2,9 @@ name: Reusable Docker build and push template
 on:
   workflow_call:
     inputs:
+      drupal_core_version:
+        required: false
+        type: string
       webserver_image:
         required: true
         type: string
@@ -27,6 +30,7 @@ jobs:
           DB_USER: user
           DB_PASSWORD: password
           DB_DRIVER: mysql
+          DP_CORE_VERSION: ${{ inputs.drupal_core_version || '' }}
         ports:
           - 80:80
         volumes:

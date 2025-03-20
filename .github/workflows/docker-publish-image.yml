@@ -8,6 +8,9 @@ on:
       webserver_image:
         required: true
         type: string
+    secrets:
+      DOCKERHUB_TOKEN:
+        required: true
 jobs:
   build-application:
     runs-on: ubuntu-latest

@@ -1,0 +1,21 @@
+name: Docker build and push template
+on:
+  push:
+    branches:
+      - main
+      - drupalforge
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  build-php-8_2:
+    uses: ./.github/workflows/docker-publish-image.yml
+    with:
+      webserver_image: devpanel/php:8.2-base
+      drupal_core_version: 10.4.5
+    secrets: inherit
+  build-php-8_3:
+    uses: ./.github/workflows/docker-publish-image.yml
+    with:
+      webserver_image: devpanel/php:8.3-base
+    secrets: inherit

@@ -83,13 +83,13 @@ jobs:
         username: ${{ vars.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Set env to testing environment
-      if: endsWith(inputs.webserver_image, ':php-8.2')
+    - name: Set env to PHP 8.2 environment
+      if: endsWith(inputs.webserver_image, ':8.2-base')
       run: |
         echo "IMAGE_TAG=drupalforge/drupalpod:php-8.2" >> $GITHUB_ENV
 
-    - name: Set env to production environment
-      if: endsWith(inputs.webserver_image, ':php-8.3')
+    - name: Set env to PHP 8.3 environment
+      if: endsWith(inputs.webserver_image, ':8.3-base')
       run: |
         echo "IMAGE_TAG=drupalforge/drupalpod:php-8.3" >> $GITHUB_ENV
 
@@ -99,7 +99,7 @@ jobs:
         docker push ${{ env.IMAGE_TAG }}
 
     - name: Push to tag latest
-      if: endsWith(inputs.webserver_image, ':php-8.3')
+      if: endsWith(inputs.webserver_image, ':8.3-base')
       run: |
         docker commit ${{ job.services.webserver.id }} drupalforge/drupalpod:latest
         docker push drupalforge/drupalpod:latest

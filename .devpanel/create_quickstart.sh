@@ -30,16 +30,10 @@ mkdir -p $DUMPS_DIR
 
 # Step 1 - Compress drupal database
 cd $WORK_DIR
-echo -e "> Export database using drupal/drush"
-drush cr --quiet
-drush sql-dump > $TMP_DIR/$DB_NAME.sql --extra=--no-tablespaces
-
-echo -e "> Compress database"
-tar czf $DUMPS_DIR/db.sql.tgz -C $TMP_DIR $DB_NAME.sql
-
-echo -e "> Store database to $APP_ROOT/.devpanel/dumps"
+echo -e "> Export database to $APP_ROOT/.devpanel/dumps"
 mkdir -p $APP_ROOT/.devpanel/dumps
-mv $DUMPS_DIR/db.sql.tgz $APP_ROOT/.devpanel/dumps/db.sql.tgz
+drush cr --quiet
+drush sql-dump --result-file=../.devpanel/dumps/db.sql --gzip --extra-dump=--no-tablespaces
 
 # Step 2 - Compress static files
 cd $WORK_DIR
@@ -49,4 +43,3 @@ tar czf $DUMPS_DIR/files.tgz -C $STATIC_FILES_DIR .
 echo -e "> Store files.tgz to $APP_ROOT/.devpanel/dumps"
 mkdir -p $APP_ROOT/.devpanel/dumps
 mv $DUMPS_DIR/files.tgz $APP_ROOT/.devpanel/dumps/files.tgz
-

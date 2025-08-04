@@ -84,12 +84,12 @@ time "${DIR}"/install-essential-packages.sh
 cd "$APP_ROOT" &&
     vendor/bin/phpcs --config-set installed_paths vendor/drupal/coder/coder_sniffer
 
-if [ -z "$(mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASSWORD $DB_NAME -e 'show tables')" ] || \
+if [ -z "$(drush status --field=db-status)" ] || \
    [ $DP_INSTALL_PROFILE != 'demo_umami' ] || \
-   ! printf "11.1.5\n$DP_CORE_VERSION" | sort -C; then
+   ! printf "11.2.2\n$DP_CORE_VERSION" | sort -C; then
     # New site install, different install profile, or lower core version.
     time drush -n si --account-pass=admin --site-name="DrupalPod" "$DP_INSTALL_PROFILE"
-elif [ $DP_CORE_VERSION != '11.1.5' ]; then
+elif [ $DP_CORE_VERSION != '11.2.2' ]; then
     # Run database updates if the core version is different.
     time drush -n updb
 fi

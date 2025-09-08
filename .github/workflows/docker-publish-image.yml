@@ -1,0 +1,105 @@
+name: Reusable Docker build and push template
+on:
+  workflow_call:
+    inputs:
+      drupal_core_version:
+        required: false
+        type: string
+      webserver_image:
+        required: true
+        type: string
+    secrets:
+      DOCKERHUB_TOKEN:
+        required: true
+jobs:
+  build-application:
+    runs-on: ubuntu-latest
+    services:
+      webserver:
+        image: ${{ inputs.webserver_image }}
+        env:
+          DP_APP_ID: 'drupalpod'
+          APP_ROOT: '/var/www/html'
+          WEB_ROOT: '/var/www/html/web'
+          CODES_USER_DATA_DIR: '/var/www/html/.vscode'
+          CODES_WORKING_DIR: '/var/www/html'
+          APACHE_RUN_USER: 'www'
+          APACHE_RUN_GROUP: 'www'
+          CODES_ENABLE: 'yes'
+          DB_HOST: mysql
+          DB_PORT: 3306
+          DB_ROOT_PASSWORD: root
+          DB_NAME: drupaldb
+          DB_USER: user
+          DB_PASSWORD: password
+          DB_DRIVER: mysql
+          DP_CORE_VERSION: ${{ inputs.drupal_core_version || '' }}
+        ports:
+          - 80:80
+        volumes:
+          - ${{ github.workspace }}:/app/  # Mounting the checked-out code
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_USER: user
+          MYSQL_PASSWORD: password
+          MYSQL_DATABASE: drupaldb
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -u root --password=root"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+    - name: Set up Docker Environment
+      uses: docker/setup-buildx-action@v3
+
+    - name: Check out code
+      uses: actions/checkout@v4
+
+    - name: Setup Drupal
+      run: |
+        echo "PREPARE DIR FOR INSTALL"
+        docker exec ${{ job.services.webserver.id }} bash -c "sudo rm -rf \$APP_ROOT && sudo mkdir -p \$APP_ROOT"
+        docker exec ${{ job.services.webserver.id }} bash -c "sudo cp -r /app/. \$APP_ROOT/."
+        docker exec ${{ job.services.webserver.id }} bash -c "sudo chown -R www:www \$APP_ROOT"
+        docker exec ${{ job.services.webserver.id }} bash -c "export && cd \$APP_ROOT && ls -al"
+        echo "SET UP GIT"
+        docker exec ${{ job.services.webserver.id }} bash -c "git config --global --add safe.directory \$APP_ROOT"
+        echo "INSTALL CUSTOM PACKAGE"
+        docker exec ${{ job.services.webserver.id }} bash -c "\$APP_ROOT/.devpanel/custom_package_installer.sh"
+        echo "INSTALL DRUPAL"
+        docker exec ${{ job.services.webserver.id }} bash -c "cd \$APP_ROOT && ls -al"
+        docker exec ${{ job.services.webserver.id }} bash -c "\$APP_ROOT/.devpanel/init.sh"
+        echo "DUMPS DATABASE + STATIC FILE"
+        docker exec ${{ job.services.webserver.id }} bash -c "\$APP_ROOT/.devpanel/create_quickstart.sh"
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ vars.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Set env to PHP 8.2 environment
+      if: endsWith(inputs.webserver_image, ':8.2-base-ai')
+      run: |
+        echo "IMAGE_TAG=drupalforge/drupalpod:php-8.2" >> $GITHUB_ENV
+
+    - name: Set env to PHP 8.3 environment
+      if: endsWith(inputs.webserver_image, ':8.3-base-ai')
+      run: |
+        echo "IMAGE_TAG=drupalforge/drupalpod:php-8.3" >> $GITHUB_ENV
+
+    - name: Commit and push the container state to Docker Hub
+      run: |
+        docker commit ${{ job.services.webserver.id }} ${{ env.IMAGE_TAG }}
+        docker push ${{ env.IMAGE_TAG }}
+
+    - name: Push to tag latest
+      if: endsWith(inputs.webserver_image, ':8.3-base-ai')
+      run: |
+        docker commit ${{ job.services.webserver.id }} drupalforge/drupalpod:latest
+        docker push drupalforge/drupalpod:latest

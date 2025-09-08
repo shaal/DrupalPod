@@ -8,8 +8,6 @@ composer.lock
 
 # DrupalPod
 .drupalpod_initiated
-.gitmodules
-repos/
 src/**/node_modules/
 src/**/package-lock.json
 src/**/out/
